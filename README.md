@@ -1,6 +1,9 @@
 KNIME ImageJ2 Integration
 ============
 
+Description
+----------
+
 The KNIP ImageJ2 plugin provides support for ImageJ1 macro execution and ImageJ2 plugins. The latter
 allows to write an algorithm once using the ImageJ2 plugin language and execute it in KNIME and ImageJ2.
 
@@ -21,3 +24,19 @@ We currently support a basic set of input and output parameters that can be exte
 The ImageJ2 plugin comes with some pre installed example plugins , like edge detection or the ImageJ2 shadow plugins, that demonstrate the neat integration of KNIME and ImageJ2. Additionally an ImageJ2 version of Tubeness 1.2 (http://www.longair.net/edinburgh/imagej/tubeness/) has been included as a demonstration of a more advanced plugin (use grayscale images to test it). Most importantly,  ImageJ2 plugins can easily be added to KNIME via KNIME update sites or with the local installations of the plugins (mainly intended for development purposes).  To test the local installation mode go to the Image Processing Preference Page (File -> Preferences -> KNIME -> Image Processing Plugin) and select ImageJ2 Plugin Installation, then choose an ImageJ2 plugin jar-file (with sezpoz annotations), install it and restart KNIME. The plugins become available in the local node repository according to the menu annotations of the plugin. 
 
 The KNIME integration of ImageJ2 is currently a beta release but with the ongoing development of ImageJ2 we hope to improve the integration between both tools. However, the current version already allows to write algorithms, that run in KNIME and ImageJ2 at the same time, without requiring a deeper knowledge of the KNIME API.
+
+Development
+-------------
+
+#### Quick-Start
+
+* checkout the knip-imagej2 and knip repositories
+* import the projects into an eclipse workspace
+* adjust the sezpoz path
+* look at fragmentdemo or buddydemo as examples how to build eclipse plugins with your own ImageJ2 algorithms (we recommend the fragmentdemo way)
+
+#### sezpoz
+
+In order to build ImageJ2 plugins with the required annotations you need to use the [sezpoz](https://github.com/jglick/sezpoz) library as annotation processor. The library is included in org.knime.knip.scijava but you have to adjust your eclipse settings to the correct path. 
+
+Go to [sezpoz](https://github.com/jglick/sezpoz) and follow the instructions under "Eclipse-specific notes"
