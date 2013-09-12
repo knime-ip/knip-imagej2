@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-Name: KNIME ImageJ BuddyDemo
+Bundle-SymbolicName: org.knime.knip.imagej2.buddydemo;singleton:=true
+Bundle-ManifestVersion: 2
+Bundle-Version: 0.1.0.qualifier
+Bundle-Vendor: University of Konstanz
+Eclipse-RegisterBuddy: org.knime.core, org.knime.knip.imagej2.core
+Require-Bundle: org.knime.base,
+ org.knime.workbench.repository,
+ org.apache.log4j;bundle-version="1.2.15",
+ org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.knime.knip.imagej2.core;bundle-version="0.1.0",
+ org.knime.knip.core;bundle-version="1.0.0",
+ org.knime.knip.scijava;bundle-version="2.1.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: knipimagejbase.jar
+Bundle-ActivationPolicy: lazy
+

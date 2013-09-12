@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (c) 2010 IBM Corporation 
+	and others. All rights reserved. This program and the accompanying materials 
+	are made available under the terms of the Eclipse Public License v1.0 which 
+	accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html 
+	Contributors: IBM Corporation - initial API and implementation -->
+
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="imagereader.png" type="Source">
+	<name>IJ Image Reader (2D) - experimental</name>
+	<shortDescription>
+		Reads images using ImageJ (http://rsbweb.nih.gov/ij/)
+		and imports them to the KNIME-internal image format. Supported formats are tif, jpg, bmp, png, ... .
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			Reads images using ImageJ (http://rsbweb.nih.gov/ij/)
+		and imports them to the KNIME-internal image format. Supported formats are tif, jpg, bmp, png, ... .
+						
+		</intro>
+		<option name="File chooser">
+			Choose your image files here and add them to the
+			list of selected files.
+			An image preview is available which will also
+			help you to determine,
+			whether an image format is supported or not.
+			The list of the core meta data gives you some more information about
+			the
+			image object.
+		</option>
+	</fullDescription>
+
+	<ports>
+		<outPort index="0" name="Images">
+			The opened images.
+		</outPort>
+	</ports>
+</knimeNode>

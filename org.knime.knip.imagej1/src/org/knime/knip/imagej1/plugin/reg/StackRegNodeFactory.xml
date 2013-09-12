@@ -1,0 +1,70 @@
+<!-- Copyright (c) 2010 IBM Corporation and others. All rights reserved. 
+	This program and the accompanying materials are made available under the 
+	terms of the Eclipse Public License v1.0 which accompanies this distribution, 
+	and is available at http://www.eclipse.org/legal/epl-v10.html Contributors: 
+	IBM Corporation - initial API and implementation -->
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="registration.png" type="Manipulator">
+	<name>StackReg (EPFL Lausanne))</name>
+	<shortDescription>
+		Introduction from
+		(http://bigwww.epfl.ch/thevenaz/stackreg/):
+		P. Thevenaz, U.E.
+		Ruttimann, M. Unser, 'A Pyramid Approach to Subpixel Registration
+		Based on Intensity,' IEEE Transactions on Image Processing, vol. 7,
+		no. 1, pp. 27-41, January 1998. Other relevant on-line publications
+		are available at http://bigwww.epfl.ch/publications/.
+
+
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			Introduction from (http://bigwww.epfl.ch/thevenaz/stackreg/):
+			Four types of transformation are considered:
+
+			Translation. The mapping
+			of coordinates takes the form x = u + deltau. There, the
+			input
+			coordinate
+			u is mapped to the output coordinate x, and the
+			constant
+			vector deltau
+			gives the amount of translation.
+			Rigid Body. The mapping
+			of
+			coordinates takes the form x = { {cos theta, −sin
+			theta}, {sin
+			theta, cos theta} } u
+			+ deltau. Because of the presence of the term
+			deltau, translation is
+			considered too, in addition to the rotation by
+			an
+			angle theta.
+			Scaled
+			rotation. The mapping of coordinates takes the
+			form x = { {cos theta,
+			−sin }, {sin theta, cos theta} } u+ u. The
+			difference with respect to a
+			rigid-body transformation is the presence
+			of the scalar resizing
+			factor lambda.
+			Affine. The mapping of
+			coordinates takes the form x = {
+			{a11, a12}, {a21,
+			a22} } u+deltau. As
+			the four coefficients a11, a12,
+			a21, and a22 are
+			independent, an affine
+			transformation has even more
+			degrees of
+			freedom than a scaled rotation.
+		</intro>
+
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="Images">Images</inPort>
+		<outPort index="0" name="Registered Image">Registered Image</outPort>
+	</ports>
+</knimeNode>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension-point id="ijadapter" name="IJAdapter" schema="schema/ijadapter.exsd"/>
+     <extension
+           point="org.knime.workbench.repository.nodesets">
+        <nodeset
+              default-category-icon="icon.png"
+              expert-flag="false"
+              factory-class="org.knime.knip.imagej2.core.node.IJNodeSetFactory"
+              id="org.knime.knip.imagej.core.node.IJNodeSetFactory">
+        </nodeset>
+     </extension>
+     <extension
+           point="org.knime.workbench.repository.categories">
+        <category
+              icon="icon.png"
+              level-id="imagej2"
+              name="ImageJ2"
+              path="/community/knip">
+        </category>
+     </extension>
+     <extension
+           point="org.knime.knip.imagej2.core.ijadapter">
+        <ijadapter
+              factory-class="org.knime.knip.imagej2.core.adapter.impl.CoreAdapterFactory">
+        </ijadapter>
+     </extension>
+</plugin>

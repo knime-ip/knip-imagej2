@@ -1,0 +1,3 @@
+ImageJ2 is distributed under a Simplified BSD License; for the full text of the
+license, see the LICENSE.txt file. For further reading, see:
+  http://en.wikipedia.org/wiki/BSD_licenses

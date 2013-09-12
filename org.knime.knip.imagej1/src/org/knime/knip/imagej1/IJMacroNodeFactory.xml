@@ -1,0 +1,38 @@
+<!-- Copyright (c) 2010 IBM Corporation and others. All rights reserved. 
+	This program and the accompanying materials are made available under the 
+	terms of the Eclipse Public License v1.0 which accompanies this distribution, 
+	and is available at http://www.eclipse.org/legal/epl-v10.html Contributors: 
+	IBM Corporation - initial API and implementation -->
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="ijmacro.png" type="Manipulator">
+	<name>ImageJ Macro</name>
+	<shortDescription>
+		Applies ImageJ macros to images.
+	</shortDescription>
+
+	<fullDescription>
+		<intro>Applies ImageJ (http://rsbweb.nih.gov/ij/) macros to images.
+			There some predefined macros
+			which can be selected by dragging and
+			dropping them to the list of
+			selected filters. The configuration of
+			the macros can either be done
+			'user-friendly' through an interface or
+			by typing the code directly.
+			To use/write a custom macro just use the
+			'Pure Code'-filter.
+			Note that
+			not every macro-code is compatible
+			with
+			KNIME which can lead in some
+			cases to an unexpected results.
+		</intro>
+
+	</fullDescription>
+	<ports>
+		<inPort index="0" name="Images">Images</inPort>
+		<outPort index="0" name="Processed Images">Processed Images</outPort>
+		<outPort index="1" name="Results Table">The ImageJ results table if available
+			(e.g. using the "Analyze Particles"-macro).</outPort>
+	</ports>
+</knimeNode>

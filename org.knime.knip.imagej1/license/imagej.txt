@@ -1,0 +1,10 @@
+ImageJ is Free Software
+ImageJ is public domain open source software. An ImageJ user has the four essential freedoms defined by the Richard Stallman in 1986:
+
+    The freedom to run the program, for any purpose.
+    The freedom to study how the program works, and change it to make it do what you wish.
+    The freedom to redistribute copies so you can help your neighbor.
+    The freedom to improve the program, and release your improvements to the public, so that the whole community benefits. 
+    
+From:
+http://rsb.info.nih.gov/ij/docs/concepts.html

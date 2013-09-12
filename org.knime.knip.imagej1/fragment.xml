@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<fragment>
+   <extension
+         point="org.knime.workbench.repository.nodesets">
+      <nodeset
+            expert-flag="false"
+            factory-class="org.knime.knip.imagej1.ImageJ1NodeSetFactory"
+            id="org.knime.knip.imagej1.ImageJ1NodeSetFactory">
+      </nodeset>
+   </extension>
+   <extension
+         point="org.knime.knip.core.Externalizer">
+      <Externalizer
+            Externalizer="org.knime.knip.imagej1.ImageJ1ObjectExt0">
+      </Externalizer>
+   </extension>
+   <extension
+         point="org.knime.workbench.repository.categories">
+      <category
+            after="imagej2"
+            icon="icons/ij1.png"
+            level-id="imagej1"
+            name="ImageJ1"
+            path="/community/knip/">
+      </category>
+   </extension>
+
+</fragment>
