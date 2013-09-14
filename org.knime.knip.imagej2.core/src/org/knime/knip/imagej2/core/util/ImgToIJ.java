@@ -117,7 +117,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         }
 
         // Create Mapping [at position one -> new index, at position 2 -> new index etc.] given: ImgPlus and m_mapping
-        int[] mapping = getNewMapping(img);
+        Integer[] mapping = getNewMapping(img);
 
         // swap metadata
         final double[] calibration = new double[img.numDimensions()];
@@ -201,9 +201,9 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
      * @param mapping
      * @return true if ordered
      */
-    private boolean inOrder(final int[] mapping) {
+    private boolean inOrder(final Integer[] mapping) {
         for (int i = 0; i < mapping.length; i++) {
-            if (mapping[i] != i) {
+            if (mapping[i] != null && mapping[i] != i) {
                 return false;
             }
         }
@@ -214,8 +214,8 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
      * @param img
      * @return
      */
-    private int[] getNewMapping(final ImgPlus<? extends RealType<?>> img) {
-        int[] mapping = new int[img.numDimensions()];
+    private Integer[] getNewMapping(final ImgPlus<? extends RealType<?>> img) {
+        Integer[] mapping = new Integer[img.numDimensions()];
         for (int i = 0; i < img.numDimensions(); i++) {
             mapping[i] = m_mapping.get(img.axis(i).type());
         }
@@ -223,6 +223,22 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         // Resultat mapping[1, 0, 3, 2, 4]
         //TODO
         return mapping;
+    }
+
+    private int[] getMapping(final ImgPlus<? extends RealType> img, final long[] dimensions) {
+        int[] mappedSizes = new int[5];
+        Arrays.fill(mappedSizes, 1);
+
+        for (int d = 0; d < img.numDimensions(); d++) {
+            Integer i;
+            if ((i = m_mapping.get(img.axis(d).type())) == null) {
+                throw new RuntimeException("Dimension " + img.axis(d).type() + " could not be mapped to IJ ImagePlus.");
+            }
+
+            mappedSizes[i] = (int)img.dimension(d);
+        }
+
+        return mappedSizes;
     }
 
     /**
@@ -249,22 +265,6 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
      */
     public void setMapping(final Map<AxisType, Integer> mapping) {
         m_mapping = mapping;
-    }
-
-    private int[] getMapping(final ImgPlus<? extends RealType> img, final long[] dimensions) {
-        int[] mappedSizes = new int[5];
-        Arrays.fill(mappedSizes, 1);
-
-        for (int d = 0; d < img.numDimensions(); d++) {
-            Integer i;
-            if ((i = m_mapping.get(img.axis(d).type())) == null) {
-                throw new RuntimeException("Dimension " + img.axis(d).type() + " could not be mapped to IJ ImagePlus.");
-            }
-
-            mappedSizes[i] = (int)img.dimension(d);
-        }
-
-        return mappedSizes;
     }
 
     private static ImageProcessor createImageProcessor(final Img<? extends RealType<?>> op) {
