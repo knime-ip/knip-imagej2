@@ -86,11 +86,16 @@ import net.imglib2.view.Views;
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
+ * @author <a href="mailto:gabriel.einsdorf@uni.kn">Gabriel Einsdorf</a>
  */
 public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends RealType<?>>, ImagePlus> {
 
     private Map<AxisType, Integer> m_mapping;
 
+
+    /**
+     * Standard constructor, assumes input image has 5 dimensions (X, Y, Channel, Z, Time)
+     */
     public ImgToIJ() {
         m_mapping = new HashMap<AxisType, Integer>();
 
@@ -100,6 +105,38 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         m_mapping.put(Axes.CHANNEL, 2);
         m_mapping.put(Axes.Z, 3);
         m_mapping.put(Axes.TIME, 4);
+    }
+
+    /**
+     * Creates a new converter instance with standard dimension mapping, depending on the number of dimensions.
+     * Assumes 2 dimensions = X,Y; 3 dimensions = X,Y,Z; 4 dimensions = X,Y,Z, Time; 5 dimensions = (X,Y,Channel,Z,Time)
+     * To convert an image with different dimensions use {@link #setMapping(Map)} to provide your own mapping.
+     * @param numDimensions
+     */
+    public ImgToIJ(final int numDimensions) {
+        m_mapping = new HashMap<AxisType, Integer>();
+
+        // standard mapping from ImgPlus to ImagePlus
+        m_mapping.put(Axes.X, 0);
+        m_mapping.put(Axes.Y, 1);
+
+        switch (numDimensions) {
+            case 2:
+                break;
+            case 3:
+                m_mapping.put(Axes.Z, 2);
+                break;
+            case 4:
+                m_mapping.put(Axes.Z, 2);
+                m_mapping.put(Axes.TIME, 3);
+            case 5:
+                m_mapping.put(Axes.CHANNEL, 2);
+                m_mapping.put(Axes.Z, 3);
+                m_mapping.put(Axes.TIME, 4);
+            default:
+                throw new IllegalArgumentException(
+                        "input image has more than 5 dimensions, this is not supported by ImageJ ImagePlus");
+        }
     }
 
     @Override
@@ -140,20 +177,14 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
                         continue;
                     }
                     permuted = Views.permute(permuted, d, type);
-                    int temp  = mapping[mapping[d]];
+                    int temp = mapping[mapping[d]];
                     mapping[mapping[d]] = mapping[d];
                     mapping[d] = temp;
                     break;
                 }
             }
         }
-        //        for (int d = 0; d < img.numDimensions(); d++) {
-        //            Integer type;
-        //            if ((type = m_mapping.get(img.axis(d).type())) != null) {
-        //                // Hier: aufpassen dass er nicht rückwärtsmapped etc  TODO:
-        //                permuted = Views.permute(permuted, d, type);
-        //            }
-        //        }
+
 
         final ImgPlus correctedImg = new ImgPlus(new ImgView(permuted, img.factory()));
         for (int i = 0; i < axes.length; i++) {
@@ -188,22 +219,45 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
             is.addSlice("", ip);
         }
 
-        // This is still possible to be done one op (even if permuted) as we just want to know to dimensionalities. The ordering is given in permuted.
-        r.setStack(is, (int)(correctedImg.numDimensions() > 2 ? correctedImg.dimension(2) : 0),
-                   (int)(correctedImg.numDimensions() > 3 ? correctedImg.dimension(3) : 0),
-                   (int)(correctedImg.numDimensions() > 4 ? correctedImg.dimension(4) : 0));
+        int channels = 1;
+        int slices = 1;
+        int frames = 1;
+
+        switch (correctedImg.numDimensions()) {
+            case 2:
+                break;
+            case 3:
+                slices = (int)correctedImg.dimension(2);
+                break;
+            case 4:
+                slices = (int)correctedImg.dimension(2);
+                frames = (int)correctedImg.dimension(3);
+                break;
+            case 54:
+                channels = (int)correctedImg.dimension(2);
+                slices = (int)correctedImg.dimension(3);
+                frames = (int)correctedImg.dimension(4);
+                break;
+            default:
+                break;
+        }
+
+        r.setStack(is, channels, slices, frames);
+
         //TODO: r.setCalibration(new Calibration().setC)
         return r;
     }
 
     /**
      * checks if mapping is ordered
+     *
      * @param mapping
      * @return true if ordered
      */
     private boolean inOrder(final Integer[] mapping) {
         for (int i = 0; i < mapping.length; i++) {
-            if (mapping[i] != null && mapping[i] != i) {
+            if (mapping[i] != i) {
+                //          if (mapping[i] != null && mapping[i] != i) {
                 return false;
             }
         }
@@ -225,6 +279,13 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         return mapping;
     }
 
+    /**
+     * Wofür ist das gedacht?
+     *
+     * @param img
+     * @param dimensions
+     * @return
+     */
     private int[] getMapping(final ImgPlus<? extends RealType> img, final long[] dimensions) {
         int[] mappedSizes = new int[5];
         Arrays.fill(mappedSizes, 1);
