@@ -55,7 +55,6 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,56 +90,80 @@ import net.imglib2.view.Views;
 public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends RealType<?>>, ImagePlus> {
 
     private Map<AxisType, Integer> m_mapping;
-
-
+    private boolean m_useStandardMapping;
     /**
-     * Standard constructor, assumes input image has 5 dimensions (X, Y, Channel, Z, Time)
-     */
-    public ImgToIJ() {
-        m_mapping = new HashMap<AxisType, Integer>();
-
-        // standard mapping from ImgPlus to ImagePlus
-        m_mapping.put(Axes.X, 0);
-        m_mapping.put(Axes.Y, 1);
-        m_mapping.put(Axes.CHANNEL, 2);
-        m_mapping.put(Axes.Z, 3);
-        m_mapping.put(Axes.TIME, 4);
-    }
-
-    /**
-     * Creates a new converter instance with standard dimension mapping, depending on the number of dimensions.
-     * Assumes 2 dimensions = X,Y; 3 dimensions = X,Y,Z; 4 dimensions = X,Y,Z, Time; 5 dimensions = (X,Y,Channel,Z,Time)
-     * To convert an image with different dimensions use {@link #setMapping(Map)} to provide your own mapping.
+     * Creates a new converter instance with standard dimension mapping, depending on the number of dimensions. Assumes
+     * 2 dimensions = X,Y; 3 dimensions = X,Y,Z; 4 dimensions = X,Y,Z, Time; 5 dimensions = (X,Y,Channel,Z,Time).To
+     * convert an image with different dimensions use {@link #setMapping(Map)} to provide your own mapping.
+     *
      * @param numDimensions
      */
-    public ImgToIJ(final int numDimensions) {
-        m_mapping = new HashMap<AxisType, Integer>();
-
-        // standard mapping from ImgPlus to ImagePlus
-        m_mapping.put(Axes.X, 0);
-        m_mapping.put(Axes.Y, 1);
-
-        switch (numDimensions) {
-            case 2:
-                break;
-            case 3:
-                m_mapping.put(Axes.Z, 2);
-                break;
-            case 4:
-                m_mapping.put(Axes.Z, 2);
-                m_mapping.put(Axes.TIME, 3);
-            case 5:
-                m_mapping.put(Axes.CHANNEL, 2);
-                m_mapping.put(Axes.Z, 3);
-                m_mapping.put(Axes.TIME, 4);
-            default:
-                throw new IllegalArgumentException(
-                        "input image has more than 5 dimensions, this is not supported by ImageJ ImagePlus");
-        }
+    public ImgToIJ() {
+        m_useStandardMapping = true;
     }
+
+    /**
+     * Creates a new converter instance with standard dimension mapping, depending on the number of dimensions. Assumes
+     * 2 dimensions = X,Y; 3 dimensions = X,Y,Z; 4 dimensions = X,Y,Z, Time; 5 dimensions = (X,Y,Channel,Z,Time) To
+     * convert an image with different dimensions use {@link #setMapping(Map)} to provide your own mapping.
+     *
+     * @param numDimensions
+     */
+//    public ImgToIJ(final int numDimensions) {
+//        m_mapping = new HashMap<AxisType, Integer>();
+//
+//        // standard mapping from ImgPlus to ImagePlus
+//        m_mapping.put(Axes.X, 0);
+//        m_mapping.put(Axes.Y, 1);
+//
+//        switch (numDimensions) {
+//            case 2:
+//                break;
+//            case 3:
+//                m_mapping.put(Axes.Z, 2);
+//                break;
+//            case 4:
+//                m_mapping.put(Axes.Z, 2);
+//                m_mapping.put(Axes.TIME, 3);
+//            case 5:
+//                m_mapping.put(Axes.CHANNEL, 2);
+//                m_mapping.put(Axes.Z, 3);
+//                m_mapping.put(Axes.TIME, 4);
+//            default:
+//                throw new IllegalArgumentException(
+//                        "input image has more than 5 dimensions, this is not supported by ImageJ ImagePlus");
+//        }
+//    }
 
     @Override
     public final ImagePlus compute(final ImgPlus<? extends RealType<?>> img, final ImagePlus r) {
+        if (m_useStandardMapping) {
+            m_mapping = new HashMap<AxisType, Integer>();
+
+            // standard mapping from ImgPlus to ImagePlus
+            m_mapping.put(Axes.X, 0);
+            m_mapping.put(Axes.Y, 1);
+
+            switch (img.numDimensions()) {
+                case 2:
+                    break;
+                case 3:
+                    m_mapping.put(Axes.Z, 2);
+                    break;
+                case 4:
+                    m_mapping.put(Axes.Z, 2);
+                    m_mapping.put(Axes.TIME, 3);
+                case 5:
+                    m_mapping.put(Axes.CHANNEL, 2);
+                    m_mapping.put(Axes.Z, 3);
+                    m_mapping.put(Axes.TIME, 4);
+                default:
+                    throw new IllegalArgumentException(
+                            "input image has more than 5 dimensions, this is not supported by ImageJ ImagePlus");
+            }
+
+        }
+
         float offset = 0;
         float scale = 1;
         if (img.firstElement() instanceof BitType) {
@@ -184,7 +207,6 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
                 }
             }
         }
-
 
         final ImgPlus correctedImg = new ImgPlus(new ImgView(permuted, img.factory()));
         for (int i = 0; i < axes.length; i++) {
@@ -286,21 +308,21 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
      * @param dimensions
      * @return
      */
-    private int[] getMapping(final ImgPlus<? extends RealType> img, final long[] dimensions) {
-        int[] mappedSizes = new int[5];
-        Arrays.fill(mappedSizes, 1);
-
-        for (int d = 0; d < img.numDimensions(); d++) {
-            Integer i;
-            if ((i = m_mapping.get(img.axis(d).type())) == null) {
-                throw new RuntimeException("Dimension " + img.axis(d).type() + " could not be mapped to IJ ImagePlus.");
-            }
-
-            mappedSizes[i] = (int)img.dimension(d);
-        }
-
-        return mappedSizes;
-    }
+//    private int[] getMapping(final ImgPlus<? extends RealType> img, final long[] dimensions) {
+//        int[] mappedSizes = new int[5];
+//        Arrays.fill(mappedSizes, 1);
+//
+//        for (int d = 0; d < img.numDimensions(); d++) {
+//            Integer i;
+//            if ((i = m_mapping.get(img.axis(d).type())) == null) {
+//                throw new RuntimeException("Dimension " + img.axis(d).type() + " could not be mapped to IJ ImagePlus.");
+//            }
+//
+//            mappedSizes[i] = (int)img.dimension(d);
+//        }
+//
+//        return mappedSizes;
+//    }
 
     /**
      * Check wether ImgPlus contains axis which can not be mapped to IJ ImagePlus. Valid axes in ImagePlus are Channel
@@ -325,7 +347,12 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
      * @param mapping
      */
     public void setMapping(final Map<AxisType, Integer> mapping) {
+        m_useStandardMapping = false;
         m_mapping = mapping;
+    }
+
+    public void setStandardMapping(){
+        m_useStandardMapping = true;
     }
 
     private static ImageProcessor createImageProcessor(final Img<? extends RealType<?>> op) {
