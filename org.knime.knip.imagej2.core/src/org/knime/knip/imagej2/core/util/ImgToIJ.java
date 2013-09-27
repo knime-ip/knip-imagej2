@@ -155,6 +155,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
 
         // Create Mapping [at position one -> new index, at position 2 -> new index etc.] given: ImgPlus and m_mapping
         int[] mapping = getNewMapping(img);
+        int[] reverseMapping = getReverseMapping(mapping);
 
         // swap metadata
         final double[] calibration = new double[img.numDimensions()];
@@ -163,7 +164,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         final AxisType[] axes = new AxisType[img.numDimensions()];
         for (int i = 0; i < axes.length; i++) {
             calibration[i] = tmpCalibration[mapping[i]];
-            axes[i] = Axes.get(img.axis(mapping[i]).type().getLabel());
+            axes[i] = Axes.get(img.axis(reverseMapping[i]).type().getLabel());
         }
 
         // Permute Operation to make sure a certain ordering
@@ -277,6 +278,18 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         // Resultat mapping[1, 0, 3, 2, 4]
         //TODO
         return mapping;
+    }
+
+    private int[] getReverseMapping(final int[] mapping){
+        int[] reverse = new int[mapping.length];
+        for (int i = 0; i < reverse.length; i++) {
+            for (int j = 0; j < reverse.length; j++) {
+                if(mapping[i] == j){
+                    reverse[j] = i;
+                }
+            }
+        }
+        return reverse;
     }
 
     /**
