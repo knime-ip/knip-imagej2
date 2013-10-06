@@ -27,7 +27,7 @@ Bundle-ClassPath: ij2-core.jar,
  lib/jcommon-1.0.17.jar,
  lib/Plugins/Tubeness2Fragment.jar,
  lib/jfreechart-1.0.14.jar,
- lib/ij-1.48b.jar
+ lib/ij-1.48c.jar
 Bundle-ActivationPolicy: lazy
 Export-Package: imagej.command
 
