@@ -155,7 +155,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
 
         // Create Mapping [at position one -> new index, at position 2 -> new index etc.] given: ImgPlus and m_mapping
         int[] mapping = getNewMapping(img);
-        int[] reverseMapping = getReverseMapping(mapping);
+//        int[] reverseMapping = getReverseMapping(mapping);
 
         // swap metadata
         final double[] calibration = new double[img.numDimensions()];
@@ -164,7 +164,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         final AxisType[] axes = new AxisType[img.numDimensions()];
         for (int i = 0; i < axes.length; i++) {
             calibration[i] = tmpCalibration[mapping[i]];
-            axes[i] = Axes.get(img.axis(reverseMapping[i]).type().getLabel());
+            axes[i] = Axes.get(img.axis(mapping[i]).type().getLabel());
         }
 
         // Permute Operation to make sure a certain ordering
@@ -258,7 +258,6 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
     private boolean inOrder(final int[] mapping) {
         for (int i = 0; i < mapping.length; i++) {
             if (mapping[i] != i) {
-                //          if (mapping[i] != null && mapping[i] != i) {
                 return false;
             }
         }
@@ -280,17 +279,17 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         return mapping;
     }
 
-    private int[] getReverseMapping(final int[] mapping){
-        int[] reverse = new int[mapping.length];
-        for (int i = 0; i < reverse.length; i++) {
-            for (int j = 0; j < reverse.length; j++) {
-                if(mapping[i] == j){
-                    reverse[j] = i;
-                }
-            }
-        }
-        return reverse;
-    }
+//    private int[] getReverseMapping(final int[] mapping){
+//        int[] reverse = new int[mapping.length];
+//        for (int i = 0; i < reverse.length; i++) {
+//            for (int j = 0; j < reverse.length; j++) {
+//                if(mapping[i] == j){
+//                    reverse[j] = i;
+//                }
+//            }
+//        }
+//        return reverse;
+//    }
 
     /**
      * Wofür ist das gedacht?
