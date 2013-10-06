@@ -82,9 +82,9 @@ import org.scijava.util.ClassUtils;
 /**
  * provides access to the ImageJ context and loads supported ImageJ Plugins. The class implements the singleton pattern
  * and ensures that only one ImageJ Context is created.
- * 
- * 
- * 
+ *
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -202,7 +202,7 @@ public final class IJGateway {
 
     /**
      * tests a type against the internal list of ImageJ dialog input types.
-     * 
+     *
      * @param type the type to test
      * @return true if this type can be handled by the ImageJ dialog
      */
@@ -221,7 +221,7 @@ public final class IJGateway {
     /**
      * tests if modules can run headless, have a static amount of inputs and outputs and whether KNIME supports these
      * input and output types.
-     * 
+     *
      * @param modules the candidates
      * @return a filtered list that contains only plugins that can run in KNIME
      */
@@ -277,7 +277,7 @@ public final class IJGateway {
 
     /**
      * tests if the plugin has dynamically generated inputs and outputs.
-     * 
+     *
      * @param info module info of the plugin
      * @return true if the plugin has dynamically generated inputs or outputs
      */
@@ -303,7 +303,7 @@ public final class IJGateway {
 
     /**
      * test if the type is supported as input type.
-     * 
+     *
      * @param type
      * @return true if KNIME can handle the specified input type e.g. with an adapter or the ImageJ parameter dialog
      */
@@ -338,7 +338,7 @@ public final class IJGateway {
 
     /**
      * tests if the type is supported as output type.
-     * 
+     *
      * @param type
      * @return true if KNIME can handle the output type i.e. an adapter for this type exists
      */
