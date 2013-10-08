@@ -65,8 +65,9 @@ import net.imglib2.img.Img;
 import net.imglib2.iterator.IntervalIterator;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import net.imglib2.meta.DefaultCalibratedAxis;
+import net.imglib2.meta.DefaultTypedAxis;
 import net.imglib2.meta.ImgPlus;
+import net.imglib2.meta.axis.DefaultLinearAxis;
 import net.imglib2.ops.img.UnaryObjectFactory;
 import net.imglib2.ops.operation.UnaryOutputOperation;
 import net.imglib2.ops.operation.subset.views.ImgView;
@@ -139,6 +140,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         }
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final ImagePlus compute(final ImgPlus<? extends RealType<?>> img, final ImagePlus r) {
         float offset = 0;
@@ -189,7 +191,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
 
         final ImgPlus correctedImg = new ImgPlus(new ImgView(permuted, img.factory()));
         for (int i = 0; i < axes.length; i++) {
-            correctedImg.setAxis(new DefaultCalibratedAxis(axes[i]), i);
+            correctedImg.setAxis(new DefaultLinearAxis(axes[i]), i);
             correctedImg.setCalibration(calibration[i], i);
         }
 
@@ -279,17 +281,6 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         return mapping;
     }
 
-//    private int[] getReverseMapping(final int[] mapping){
-//        int[] reverse = new int[mapping.length];
-//        for (int i = 0; i < reverse.length; i++) {
-//            for (int j = 0; j < reverse.length; j++) {
-//                if(mapping[i] == j){
-//                    reverse[j] = i;
-//                }
-//            }
-//        }
-//        return reverse;
-//    }
 
     /**
      * Wofür ist das gedacht?
@@ -324,7 +315,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
     public boolean validateMapping(final ImgPlus img) {
         for (int d = 0; d < img.numDimensions(); d++) {
             Integer i;
-            if ((i = m_mapping.get(img.axis(d).type())) == null) {
+            if ((i = m_mapping.get(((DefaultTypedAxis)img.axis(d)).type())) == null) {
                 return false;
             }
         }
