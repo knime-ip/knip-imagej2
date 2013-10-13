@@ -29,5 +29,6 @@ Bundle-ClassPath: ij2-core.jar,
  lib/jfreechart-1.0.14.jar,
  lib/ij-1.48c.jar
 Bundle-ActivationPolicy: lazy
-Export-Package: imagej.command
+Export-Package: imagej.command,
+ org.knime.knip.imagej2.core.util
 
