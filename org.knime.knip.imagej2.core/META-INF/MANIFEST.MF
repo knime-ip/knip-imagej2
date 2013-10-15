@@ -27,8 +27,15 @@ Bundle-ClassPath: ij2-core.jar,
  lib/jcommon-1.0.17.jar,
  lib/Plugins/Tubeness2Fragment.jar,
  lib/jfreechart-1.0.14.jar,
- lib/ij-1.48c.jar
+ lib/ij-1.48d.jar
 Bundle-ActivationPolicy: lazy
 Export-Package: imagej.command,
+ org.knime.knip.imagej2.core,
+ org.knime.knip.imagej2.core.adapter,
+ org.knime.knip.imagej2.core.adapter.impl,
+ org.knime.knip.imagej2.core.adapter.impl.basicinput,
+ org.knime.knip.imagej2.core.adapter.impl.basicoutput,
+ org.knime.knip.imagej2.core.imagejdialog,
+ org.knime.knip.imagej2.core.node,
  org.knime.knip.imagej2.core.util
 

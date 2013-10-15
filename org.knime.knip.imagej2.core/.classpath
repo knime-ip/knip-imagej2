@@ -14,6 +14,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jcommon-1.0.17.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/Plugins/Tubeness2Fragment.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jfreechart-1.0.14.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-1.48c.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ij-1.48d.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
