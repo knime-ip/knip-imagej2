@@ -162,7 +162,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         // swap metadata
         final double[] calibration = new double[img.numDimensions()];
         final double[] tmpCalibration = new double[img.numDimensions()];
-        img.calibration(tmpCalibration);
+
         final AxisType[] axes = new AxisType[img.numDimensions()];
         for (int i = 0; i < axes.length; i++) {
             calibration[i] = tmpCalibration[mapping[i]];
@@ -192,7 +192,6 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         final ImgPlus correctedImg = new ImgPlus(new ImgView(permuted, img.factory()));
         for (int i = 0; i < axes.length; i++) {
             correctedImg.setAxis(new DefaultLinearAxis(axes[i]), i);
-            correctedImg.setCalibration(calibration[i], i);
         }
 
         final long[] dim = new long[correctedImg.numDimensions()];
