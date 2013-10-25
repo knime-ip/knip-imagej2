@@ -159,25 +159,23 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         // Create Mapping [at position one -> new index, at position 2 -> new index etc.] given: ImgPlus and m_mapping
         int[] mapping = getNewMapping(img);
         int nDims = img.numDimensions();
-        final double[] calibration = new double[nDims];
-        final double[] tmpCalibration = new double[nDims];
 
+        //saving axis to be able to restore them and their calibration
         final AxisType[] axes = new AxisType[img.numDimensions()];
         for (int i = 0; i < axes.length; i++) {
-            calibration[i] = tmpCalibration[mapping[i]];
             axes[i] = Axes.get(img.axis(mapping[i]).type().getLabel());
         }
 
         // Permute Operation to make sure of correct ordering
         RandomAccessibleInterval permuted = img;
 
-        //Swapping state indication list used for comparison
+        //list that indicates the state of the swapping, initialised with the identity permutation
         ArrayList<Integer> swappingState = new ArrayList<Integer>(nDims);
         for (int i = 0; i < nDims; i++) {
             swappingState.add(i);
         }
 
-        // Swapping of Dimensions to fulfil the mapping resulting in an ordered Immage
+        // Swapping of Dimensions to fulfil the mapping resulting in an ordered Image
         for (int d = 0; d < nDims; d++) {
             if (mapping[d] == swappingState.get(d)) {
                 continue;
@@ -188,11 +186,13 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
             Collections.swap(swappingState, d, dimIndex);
         }
 
+        //Img with corrcet dimension order
         final ImgPlus correctedImg = new ImgPlus(new ImgView(permuted, img.factory()));
         for (int i = 0; i < axes.length; i++) {
             correctedImg.setAxis(new DefaultLinearAxis(axes[i]), i);
         }
 
+        //Building the IJ ImagePlus
         final long[] dim = new long[correctedImg.numDimensions()];
         correctedImg.dimensions(dim);
         final long width = dim[0];
@@ -220,6 +220,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
             is.addSlice("", ip);
         }
 
+        //calculates the missing arguments for the image stack constructor
         int channels = 1;
         int slices = 1;
         int frames = 1;
@@ -234,7 +235,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
                 slices = (int)correctedImg.dimension(2);
                 frames = (int)correctedImg.dimension(3);
                 break;
-            case 54:
+            case 5:
                 channels = (int)correctedImg.dimension(2);
                 slices = (int)correctedImg.dimension(3);
                 frames = (int)correctedImg.dimension(4);
