@@ -55,7 +55,8 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,7 +94,6 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
 
     private Map<AxisType, Integer> m_mapping;
 
-
     /**
      * Standard constructor, assumes input image has 5 dimensions (X, Y, Channel, Z, Time)
      */
@@ -109,9 +109,10 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
     }
 
     /**
-     * Creates a new converter instance with standard dimension mapping, depending on the number of dimensions.
-     * Assumes 2 dimensions = X,Y; 3 dimensions = X,Y,Z; 4 dimensions = X,Y,Z, Time; 5 dimensions = (X,Y,Channel,Z,Time)
-     * To convert an image with different dimensions use {@link #setMapping(Map)} to provide your own mapping.
+     * Creates a new converter instance with standard dimension mapping, depending on the number of dimensions. Assumes
+     * 2 dimensions = X,Y; 3 dimensions = X,Y,Z; 4 dimensions = X,Y,Z, Time; 5 dimensions = (X,Y,Channel,Z,Time) To
+     * convert an image with different dimensions use {@link #setMapping(Map)} to provide your own mapping.
+     *
      * @param numDimensions
      */
     public ImgToIJ(final int numDimensions) {
@@ -157,11 +158,9 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
 
         // Create Mapping [at position one -> new index, at position 2 -> new index etc.] given: ImgPlus and m_mapping
         int[] mapping = getNewMapping(img);
-//        int[] reverseMapping = getReverseMapping(mapping);
-
-        // swap metadata
-        final double[] calibration = new double[img.numDimensions()];
-        final double[] tmpCalibration = new double[img.numDimensions()];
+        int nDims = img.numDimensions();
+        final double[] calibration = new double[nDims];
+        final double[] tmpCalibration = new double[nDims];
 
         final AxisType[] axes = new AxisType[img.numDimensions()];
         for (int i = 0; i < axes.length; i++) {
@@ -169,25 +168,25 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
             axes[i] = Axes.get(img.axis(mapping[i]).type().getLabel());
         }
 
-        // Permute Operation to make sure a certain ordering
+        // Permute Operation to make sure of correct ordering
         RandomAccessibleInterval permuted = img;
 
-        while (!(inOrder(mapping))) {
-            Integer type;
-            for (int d = 0; d < img.numDimensions(); d++) {
-                if ((type = m_mapping.get(img.axis(d).type())) != null) {
-                    if (mapping[d] == d) {
-                        continue;
-                    }
-                    permuted = Views.permute(permuted, d, type);
-                    int temp = mapping[mapping[d]];
-                    mapping[mapping[d]] = mapping[d];
-                    mapping[d] = temp;
-                    break;
-                }
-            }
+        //Swapping state indication list used for comparison
+        ArrayList<Integer> swappingState = new ArrayList<Integer>(nDims);
+        for (int i = 0; i < nDims; i++) {
+            swappingState.add(i);
         }
 
+        // Swapping of Dimensions to fulfil the mapping resulting in an ordered Immage
+        for (int d = 0; d < nDims; d++) {
+            if (mapping[d] == swappingState.get(d)) {
+                continue;
+            }
+
+            int dimIndex = swappingState.indexOf(mapping[d]);
+            permuted = Views.permute(permuted, d, dimIndex);
+            Collections.swap(swappingState, d, dimIndex);
+        }
 
         final ImgPlus correctedImg = new ImgPlus(new ImgView(permuted, img.factory()));
         for (int i = 0; i < axes.length; i++) {
@@ -245,8 +244,6 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         }
 
         r.setStack(is, channels, slices, frames);
-
-        //TODO: r.setCalibration(new Calibration().setC)
         return r;
     }
 
@@ -276,32 +273,8 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         }
         // IJ Mapping ist: X Y Channel Z T. Eingabe Bild Mapping ist: Y X Z Channel T
         // Resultat mapping[1, 0, 3, 2, 4]
-        //TODO
+        //
         return mapping;
-    }
-
-
-    /**
-     * Wofür ist das gedacht?
-     *
-     * @param img
-     * @param dimensions
-     * @return
-     */
-    private int[] getMapping(final ImgPlus<? extends RealType> img, final long[] dimensions) {
-        int[] mappedSizes = new int[5];
-        Arrays.fill(mappedSizes, 1);
-
-        for (int d = 0; d < img.numDimensions(); d++) {
-            Integer i;
-            if ((i = m_mapping.get(img.axis(d).type())) == null) {
-                throw new RuntimeException("Dimension " + img.axis(d).type() + " could not be mapped to IJ ImagePlus.");
-            }
-
-            mappedSizes[i] = (int)img.dimension(d);
-        }
-
-        return mappedSizes;
     }
 
     /**
