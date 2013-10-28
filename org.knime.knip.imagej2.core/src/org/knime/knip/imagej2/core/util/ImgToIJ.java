@@ -249,21 +249,6 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
     }
 
     /**
-     * checks if mapping is ordered
-     *
-     * @param mapping
-     * @return true if ordered
-     */
-    private boolean inOrder(final int[] mapping) {
-        for (int i = 0; i < mapping.length; i++) {
-            if (mapping[i] != i) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * @param img
      * @return
      */
@@ -272,15 +257,13 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         for (int i = 0; i < img.numDimensions(); i++) {
             mapping[i] = m_mapping.get(img.axis(i).type());
         }
-        // IJ Mapping ist: X Y Channel Z T. Eingabe Bild Mapping ist: Y X Z Channel T
-        // Resultat mapping[1, 0, 3, 2, 4]
-        //
+
         return mapping;
     }
 
     /**
-     * Check wether ImgPlus contains axis which can not be mapped to IJ ImagePlus. Valid axes in ImagePlus are Channel
-     * (index 0), Z (index 1), Time (index 2). Use setMapping if you want to change.
+     * Check if ImgPlus contains axis which can not be mapped to IJ ImagePlus. Valid axes in ImagePlus are Channel
+     * (index 0), Z (index 1), Time (index 2). Use setMapping if you want to change this.
      *
      * @param img
      * @return
