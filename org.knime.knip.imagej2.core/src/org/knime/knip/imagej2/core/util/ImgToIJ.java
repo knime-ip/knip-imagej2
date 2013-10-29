@@ -55,15 +55,23 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-import net.imglib2.RandomAccess;
+import net.imglib2.Axis;
+import net.imglib2.Cursor;
+import net.imglib2.FinalInterval;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.iterator.IntervalIterator;
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
+import net.imglib2.meta.DefaultTypedAxis;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.ops.img.UnaryObjectFactory;
+import net.imglib2.ops.operation.SubsetOperations;
 import net.imglib2.ops.operation.UnaryOutputOperation;
+import net.imglib2.ops.operation.subset.views.ImgView;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.ByteType;
@@ -71,79 +79,202 @@ import net.imglib2.type.numeric.integer.ShortType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.Views;
+
+import org.knime.knip.core.ops.metadata.DimSwapper;
 
 // TODO has to be replaced if imglib2 has this as fast routines
 /**
  * TODO Auto-generated
- * 
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
+ * @author <a href="mailto:gabriel.einsdorf@uni.kn">Gabriel Einsdorf</a>
  */
 public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends RealType<?>>, ImagePlus> {
 
+    private Map<AxisType, Integer> m_mapping;
+
+    /**
+     * Standard constructor, assumes input image has 5 dimensions (X, Y, Channel, Z, Time)
+     */
+    public ImgToIJ() {
+        m_mapping = new HashMap<AxisType, Integer>();
+
+        // standard mapping from ImgPlus to ImagePlus
+        m_mapping.put(Axes.X, 0);
+        m_mapping.put(Axes.Y, 1);
+        m_mapping.put(Axes.CHANNEL, 2);
+        m_mapping.put(Axes.Z, 3);
+        m_mapping.put(Axes.TIME, 4);
+    }
+
+    /**
+     * Creates a new converter instance with standard dimension mapping, depending on the number of dimensions. Assumes
+     * 2 dimensions = X,Y; 3 dimensions = X,Y,Z; 4 dimensions = X,Y,Z, Time; 5 dimensions = (X,Y,Channel,Z,Time) To
+     * convert an image with different dimensions use {@link #setMapping(Map)} to provide your own mapping.
+     *
+     * @param numDimensions
+     */
+    public ImgToIJ(final int numDimensions) {
+        m_mapping = new HashMap<AxisType, Integer>();
+
+        // standard mapping from ImgPlus to ImagePlus
+        m_mapping.put(Axes.X, 0);
+        m_mapping.put(Axes.Y, 1);
+
+        switch (numDimensions) {
+            case 2:
+                break;
+            case 3:
+                m_mapping.put(Axes.Z, 2);
+                break;
+            case 4:
+                m_mapping.put(Axes.Z, 2);
+                m_mapping.put(Axes.TIME, 3);
+            case 5:
+                m_mapping.put(Axes.CHANNEL, 2);
+                m_mapping.put(Axes.Z, 3);
+                m_mapping.put(Axes.TIME, 4);
+            default:
+                throw new IllegalArgumentException(
+                        "input image has more than 5 dimensions, this is not supported by ImageJ ImagePlus");
+        }
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public final ImagePlus compute(final ImgPlus<? extends RealType<?>> op, final ImagePlus r) {
+    public final ImagePlus compute(final ImgPlus<? extends RealType<?>> img, final ImagePlus r) {
         float offset = 0;
         float scale = 1;
-        if (op.firstElement() instanceof BitType) {
+        if (img.firstElement() instanceof BitType) {
             scale = 255;
         }
-        if (op.firstElement() instanceof ByteType) {
+        if (img.firstElement() instanceof ByteType) {
             offset = -Byte.MIN_VALUE;
         }
-        if (op.firstElement() instanceof ShortType) {
+        if (img.firstElement() instanceof ShortType) {
             offset = -Short.MIN_VALUE;
         }
-        final long[] dim = new long[op.numDimensions()];
-        op.dimensions(dim);
+
+        // Create Mapping [at position one -> new index, at position 2 -> new index etc.] given: ImgPlus and m_mapping
+        int[] mapping = getNewMapping(img);
+
+        RandomAccessibleInterval permuted = DimSwapper.swap(img, mapping);
+
+        //saving axis to be able to restore them and their calibration
+        final Axis[] axes = new Axis[img.numDimensions()];
+        for (int i = 0; i < axes.length; i++) {
+            axes[i] = img.axis(mapping[i]).copy();
+        }
+
+        // Img with correct dimension order
+        final ImgPlus correctedImg = new ImgPlus(new ImgView(permuted, img.factory()));
+        for (int i = 0; i < axes.length; i++) {
+            correctedImg.setAxis(axes[i], i);
+        }
+
+        //Building the IJ ImagePlus
+        final long[] dim = new long[correctedImg.numDimensions()];
+        correctedImg.dimensions(dim);
         final long width = dim[0];
         final long height = dim[1];
         int x, y;
         dim[0] = 1;
         dim[1] = 1;
         final IntervalIterator ii = new IntervalIterator(dim);
-        final RandomAccess<? extends RealType> ra = op.randomAccess();
-        final ImageStack is = new ImageStack((int)op.dimension(0), (int)op.dimension(1));
+        //        final RandomAccess<? extends RealType> ra = correctedImg.randomAccess();
+        Cursor cursor = correctedImg.cursor();
+        final ImageStack is = new ImageStack((int)permuted.dimension(0), (int)permuted.dimension(1));
+
+        long[] min = new long[ii.numDimensions()];
         while (ii.hasNext()) {
             ii.fwd();
-            //TODO: USe cursor. can be made faster with subset interval
 
-            ra.setPosition(ii);
+            ii.min(min);
 
-            final ImageProcessor ip = createImageProcessor(op);
-            for (y = 0; y < height; y++) {
-                ra.setPosition(y, 1);
-                for (x = 0; x < width; x++) {
-                    ra.setPosition(x, 0);
-                    ip.setf(x, y, (ra.get().getRealFloat() + offset) * scale);
-                }
+            long[] max = min.clone();
+            max[0] = width - 1;
+            max[1] = height - 1;
+
+            Cursor<RealType> xyPlaneCursor = Views.iterable(SubsetOperations.subsetview(correctedImg, new FinalInterval(min, max))).cursor();
+            final ImageProcessor ip = createImageProcessor(correctedImg);
+
+            while(xyPlaneCursor.hasNext()){
+                RealType type = xyPlaneCursor.next();
+
+                ip.setf(xyPlaneCursor.getIntPosition(0), xyPlaneCursor.getIntPosition(1), (type.getRealFloat() + offset) * scale);
             }
+
             is.addSlice("", ip);
         }
 
-        int[] mapping = getMapping(op, dim);
-        r.setStack(is, mapping[0], mapping[1], mapping[2]);
+        //calculates the missing arguments for the image stack constructor
+        int channels = 1;
+        int slices = 1;
+        int frames = 1;
+
+        switch (correctedImg.numDimensions()) {
+            case 2:
+                break;
+            case 3:
+                slices = (int)correctedImg.dimension(2);
+                break;
+            case 4:
+                slices = (int)correctedImg.dimension(2);
+                frames = (int)correctedImg.dimension(3);
+                break;
+            case 5:
+                channels = (int)correctedImg.dimension(2);
+                slices = (int)correctedImg.dimension(3);
+                frames = (int)correctedImg.dimension(4);
+                break;
+            default:
+                break;
+        }
+
+        r.setStack(is, channels, slices, frames);
         return r;
     }
 
-    private int[] getMapping(final ImgPlus<? extends RealType> img, final long[] dimensions) {
-        int[] mappedSizes = new int[3];
-        Arrays.fill(mappedSizes, 1);
-
-        for (int d = 2; d < img.numDimensions(); d++) {
-            if (img.axis(d).type().getLabel().equalsIgnoreCase(Axes.CHANNEL.getLabel())) {
-                mappedSizes[0] = (int)img.dimension(d);
-            } else if (img.axis(d).type().getLabel().equalsIgnoreCase(Axes.Z.getLabel())) {
-                mappedSizes[1] = (int)img.dimension(d);
-            } else if (img.axis(d).type().getLabel().equalsIgnoreCase(Axes.TIME.getLabel())) {
-                mappedSizes[2] = (int)img.dimension(d);
-            } else {
-                throw new RuntimeException("Unknown dimension name. Only Z, Channel and Time are supported.");
-            }
+    /**
+     * @param img
+     * @return
+     */
+    private int[] getNewMapping(final ImgPlus<? extends RealType<?>> img) {
+        int[] mapping = new int[img.numDimensions()];
+        for (int i = 0; i < img.numDimensions(); i++) {
+            mapping[i] = m_mapping.get(img.axis(i).type());
         }
 
-        return mappedSizes;
+        return mapping;
+    }
+
+    /**
+     * Check if ImgPlus contains axis which can not be mapped to IJ ImagePlus. Valid axes in ImagePlus are Channel
+     * (index 0), Z (index 1), Time (index 2). Use setMapping if you want to change this.
+     *
+     * @param img
+     * @return
+     */
+    public <T> boolean validateMapping(final ImgPlus<T> img) {
+        for (int d = 0; d < img.numDimensions(); d++) {
+            Integer i = null;
+            if ((i = m_mapping.get(((DefaultTypedAxis)img.axis(d)).type())) == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Set the dimension mapping from ImagePlus Axis to IJ ImagePlus Index
+     *
+     * @param mapping
+     */
+    public void setMapping(final Map<AxisType, Integer> mapping) {
+        m_mapping = mapping;
     }
 
     private static ImageProcessor createImageProcessor(final Img<? extends RealType<?>> op) {
