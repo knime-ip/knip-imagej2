@@ -59,7 +59,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.imglib2.Axis;
-import net.imglib2.RandomAccess;
+import net.imglib2.Cursor;
+import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.iterator.IntervalIterator;
@@ -68,6 +69,7 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.meta.DefaultTypedAxis;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.ops.img.UnaryObjectFactory;
+import net.imglib2.ops.operation.SubsetOperations;
 import net.imglib2.ops.operation.UnaryOutputOperation;
 import net.imglib2.ops.operation.subset.views.ImgView;
 import net.imglib2.type.logic.BitType;
@@ -77,6 +79,7 @@ import net.imglib2.type.numeric.integer.ShortType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.Views;
 
 import org.knime.knip.core.ops.metadata.DimSwapper;
 
@@ -181,22 +184,29 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         dim[0] = 1;
         dim[1] = 1;
         final IntervalIterator ii = new IntervalIterator(dim);
-        final RandomAccess<? extends RealType> ra = correctedImg.randomAccess();
+        //        final RandomAccess<? extends RealType> ra = correctedImg.randomAccess();
+        Cursor cursor = correctedImg.cursor();
         final ImageStack is = new ImageStack((int)permuted.dimension(0), (int)permuted.dimension(1));
 
+        long[] min = new long[ii.numDimensions()];
         while (ii.hasNext()) {
             ii.fwd();
-            //TODO: Use cursor. can be made faster with subset interval
-            ra.setPosition(ii);
 
+            ii.min(min);
+
+            long[] max = min.clone();
+            max[0] = width - 1;
+            max[1] = height - 1;
+
+            Cursor<RealType> xyPlaneCursor = Views.iterable(SubsetOperations.subsetview(correctedImg, new FinalInterval(min, max))).cursor();
             final ImageProcessor ip = createImageProcessor(correctedImg);
-            for (y = 0; y < height; y++) {
-                ra.setPosition(y, 1);
-                for (x = 0; x < width; x++) {
-                    ra.setPosition(x, 0);
-                    ip.setf(x, y, (ra.get().getRealFloat() + offset) * scale);
-                }
+
+            while(xyPlaneCursor.hasNext()){
+                RealType type = xyPlaneCursor.next();
+
+                ip.setf(xyPlaneCursor.getIntPosition(0), xyPlaneCursor.getIntPosition(1), (type.getRealFloat() + offset) * scale);
             }
+
             is.addSlice("", ip);
         }
 
