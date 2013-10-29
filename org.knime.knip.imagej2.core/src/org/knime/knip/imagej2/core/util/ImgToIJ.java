@@ -55,8 +55,6 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -79,7 +77,8 @@ import net.imglib2.type.numeric.integer.ShortType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.view.Views;
+
+import org.knime.knip.core.ops.metadata.DimSwapper;
 
 // TODO has to be replaced if imglib2 has this as fast routines
 /**
@@ -158,32 +157,13 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
 
         // Create Mapping [at position one -> new index, at position 2 -> new index etc.] given: ImgPlus and m_mapping
         int[] mapping = getNewMapping(img);
-        int nDims = img.numDimensions();
+
+        RandomAccessibleInterval permuted = DimSwapper.swap(img, mapping);
 
         //saving axis to be able to restore them and their calibration
         final Axis[] axes = new Axis[img.numDimensions()];
         for (int i = 0; i < axes.length; i++) {
             axes[i] = img.axis(mapping[i]).copy();
-        }
-
-        // Permute Operation to make sure of correct ordering
-        RandomAccessibleInterval permuted = img;
-
-        //list that indicates the state of the swapping, initialized with the identity permutation
-        ArrayList<Integer> swappingState = new ArrayList<Integer>(nDims);
-        for (int i = 0; i < nDims; i++) {
-            swappingState.add(i);
-        }
-
-        // Swapping of Dimensions to fulfill the mapping resulting in an ordered Image
-        for (int d = 0; d < nDims; d++) {
-            if (mapping[d] == swappingState.get(d)) {
-                continue;
-            }
-
-            int dimIndex = swappingState.indexOf(mapping[d]);
-            permuted = Views.permute(permuted, d, dimIndex);
-            Collections.swap(swappingState, d, dimIndex);
         }
 
         // Img with correct dimension order
