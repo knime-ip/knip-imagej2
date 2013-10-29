@@ -60,6 +60,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.imglib2.Axis;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
@@ -68,7 +69,6 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.DefaultTypedAxis;
 import net.imglib2.meta.ImgPlus;
-import net.imglib2.meta.axis.DefaultLinearAxis;
 import net.imglib2.ops.img.UnaryObjectFactory;
 import net.imglib2.ops.operation.UnaryOutputOperation;
 import net.imglib2.ops.operation.subset.views.ImgView;
@@ -161,21 +161,21 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         int nDims = img.numDimensions();
 
         //saving axis to be able to restore them and their calibration
-        final AxisType[] axes = new AxisType[img.numDimensions()];
+        final Axis[] axes = new Axis[img.numDimensions()];
         for (int i = 0; i < axes.length; i++) {
-            axes[i] = Axes.get(img.axis(mapping[i]).type().getLabel());
+            axes[i] = img.axis(mapping[i]).copy();
         }
 
         // Permute Operation to make sure of correct ordering
         RandomAccessibleInterval permuted = img;
 
-        //list that indicates the state of the swapping, initialised with the identity permutation
+        //list that indicates the state of the swapping, initialized with the identity permutation
         ArrayList<Integer> swappingState = new ArrayList<Integer>(nDims);
         for (int i = 0; i < nDims; i++) {
             swappingState.add(i);
         }
 
-        // Swapping of Dimensions to fulfil the mapping resulting in an ordered Image
+        // Swapping of Dimensions to fulfill the mapping resulting in an ordered Image
         for (int d = 0; d < nDims; d++) {
             if (mapping[d] == swappingState.get(d)) {
                 continue;
@@ -186,10 +186,10 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
             Collections.swap(swappingState, d, dimIndex);
         }
 
-        //Img with corrcet dimension order
+        // Img with correct dimension order
         final ImgPlus correctedImg = new ImgPlus(new ImgView(permuted, img.factory()));
         for (int i = 0; i < axes.length; i++) {
-            correctedImg.setAxis(new DefaultLinearAxis(axes[i]), i);
+            correctedImg.setAxis(axes[i], i);
         }
 
         //Building the IJ ImagePlus
@@ -268,9 +268,9 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
      * @param img
      * @return
      */
-    public boolean validateMapping(final ImgPlus img) {
+    public <T> boolean validateMapping(final ImgPlus<T> img) {
         for (int d = 0; d < img.numDimensions(); d++) {
-            Integer i;
+            Integer i = null;
             if ((i = m_mapping.get(((DefaultTypedAxis)img.axis(d)).type())) == null) {
                 return false;
             }
