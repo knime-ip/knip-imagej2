@@ -82,7 +82,7 @@ import org.knime.knip.core.ops.metadata.DimSwapper;
 
 // TODO has to be replaced if imglib2 has this as fast routines
 /**
- * TODO Auto-generated
+ *
  *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
@@ -110,7 +110,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
     /**
      * Creates a new converter instance with standard dimension mapping, depending on the number of dimensions. Assumes
      * 2 dimensions = X,Y; 3 dimensions = X,Y,Z; 4 dimensions = X,Y,Z, Time; 5 dimensions = (X,Y,Channel,Z,Time) To
-     * convert an image with different dimensions use {@link #setMapping(Map)} to provide your own mapping.
+     * convert an image with different dimensions try to automatically generate it with {@link #inferMapping(ImgPlus)} or use  {@link #setMapping(Map)} to provide your own mapping.
      *
      * @param numDimensions
      */
@@ -200,7 +200,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
             is.addSlice("", ip);
         }
 
-        //calculates the missing arguments for the image stack constructor
+        //calculates the missing arguments for the image stack constructor  FIXME enable for images with different dimensions
         int channels = 1;
         int slices = 1;
         int frames = 1;
@@ -265,6 +265,24 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
      */
     public void setMapping(final Map<AxisType, Integer> mapping) {
         m_mapping = mapping;
+    }
+
+    /**
+     * Infers a mapping for the argument picture
+     * @param <T> ImgPlus the mapping shall be based on
+     * @return True when successful, equal to {@link ImgToIJ.validateMapping}
+     */
+    public <T> boolean inferMapping(final ImgPlus<T> img){
+        HashMap<AxisType, Integer> newMapping = new HashMap<AxisType, Integer>();
+
+        for (int d = 0; d < img.numDimensions(); d++) {
+            newMapping.put(img.axis(d).type(), d);
+        }
+
+        m_mapping = newMapping;
+
+        return validateMapping(img);
+
     }
 
     private static ImageProcessor createImageProcessor(final Img<? extends RealType<?>> op) {
