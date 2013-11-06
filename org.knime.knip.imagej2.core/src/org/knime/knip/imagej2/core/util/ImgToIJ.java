@@ -110,7 +110,8 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
     /**
      * Creates a new converter instance with standard dimension mapping, depending on the number of dimensions. Assumes
      * 2 dimensions = X,Y; 3 dimensions = X,Y,Z; 4 dimensions = X,Y,Z, Time; 5 dimensions = (X,Y,Channel,Z,Time) To
-     * convert an image with different dimensions try to automatically generate it with {@link #inferMapping(ImgPlus)} or use  {@link #setMapping(Map)} to provide your own mapping.
+     * convert an image with different dimensions try to automatically generate it with {@link #inferMapping(ImgPlus)}
+     * or use {@link #setMapping(Map)} to provide your own mapping.
      *
      * @param numDimensions
      */
@@ -269,10 +270,11 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
 
     /**
      * Infers a mapping for the argument picture
+     *
      * @param <T> ImgPlus the mapping shall be based on
      * @return True when successful, equal to {@link ImgToIJ.validateMapping}
      */
-    public <T> boolean inferMapping(final ImgPlus<T> img){
+    public <T> boolean inferMapping(final ImgPlus<T> img) {
         HashMap<AxisType, Integer> newMapping = new HashMap<AxisType, Integer>();
 
         for (int d = 0; d < img.numDimensions(); d++) {
