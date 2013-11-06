@@ -131,10 +131,12 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
             case 4:
                 m_mapping.put(Axes.Z, 2);
                 m_mapping.put(Axes.TIME, 3);
+                break;
             case 5:
                 m_mapping.put(Axes.CHANNEL, 2);
                 m_mapping.put(Axes.Z, 3);
                 m_mapping.put(Axes.TIME, 4);
+                break;
             default:
                 throw new IllegalArgumentException(
                         "input image has more than 5 dimensions, this is not supported by ImageJ ImagePlus");
@@ -201,7 +203,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
             is.addSlice("", ip);
         }
 
-        //calculates the missing arguments for the image stack constructor  FIXME enable for images with different dimensions
+        //calculates the missing arguments for the image stack constructor
         int channels = 1;
         int slices = 1;
         int frames = 1;
