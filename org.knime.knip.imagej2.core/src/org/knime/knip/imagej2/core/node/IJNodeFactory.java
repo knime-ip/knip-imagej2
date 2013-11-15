@@ -54,7 +54,6 @@ import imagej.data.display.ImageDisplay;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 
@@ -87,8 +86,8 @@ import org.scijava.service.Service;
 /**
  * Node factory for ImageJ2 plugins. Contains internal settings that associate an instance of IJNodeFactory with a
  * specific ImageJ2 plugin, that is created as KNIME node by the factory instance.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -135,10 +134,10 @@ public class IJNodeFactory extends DynamicNodeFactory<AbstractIJNodeModel> {
 
     /**
      * @return returns a new node view if {@link IJNodeFactory#getNrNodeViews()} equals one. else returns null
-     * 
-     * 
+     *
+     *
      *         {@inheritDoc}
-     * 
+     *
      */
     @Override
     public NodeView<AbstractIJNodeModel> createNodeView(final int viewIndex, final AbstractIJNodeModel nodeModel) {
@@ -172,9 +171,9 @@ public class IJNodeFactory extends DynamicNodeFactory<AbstractIJNodeModel> {
      * - (optional) a description for a table cell viewer if the output matches one of the predefined displayable types <br>
      * - an icon from the plugin jar or the standard plugin icon<br>
      * - a menu category from the plugin menu path - a description of the plugin - a basic static port description
-     * 
+     *
      * {@inheritDoc}
-     * 
+     *
      */
     @Override
     protected void addNodeDescription(final KnimeNodeDocument doc) {
@@ -189,21 +188,17 @@ public class IJNodeFactory extends DynamicNodeFactory<AbstractIJNodeModel> {
         }
 
         // ICON
-        URL iconURL = null;
-        try {
-            iconURL = new URL("platform:/plugin/org.knime.knip.imagej.core/res/plugin.png");
-        } catch (final MalformedURLException e1) {
-            e1.printStackTrace();
-        }
-
+        String path = "default_icon.png";
         try {
             if (m_moduleInfo.getIconPath().length() > 0) {
-                iconURL = Class.forName(m_moduleInfo.getDelegateClassName()).getResource(m_moduleInfo.getIconPath());
+                URL iconURL =
+                        Class.forName(m_moduleInfo.getDelegateClassName()).getResource(m_moduleInfo.getIconPath());
+                path = iconURL.getPath();
             }
         } catch (final ClassNotFoundException e) {
             // use fallback icon
         }
-        node.setIcon(iconURL.getPath());
+        node.setIcon(path);
 
         // MENU
         String name;
@@ -284,9 +279,9 @@ public class IJNodeFactory extends DynamicNodeFactory<AbstractIJNodeModel> {
      * loads additional factory settings that allow to load different IJNodeFactory instances for the different ImageJ
      * plugins. Essentially an identifier is loaded that allows reloading of meta data that is specific to the
      * associated ImageJ plugin of the IJNodeFactory
-     * 
+     *
      * {@inheritDoc}
-     * 
+     *
      */
     @Override
     public void loadAdditionalFactorySettings(final ConfigRO config) throws InvalidSettingsException {
@@ -300,9 +295,9 @@ public class IJNodeFactory extends DynamicNodeFactory<AbstractIJNodeModel> {
      * saves additional factory settings such that different IJNodeFactory instances can be loaded for the different
      * ImageJ Plugins. Essentially stores an identifier that allows reloading of the specific information that belongs
      * to a specific Plugin.
-     * 
+     *
      * {@inheritDoc}
-     * 
+     *
      */
     @Override
     public void saveAdditionalFactorySettings(final ConfigWO config) {
@@ -340,7 +335,7 @@ public class IJNodeFactory extends DynamicNodeFactory<AbstractIJNodeModel> {
      * is the case if exactly one ImageJ input and output exists (except for basic ImageJ dialog inputs). Additionally
      * the selected adapters are only allowed to use one column and the input adapter must be a
      * {@link IJStandardInputAdapter}
-     * 
+     *
      * @return true if the ValueToCell dialog/model/cell factory can be used
      */
     @SuppressWarnings("unchecked")
