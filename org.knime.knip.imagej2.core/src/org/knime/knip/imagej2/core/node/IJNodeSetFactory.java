@@ -79,7 +79,7 @@ public class IJNodeSetFactory implements NodeSetFactory {
     /**
      * common part of the category path the top entry that contains subentries and finally the created nodes.
      */
-    private static final String CATEGORY_PATH_COMMON_PART = "/community/knip/Imagej2";
+    private static final String CATEGORY_PATH_COMMON_PART = "/community/knip/imagej2";
 
     public static final String IMAGEJ_VERSION_KEY = "imagej_version_key";
 
