@@ -66,8 +66,8 @@ import org.scijava.MenuEntry;
 /**
  * Creates a set of ImageJ2 nodes based on the set of supported modules provided by {@link IJGateway}. The nodes are
  * placed at a common menu point.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -79,7 +79,7 @@ public class IJNodeSetFactory implements NodeSetFactory {
     /**
      * common part of the category path the top entry that contains subentries and finally the created nodes.
      */
-    private static final String CATEGORY_PATH_COMMON_PART = "/community/knip/imagej2";
+    private static final String CATEGORY_PATH_COMMON_PART = "/community/knip/Imagej2";
 
     public static final String IMAGEJ_VERSION_KEY = "imagej_version_key";
 
@@ -99,9 +99,9 @@ public class IJNodeSetFactory implements NodeSetFactory {
     /**
      * loads the supported modules from {@link IJGateway} and creates node factory ids for all supported modules.
      * Furthermore associates the created ids with a category path which is automatically created from the ModuleInfo.
-     * 
+     *
      * @return node factory ids (the delegate class name) of all supported modules
-     * 
+     *
      */
     @Override
     public Collection<String> getNodeFactoryIds() {
