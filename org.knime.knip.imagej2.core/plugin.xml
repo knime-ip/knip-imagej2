@@ -19,4 +19,14 @@
               factory-class="org.knime.knip.imagej2.core.adapter.impl.CoreAdapterFactory">
         </ijadapter>
      </extension>
+     <extension
+           point="org.knime.workbench.repository.categories">
+        <category
+              icon="icon.png"
+              level-id="imagej2"
+              locked="false"
+              name="ImageJ2"
+              path="/community/knip/">
+        </category>
+     </extension>
 </plugin>
