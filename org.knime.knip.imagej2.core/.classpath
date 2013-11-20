@@ -4,10 +4,10 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="lib/ij-commands-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-core-2.0.0-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ij-core-2.0.0-SNAPSHOT.jar" sourcepath="lib/sources/ij-core-2.0.0-SNAPSHOT-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ij-data-2.0.0-SNAPSHOT.jar" sourcepath="C:/Users/Mia/Desktop/devel/imagej"/>
 	<classpathentry exported="true" kind="lib" path="lib/ij-ui-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-ui-swing-2.0.0-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ij-ui-swing-2.0.0-SNAPSHOT.jar" sourcepath="lib/sources/ij-ui-swing-2.0.0-SNAPSHOT-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ij-util-awt-2.0.0-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/miglayout-3.7.3.1-swing.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ij-ui-common-awt-2.0.0-SNAPSHOT.jar"/>
@@ -15,5 +15,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/Plugins/Tubeness2Fragment.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jfreechart-1.0.14.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ij-1.48d.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jdatepicker-1.3.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

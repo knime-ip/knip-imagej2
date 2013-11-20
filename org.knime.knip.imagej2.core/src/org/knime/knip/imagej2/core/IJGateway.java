@@ -51,9 +51,13 @@ package org.knime.knip.imagej2.core;
 import imagej.app.ImageJApp;
 import imagej.command.CommandInfo;
 import imagej.command.DynamicCommand;
+import imagej.data.DatasetService;
 import imagej.data.autoscale.AutoscaleService;
 import imagej.data.types.DataTypeService;
 import imagej.menu.MenuService;
+import imagej.module.MethodCallException;
+import imagej.module.Module;
+import imagej.module.ModuleException;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 import imagej.module.ModuleService;
@@ -75,7 +79,9 @@ import org.scijava.InstantiableException;
 import org.scijava.app.App;
 import org.scijava.app.AppService;
 import org.scijava.event.EventService;
+import org.scijava.object.ObjectService;
 import org.scijava.plugin.PluginService;
+import org.scijava.plugin.SingletonService;
 import org.scijava.service.Service;
 import org.scijava.util.ClassUtils;
 
@@ -108,12 +114,15 @@ public final class IJGateway {
      * harm like the MenuService
      */
     private static final Class<?>[] SUPPORTED_IJ_SERVICE_TYPES = {MenuService.class, ToolService.class,
-            EventService.class};
+            EventService.class, ObjectService.class, SingletonService.class, DatasetService.class};
 
     // MEMBERS
 
     /** singelton instance. */
     private static IJGateway instance = null;
+
+    /** singleton ob object service */
+    private final ObjectService m_objService;
 
     /** the one and unique ImageJ context. */
     private final Context m_imageJContext;
@@ -154,6 +163,10 @@ public final class IJGateway {
         // could also use the more specific new ImageJ here but Context gives as more
         // control of loaded services atm.
         m_imageJContext = new Context(getImageJContextServices());
+
+        // get object service
+        m_objService = m_imageJContext.getService(ObjectService.class);
+
         //using the log service comes to late for the initial output on plugin discovery
         //m_imageJContext.getService(LogService.class).setLevel(LogService.ERROR);
         final ModuleService moduleService = m_imageJContext.getService(ModuleService.class);
@@ -242,7 +255,7 @@ public final class IJGateway {
                         for (final ModuleItem<?> item : info.inputs()) {
                             final Class<?> type = item.getType();
                             hasInOrOutput = true;
-                            if (!isSupportedInputType(type)) {
+                            if (!isSupportedInputType(info, type)) {
                                 inputsOK = false;
                                 break;
                             }
@@ -306,8 +319,10 @@ public final class IJGateway {
      *
      * @param type
      * @return true if KNIME can handle the specified input type e.g. with an adapter or the ImageJ parameter dialog
+     * @throws ModuleException
+     * @throws MethodCallException
      */
-    private static boolean isSupportedInputType(final Class<?> type) {
+    private boolean isSupportedInputType(final ModuleInfo info, final Class<?> type) {
 
         // test for classes that can be mapped to the image j generated dialog
         for (final Class<?> candidate : SUPPORTED_IJ_DIALOG_TYPES) {
@@ -331,6 +346,26 @@ public final class IJGateway {
         // test for adaptable types
         if (IJAdapterProvider.getKnownInputTypes().contains(type)) {
             return true;
+        }
+
+         Module module = null;
+
+        try {
+            module = info.createModule();
+            m_imageJContext.inject(module);
+            module.initialize();
+            // check for objects with lists
+            if (m_objService.getObjects(type).size() > 0) {
+                System.out.println("Added " + module.getInfo());
+                return true;
+            }
+            System.out.println("Didn't add " + module.getInfo());
+        } catch (MethodCallException e) {
+            System.out.println("Didn't add " + module.getInfo());
+            return false;
+        } catch (ModuleException e) {
+            System.out.println("Didn't add " + module.getInfo());
+            return false;
         }
 
         return false;

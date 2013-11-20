@@ -50,21 +50,18 @@ package org.knime.knip.imagej2.core.imagejdialog;
 
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
-import imagej.module.ModuleItem;
 
 import java.util.HashSet;
 import java.util.Map;
 
-import org.knime.knip.imagej2.core.IJGateway;
-
 /**
  * encapsulates a module and blocks the calls to most setters and executing methods like run and preview.. .Therefore it
  * is save to use this class during harvesting without e.g. triggering the preview method
- * 
+ *
  * Basically it works like a read only version of the object with the exception that certain set calls have to be
  * implemented because the module is used as data basis by the widgets.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -81,22 +78,22 @@ public class HarvesterModuleWrapper implements Module {
     public HarvesterModuleWrapper(final Module module) {
         m_module = module;
         m_notHarvested = new HashSet<String>();
-
-        //ignore all items that cannot be part of the input panel
-        for (final ModuleItem<?> item : m_module.getInfo().inputs()) {
-            boolean dialogSupportedType = false;
-
-            for (final Class<?> c : IJGateway.SUPPORTED_IJ_DIALOG_TYPES) {
-                if (c.isAssignableFrom(item.getType())) {
-                    dialogSupportedType = true;
-                    break;
-                }
-            }
-
-            if (!dialogSupportedType) {
-                m_notHarvested.add(item.getName());
-            }
-        }
+//
+//        //ignore all items that cannot be part of the input panel
+//        for (final ModuleItem<?> item : m_module.getInfo().inputs()) {
+//            boolean dialogSupportedType = false;
+//
+//            for (final Class<?> c : IJGateway.SUPPORTED_IJ_DIALOG_TYPES) {
+//                if (c.isAssignableFrom(item.getType())) {
+//                    dialogSupportedType = true;
+//                    break;
+//                }
+//            }
+//
+//            if (!dialogSupportedType) {
+//                m_notHarvested.add(item.getName());
+//            }
+//        }
     }
 
     @Override
