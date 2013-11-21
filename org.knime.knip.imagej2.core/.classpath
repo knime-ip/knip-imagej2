@@ -5,8 +5,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="lib/ij-commands-2.0.0-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ij-core-2.0.0-SNAPSHOT.jar" sourcepath="lib/sources/ij-core-2.0.0-SNAPSHOT-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-data-2.0.0-SNAPSHOT.jar" sourcepath="C:/Users/Mia/Desktop/devel/imagej"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-ui-2.0.0-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ij-data-2.0.0-SNAPSHOT.jar" sourcepath="lib/sources/ij-data-2.0.0-SNAPSHOT-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ij-ui-2.0.0-SNAPSHOT.jar" sourcepath="lib/sources/ij-ui-2.0.0-SNAPSHOT-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ij-ui-swing-2.0.0-SNAPSHOT.jar" sourcepath="lib/sources/ij-ui-swing-2.0.0-SNAPSHOT-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ij-util-awt-2.0.0-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/miglayout-3.7.3.1-swing.jar"/>
