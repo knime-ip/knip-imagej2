@@ -64,6 +64,8 @@ import imagej.tool.ToolService;
 import imagej.ui.UIService;
 import imagej.util.ColorRGB;
 import imagej.widget.WidgetService;
+import io.scif.codec.JPEG2000Codec;
+import io.scif.img.ImgUtilityService;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -171,8 +173,12 @@ public final class IJGateway {
                 continue;
             }
 
-            ((SingletonService<?>)s).getInstances();
+            // TODO: remove this stuff
+            if (s instanceof JPEG2000Codec || s instanceof ImgUtilityService) {
+                continue;
+            }
 
+            ((SingletonService<?>)s).getInstances();
         }
 
         // get object service
