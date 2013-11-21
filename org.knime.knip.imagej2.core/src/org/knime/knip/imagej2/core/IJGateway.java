@@ -64,8 +64,8 @@ import imagej.tool.ToolService;
 import imagej.ui.UIService;
 import imagej.util.ColorRGB;
 import imagej.widget.WidgetService;
-import io.scif.codec.JPEG2000Codec;
 import io.scif.img.ImgUtilityService;
+import io.scif.services.JAIIIOService;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -115,7 +115,8 @@ public final class IJGateway {
      * harm like the MenuService
      */
     private static final Class<?>[] SUPPORTED_IJ_SERVICE_TYPES = {MenuService.class, ToolService.class,
-            EventService.class, ObjectService.class, SingletonService.class, DatasetService.class};
+            EventService.class, ObjectService.class, SingletonService.class, DatasetService.class,
+            ImgUtilityService.class, ImgUtilityService.class, JAIIIOService.class};
 
     // MEMBERS
 
@@ -170,11 +171,6 @@ public final class IJGateway {
         // This is temporary, until ImageJ fixes the ObjectService registration to work as expected.
         for (Service s : m_imageJContext.getServiceIndex()) {
             if (!(s instanceof SingletonService)) {
-                continue;
-            }
-
-            // TODO: remove this stuff
-            if (s instanceof JPEG2000Codec || s instanceof ImgUtilityService) {
                 continue;
             }
 
