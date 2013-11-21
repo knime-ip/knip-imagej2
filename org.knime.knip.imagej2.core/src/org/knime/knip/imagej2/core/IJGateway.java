@@ -359,27 +359,19 @@ public final class IJGateway {
             return true;
         }
 
-         Module module = null;
-
-        try {
-            module = info.createModule();
-            m_imageJContext.inject(module);
-            module.initialize();
-            // check for objects with lists
-            if (m_objService.getObjects(type).size() > 0) {
-                System.out.println("Added " + module.getInfo());
-                return true;
-            }
-            System.out.println("Didn't add " + module.getInfo());
-        } catch (MethodCallException e) {
-            System.out.println("Didn't add " + module.getInfo());
-            return false;
-        } catch (ModuleException e) {
-            System.out.println("Didn't add " + module.getInfo());
-            return false;
+        // check for objects with lists
+        if (isMultipleChoiceObject(type)) {
+            return true;
         }
-
         return false;
+    }
+
+    /**
+     * @param type
+     * @return
+     */
+    public boolean isMultipleChoiceObject(final Class<?> type) {
+        return m_objService.getObjects(type).size() > 0;
     }
 
     /**
@@ -426,4 +418,32 @@ public final class IJGateway {
         return services;
     }
 
+    /**
+     * @return
+     */
+    public ObjectService getObjectService() {
+        return m_imageJContext.getService(ObjectService.class);
+    }
+
+    /**
+     * @return
+     */
+    public ModuleService getModuleService() {
+        return m_imageJContext.getService(ModuleService.class);
+    }
+
+    /**
+     * @param type
+     */
+    public <T> T getObject(final Class<T> type, final Object o) {
+        final String s = o.toString();
+        for (T t : getObjectService().getObjects(type)) {
+            if (t.toString().equals(s)) {
+                return t;
+            }
+        }
+
+        //TODO throw correct exception
+        return null;
+    }
 }
