@@ -49,6 +49,8 @@
 package org.knime.knip.imagej2.core.imagejdialog;
 
 import imagej.module.Module;
+import imagej.module.ModuleInfo;
+import imagej.module.ModuleItem;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -67,14 +69,16 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.config.Config;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.knip.imagej2.core.IJGateway;
+import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
 
 /**
  * Partial configuration of a {@link Module} by the basic input parameters of an ImageJ parameter dialog. The parameters
  * get added to an {@link ExtendedInputPanel} and presented to the user with the associated
  * {@link DialogComponentImageJDlg}. This SettingsModel allows to make a configuration persistent in a {@link Config}
  * object.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -90,23 +94,38 @@ public class SettingsModelImageJDlg extends SettingsModel {
 
     private final String m_configName;
 
+    // module info needed to get item type
+    private ModuleInfo m_info;
+
     /**
      * @param configName a name that is suitable for {@link SettingsModel#getConfigName}
      */
-    public SettingsModelImageJDlg(final String configName) {
+    public SettingsModelImageJDlg(final ModuleInfo info, final String configName) {
         m_configName = configName;
+        m_info = info;
         m_itemName2Value = new HashMap<String, Object>(10);
     }
 
     /**
      * sets the values of the ModuleItems that are handled by this SettingsModel and changes their status to resolved.
-     * 
+     *
      * @param module a partially resolved Module where the basic input parameters have been configured and resolved
      */
     public void configureModule(final Module module) {
 
         for (final String name : m_itemName2Value.keySet()) {
-            module.setInput(name, m_itemName2Value.get(name));
+            ModuleItem<?> item = m_info.getInput(name);
+
+            final Object o = m_itemName2Value.get(name);
+            final Object value;
+
+            if(null == IJAdapterProvider.getNativeAdapter(item.getType())){
+                value = IJGateway.getInstance().getObject(item.getType(), o);
+            }else{
+                value = o;
+            }
+
+            module.setInput(name, value);
             module.setResolved(name, true);
         }
 
@@ -129,7 +148,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
     /**
      * sets the value of the item with the specified name in the model. E.g. could set the value of an input parameter
      * threshold that is handled in a {@link DialogComponentImageJDlg}.
-     * 
+     *
      * @param itemName identifies an item by name
      * @param value new value of the identified item
      */
@@ -139,7 +158,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
 
     @Override
     protected <T extends SettingsModel> T createClone() {
-        return (T)new SettingsModelImageJDlg(m_configName);
+        return (T)new SettingsModelImageJDlg(m_info, m_configName);
     }
 
     @Override
@@ -214,7 +233,13 @@ public class SettingsModelImageJDlg extends SettingsModel {
 
         for (final String key : m_itemName2Value.keySet()) {
 
-            final Object item = m_itemName2Value.get(key);
+            final Object item;
+            if (IJAdapterProvider.getNativeAdapter(m_info.getInput(key).getType()) != null) {
+                item = m_itemName2Value.get(key);
+            } else {
+                item = m_itemName2Value.get(key).toString();
+            }
+
             final String itemString = toBase64String(item);
 
             if (!itemString.isEmpty()) {
@@ -226,7 +251,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
 
     /**
      * encodes the bytes of an object as a base 64 string.
-     * 
+     *
      * @param object
      * @return a string representation of an object in base 64 encoding
      */

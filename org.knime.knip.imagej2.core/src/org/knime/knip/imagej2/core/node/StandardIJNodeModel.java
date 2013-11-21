@@ -75,8 +75,8 @@ import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
 
 /**
  * Standard implementation that can be used for all modules (in contrast to the ValueToCell implementation)
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -118,9 +118,9 @@ public class StandardIJNodeModel extends AbstractIJNodeModel {
     /**
      * tests the provided inSpecs and configures the node with the columns if possible. Else asks for further user
      * interaction, e.g. to set values for required parameters.
-     * 
+     *
      * {@inheritDoc}
-     * 
+     *
      */
     @Override
     protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {

@@ -50,9 +50,14 @@ package org.knime.knip.imagej2.core.imagejdialog;
 
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
+import imagej.module.ModuleItem;
 
 import java.util.HashSet;
 import java.util.Map;
+
+import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
+import org.knime.knip.imagej2.core.adapter.IJInputAdapter;
+import org.knime.knip.imagej2.core.adapter.IJStandardInputAdapter;
 
 /**
  * encapsulates a module and blocks the calls to most setters and executing methods like run and preview.. .Therefore it
@@ -78,22 +83,14 @@ public class HarvesterModuleWrapper implements Module {
     public HarvesterModuleWrapper(final Module module) {
         m_module = module;
         m_notHarvested = new HashSet<String>();
-//
-//        //ignore all items that cannot be part of the input panel
-//        for (final ModuleItem<?> item : m_module.getInfo().inputs()) {
-//            boolean dialogSupportedType = false;
-//
-//            for (final Class<?> c : IJGateway.SUPPORTED_IJ_DIALOG_TYPES) {
-//                if (c.isAssignableFrom(item.getType())) {
-//                    dialogSupportedType = true;
-//                    break;
-//                }
-//            }
-//
-//            if (!dialogSupportedType) {
-//                m_notHarvested.add(item.getName());
-//            }
-//        }
+
+        //ignore all items that cannot be part of the input panel
+        for (final ModuleItem<?> item : m_module.getInfo().inputs()) {
+            IJInputAdapter<?> o = IJAdapterProvider.getInputAdapter(item.getType());
+            if (o == null || o instanceof IJStandardInputAdapter) {
+                m_notHarvested.add(item.getName());
+            }
+        }
     }
 
     @Override
