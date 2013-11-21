@@ -56,7 +56,6 @@ import imagej.data.autoscale.AutoscaleService;
 import imagej.data.types.DataTypeService;
 import imagej.menu.MenuService;
 import imagej.module.MethodCallException;
-import imagej.module.Module;
 import imagej.module.ModuleException;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
@@ -163,6 +162,18 @@ public final class IJGateway {
         // could also use the more specific new ImageJ here but Context gives as more
         // control of loaded services atm.
         m_imageJContext = new Context(getImageJContextServices());
+
+        // TODO:
+        // CTR HACK: force lazy initialization of all SingletonServices.
+        // This is temporary, until ImageJ fixes the ObjectService registration to work as expected.
+        for (Service s : m_imageJContext.getServiceIndex()) {
+            if (!(s instanceof SingletonService)) {
+                continue;
+            }
+
+            ((SingletonService<?>)s).getInstances();
+
+        }
 
         // get object service
         m_objService = m_imageJContext.getService(ObjectService.class);
