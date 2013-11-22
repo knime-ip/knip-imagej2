@@ -60,7 +60,6 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.knime.core.node.NodeLogger;
-import org.knime.knip.imagej2.core.IJGateway;
 import org.scijava.service.Service;
 
 /**
@@ -149,34 +148,12 @@ public final class IJAdapterProvider {
      * @param type the class of the ImageJ type
      * @return an input adapter that handles the specified type
      */
-    public static <IJ_OBJ> IJInputAdapter<IJ_OBJ> getNativeAdapter(final Class<IJ_OBJ> type) {
-        IJInputAdapter<IJ_OBJ> o = (IJInputAdapter<IJ_OBJ>)getInstance().m_InputAdapters.get(type);
-
-        if (o != null) {
-            return o;
-        }
-
-        return null;
-    }
-
-    /**
-     * returns the first registred adapter that handles this type.
-     *
-     * @param <IJ_OBJ> an ImageJ type
-     * @param type the class of the ImageJ type
-     * @return an input adapter that handles the specified type
-     */
     public static <IJ_OBJ> IJInputAdapter<IJ_OBJ> getInputAdapter(final Class<IJ_OBJ> type) {
-        Object o = getNativeAdapter(type);
+        Object o = getInstance().m_InputAdapters.get(type);
 
         if (o != null) {
             return (IJInputAdapter<IJ_OBJ>)o;
         }
-
-        if (IJGateway.getInstance().isMultipleChoiceObject(type)) {
-           return (IJInputAdapter<IJ_OBJ>)getInstance().m_InputAdapters.get(String.class);
-        }
-
         return null;
     }
 

@@ -108,7 +108,7 @@ public abstract class AbstractIJNodeDialog extends DefaultNodeSettingsPane {
      * @param info
      */
     protected AbstractIJNodeDialog(final ModuleInfo info) {
-        m_dummyModel = AbstractIJNodeModel.createImageJDlgModel(info);
+        m_dummyModel = AbstractIJNodeModel.createImageJDlgModel();
         m_dummyModel.setEnabled(false);
 
         HarvesterModuleWrapper harvesterModule = null;
@@ -124,7 +124,7 @@ public abstract class AbstractIJNodeDialog extends DefaultNodeSettingsPane {
             e.printStackTrace();
         }
 
-        m_imageJDialog = new DialogComponentImageJDlg(AbstractIJNodeModel.createImageJDlgModel(info), harvesterModule);
+        m_imageJDialog = new DialogComponentImageJDlg(AbstractIJNodeModel.createImageJDlgModel(), harvesterModule);
         m_useDialog = false;
     }
 

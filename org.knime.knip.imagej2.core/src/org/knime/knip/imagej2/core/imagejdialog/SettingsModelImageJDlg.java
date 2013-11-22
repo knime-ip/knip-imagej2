@@ -49,14 +49,14 @@
 package org.knime.knip.imagej2.core.imagejdialog;
 
 import imagej.module.Module;
-import imagej.module.ModuleInfo;
-import imagej.module.ModuleItem;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -69,8 +69,6 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.config.Config;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.port.PortObjectSpec;
-import org.knime.knip.imagej2.core.IJGateway;
-import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
 
 /**
  * Partial configuration of a {@link Module} by the basic input parameters of an ImageJ parameter dialog. The parameters
@@ -85,6 +83,9 @@ import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
  */
 public class SettingsModelImageJDlg extends SettingsModel {
 
+    /* prefix if the class name of a module item has been serialized instead of the module item itself*/
+    private static final String CLASS_PREFIX = "class:";
+
     /**
      * the data values that are set via the Dialog. Associates an item name with its data value.
      */
@@ -94,15 +95,11 @@ public class SettingsModelImageJDlg extends SettingsModel {
 
     private final String m_configName;
 
-    // module info needed to get item type
-    private ModuleInfo m_info;
-
     /**
      * @param configName a name that is suitable for {@link SettingsModel#getConfigName}
      */
-    public SettingsModelImageJDlg(final ModuleInfo info, final String configName) {
+    public SettingsModelImageJDlg(final String configName) {
         m_configName = configName;
-        m_info = info;
         m_itemName2Value = new HashMap<String, Object>(10);
     }
 
@@ -114,18 +111,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
     public void configureModule(final Module module) {
 
         for (final String name : m_itemName2Value.keySet()) {
-            ModuleItem<?> item = m_info.getInput(name);
-
-            final Object o = m_itemName2Value.get(name);
-            final Object value;
-
-            if(null == IJAdapterProvider.getNativeAdapter(item.getType())){
-                value = IJGateway.getInstance().getObject(item.getType(), o);
-            }else{
-                value = o;
-            }
-
-            module.setInput(name, value);
+            module.setInput(name, m_itemName2Value.get(name));
             module.setResolved(name, true);
         }
 
@@ -158,7 +144,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
 
     @Override
     protected <T extends SettingsModel> T createClone() {
-        return (T)new SettingsModelImageJDlg(m_info, m_configName);
+        return (T)new SettingsModelImageJDlg(m_configName);
     }
 
     @Override
@@ -233,13 +219,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
 
         for (final String key : m_itemName2Value.keySet()) {
 
-            final Object item;
-            if (IJAdapterProvider.getNativeAdapter(m_info.getInput(key).getType()) != null) {
-                item = m_itemName2Value.get(key);
-            } else {
-                item = m_itemName2Value.get(key).toString();
-            }
-
+            final Object item = m_itemName2Value.get(key);
             final String itemString = toBase64String(item);
 
             if (!itemString.isEmpty()) {
@@ -256,26 +236,42 @@ public class SettingsModelImageJDlg extends SettingsModel {
      * @return a string representation of an object in base 64 encoding
      */
     private String toBase64String(final Object object) {
-        String ret = "";
-
         try {
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            final ObjectOutputStream out = new ObjectOutputStream(baos);
-            out.writeObject(object);
-            baos.flush();
-            out.close();
-            baos.close();
+            //use java serialization, if object is serializable
+            if (object instanceof Serializable) {
+                final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                final ObjectOutputStream out = new ObjectOutputStream(baos);
+                out.writeObject(object);
+                baos.flush();
+                out.close();
+                baos.close();
 
-            final byte[] byteObject = baos.toByteArray();
-            new Base64();
-            final byte[] encodedObject = Base64.encode(byteObject);
+                final byte[] byteObject = baos.toByteArray();
+                new Base64();
+                final byte[] encodedObject = Base64.encode(byteObject);
 
-            ret = new String(encodedObject);
+                return new String(encodedObject);
+            }
+
+            //if there is an empty default constructor, just write the class name and re-instantiate the object later
+            Constructor<?>[] constructors = object.getClass().getConstructors();
+            boolean hasPublicDefaultConstructor = false;
+            for (Constructor<?> constr : constructors) {
+                if (constr.getParameterTypes().length == 0) {
+                    hasPublicDefaultConstructor = true;
+                    break;
+                }
+            }
+            if (hasPublicDefaultConstructor) {
+                return CLASS_PREFIX + object.getClass().getCanonicalName();
+            }
+
         } catch (final IOException e) {
             e.printStackTrace();
         }
+        throw new RuntimeException("Object of class " + object.getClass().getCanonicalName()
+                + " can not be serialized.");
 
-        return ret;
     }
 
     /**
@@ -283,23 +279,36 @@ public class SettingsModelImageJDlg extends SettingsModel {
      * @return the decoded object
      */
     private Object fromBase64String(final String stringRepresentation) {
-        Object ret = null;
 
-        new Base64();
-        final byte[] decodedObject = Base64.decode(stringRepresentation.getBytes());
+        if (stringRepresentation.startsWith(CLASS_PREFIX)) {
+            //if only the class name has been serialized re-instantiate from the class name
+            try {
+                return Class.forName(stringRepresentation.substring(CLASS_PREFIX.length())).newInstance();
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            //restore object via java serialization
+            Object ret = null;
+            new Base64();
+            final byte[] decodedObject = Base64.decode(stringRepresentation.getBytes());
 
-        try {
-            final ByteArrayInputStream bis = new ByteArrayInputStream(decodedObject);
-            ObjectInputStream ois;
-            ois = new ObjectInputStream(bis);
-            ret = ois.readObject();
-        } catch (final IOException e) {
-            e.printStackTrace();
-        } catch (final ClassNotFoundException e) {
-            e.printStackTrace();
+            try {
+                final ByteArrayInputStream bis = new ByteArrayInputStream(decodedObject);
+                ObjectInputStream ois;
+                ois = new ObjectInputStream(bis);
+                ret = ois.readObject();
+            } catch (final IOException e) {
+                e.printStackTrace();
+            } catch (final ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            return ret;
         }
-
-        return ret;
     }
 
     @Override

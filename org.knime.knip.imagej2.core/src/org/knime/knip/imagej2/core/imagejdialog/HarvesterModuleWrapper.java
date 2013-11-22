@@ -87,7 +87,9 @@ public class HarvesterModuleWrapper implements Module {
         //ignore all items that cannot be part of the input panel
         for (final ModuleItem<?> item : m_module.getInfo().inputs()) {
             IJInputAdapter<?> o = IJAdapterProvider.getInputAdapter(item.getType());
-            if (o == null || o instanceof IJStandardInputAdapter) {
+            //do not allow those items, that are IJStandardInputAdapter (like image input etc.)
+            //if there is NO input adapter, allow them and hope that imagej provides a dialog component (TODO: is this the right approach?? what if there is no input adapter AND imagej DOESN'T provide any widget)
+            if (o != null && o instanceof IJStandardInputAdapter) {
                 m_notHarvested.add(item.getName());
             }
         }

@@ -100,8 +100,8 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
     /**
      * @return the settings model for the ImageJ dialog.
      */
-    static SettingsModelImageJDlg createImageJDlgModel(final ModuleInfo info) {
-        return new SettingsModelImageJDlg(info, "imagej_dlg_settings_model");
+    static SettingsModelImageJDlg createImageJDlgModel() {
+        return new SettingsModelImageJDlg("imagej_dlg_settings_model");
     }
 
     /**
@@ -143,7 +143,7 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
         m_moduleInfo = moduleInfo;
         m_columnSelectionSettingsModels = new LinkedHashMap<String, SettingsModelString>();
         m_columnSelectionDataValues = new HashMap<String, Class<? extends DataValue>>();
-        m_imageJDlGSettingsModel = createImageJDlgModel(m_moduleInfo);
+        m_imageJDlGSettingsModel = createImageJDlgModel();
     }
 
     /**
