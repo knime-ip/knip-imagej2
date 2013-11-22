@@ -148,16 +148,12 @@ public final class IJGateway {
     private String m_imagejVersion;
 
     /**
-     * @return the headless instance of IJGateway
+     * @return create a  headless instance of IJGateway
      */
-    public static synchronized IJGateway getHeadlessInstance() {
-        if (instance != null) {
-            throw new IllegalStateException("IJGateway was already instantiated");
+    public static synchronized void createHeadlessInstance() {
+        if(instance == null) {
+            instance = new IJGateway(true);
         }
-
-        instance = new IJGateway(true);
-
-        return instance;
     }
 
     /**
@@ -186,6 +182,20 @@ public final class IJGateway {
         // could also use the more specific new ImageJ here but Context gives as more
         // control of loaded services atm.
         m_imageJContext = new Context(getImageJContextServices(isHeadless));
+
+
+        // TODO:
+        // CTR HACK: force lazy initialization of all SingletonServices.
+        // This is temporary, until ImageJ fixes the ObjectService registration to work as expected.
+        if(!isHeadless){
+            for (Service s : m_imageJContext.getServiceIndex()) {
+                if (!(s instanceof SingletonService)) {
+                    continue;
+                }
+
+                ((SingletonService<?>)s).getInstances();
+            }
+        }
 
         //get version info
         final AppService appService = m_imageJContext.getService(AppService.class);
@@ -416,17 +426,6 @@ public final class IJGateway {
             // add general supported service types
             for (int i = 0; i < GUI_IJ_SERVICES.length; i++) {
                 services.add(GUI_IJ_SERVICES[i]);
-            }
-
-            // TODO:
-            // CTR HACK: force lazy initialization of all SingletonServices.
-            // This is temporary, until ImageJ fixes the ObjectService registration to work as expected.
-            for (Service s : m_imageJContext.getServiceIndex()) {
-                if (!(s instanceof SingletonService)) {
-                    continue;
-                }
-
-                ((SingletonService<?>)s).getInstances();
             }
         }
 
