@@ -112,10 +112,18 @@ public final class IJGateway {
             boolean.class, File.class, ColorRGB.class};
 
     /**
+     *
+     * Core services which are need to run the plugin headless
+     *
+     */
+    public static final Class<?>[] HEADLESS_IJ_SERVICES = {ModuleService.class, PluginService.class,
+            WidgetService.class, AutoscaleService.class, AppService.class, DataTypeService.class, UIService.class};
+
+    /**
      * all services that are supported out of the box. Mainly services that are actually not supported but will do no
      * harm like the MenuService
      */
-    private static final Class<?>[] SUPPORTED_IJ_SERVICE_TYPES = {MenuService.class, ToolService.class,
+    private static final Class<?>[] GUI_IJ_SERVICES = {UIService.class, MenuService.class, ToolService.class,
             EventService.class, ObjectService.class, SingletonService.class, DatasetService.class,
             ImgUtilityService.class, ImgUtilityService.class, JAIIIOService.class};
 
@@ -147,17 +155,39 @@ public final class IJGateway {
     /**
      * @return the singelton instance of IJGateway
      */
+    public static synchronized IJGateway createHeadlessInstance() {
+        if (instance != null) {
+            throw new IllegalStateException("IJGateway was already instantiated");
+        }
+
+        instance = new IJGateway(true);
+
+        return instance;
+    }
+    /**
+     * @return the singelton instance of IJGateway
+     */
     public static synchronized IJGateway getInstance() {
         if (instance == null) {
-            instance = new IJGateway();
+            instance = new IJGateway(false);
         }
         return instance;
     }
 
     /**
+     * @return Headless instance of this gateway
+     */
+    public static synchronized IJGateway getHeadlessInstance() {
+        if (headless_instance == null) {
+            headless_instance = new IJGateway(true);
+        }
+        return headless_instance;
+    }
+
+    /**
      * creates the ImageJ context and initializes the list of supported modules.
      */
-    private IJGateway() {
+    private IJGateway(final boolean isHeadless) {
 
         // set log level
         if (System.getProperty(LogService.LOG_LEVEL_PROPERTY) == null) {
@@ -167,19 +197,7 @@ public final class IJGateway {
         // create ImageJ context with services
         // could also use the more specific new ImageJ here but Context gives as more
         // control of loaded services atm.
-        m_imageJContext = new Context(getImageJContextServices());
-
-        // TODO:
-        // CTR HACK: force lazy initialization of all SingletonServices.
-        // This is temporary, until ImageJ fixes the ObjectService registration to work as expected.
-        for (Service s : m_imageJContext.getServiceIndex()) {
-            if (!(s instanceof SingletonService)) {
-                continue;
-            }
-
-            ((SingletonService<?>)s).getInstances();
-        }
-
+        m_imageJContext = new Context(getImageJContextServices(isHeadless));
         // get object service
         m_objService = m_imageJContext.getService(ObjectService.class);
 
@@ -348,7 +366,7 @@ public final class IJGateway {
         }
 
         // test for supported services
-        for (final Class<?> candidate : SUPPORTED_IJ_SERVICE_TYPES) {
+        for (final Class<?> candidate : GUI_IJ_SERVICES) {
             if (candidate.isAssignableFrom(type)) {
                 return true;
             }
@@ -398,17 +416,10 @@ public final class IJGateway {
     /**
      * @return all services that the created ImageJ context should support
      */
-    private List<Class<? extends Service>> getImageJContextServices() {
-        final Class<?>[] coreServices =
-                {ModuleService.class, PluginService.class, WidgetService.class, AutoscaleService.class,
-                        AppService.class, DataTypeService.class, UIService.class};
+    private List<Class<? extends Service>> getImageJContextServices(final boolean isHeadless) {
 
         final List services = new ArrayList();
 
-        // add general supported service types
-        for (int i = 0; i < SUPPORTED_IJ_SERVICE_TYPES.length; i++) {
-            services.add(SUPPORTED_IJ_SERVICE_TYPES[i]);
-        }
 
         // add service types supported by adapters
         for (Class service : IJAdapterProvider.getKnownServiceTypes()) {
@@ -416,8 +427,26 @@ public final class IJGateway {
         }
 
         // add the core services needed for plugin discovery or core functionalities of the plugin
-        for (int i = 0; i < coreServices.length; i++) {
-            services.add(coreServices[i]);
+        for (int i = 0; i < HEADLESS_IJ_SERVICES.length; i++) {
+            services.add(HEADLESS_IJ_SERVICES[i]);
+        }
+
+        if (!isHeadless) {
+            // add general supported service types
+            for (int i = 0; i < GUI_IJ_SERVICES.length; i++) {
+                services.add(GUI_IJ_SERVICES[i]);
+            }
+
+            // TODO:
+            // CTR HACK: force lazy initialization of all SingletonServices.
+            // This is temporary, until ImageJ fixes the ObjectService registration to work as expected.
+            for (Service s : m_imageJContext.getServiceIndex()) {
+                if (!(s instanceof SingletonService)) {
+                    continue;
+                }
+
+                ((SingletonService<?>)s).getInstances();
+            }
         }
 
         return services;
