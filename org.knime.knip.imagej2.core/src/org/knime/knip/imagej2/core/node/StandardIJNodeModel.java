@@ -66,6 +66,8 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
 import org.knime.knip.imagej2.core.adapter.IJInputAdapter;
@@ -222,6 +224,33 @@ public class StandardIJNodeModel extends AbstractIJNodeModel {
     @Override
     protected List<ModuleItemConfig> getModuleItemConfigs() {
         return m_moduleItemConfigs;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveSettingsTo(final NodeSettingsWO settings) {
+        super.saveSettingsTo(settings);
+        m_appendColumns.saveSettingsTo(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        super.validateSettings(settings);
+        m_appendColumns.validateSettings(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
+        super.loadValidatedSettingsFrom(settings);
+        m_appendColumns.loadSettingsFrom(settings);
     }
 
 }
