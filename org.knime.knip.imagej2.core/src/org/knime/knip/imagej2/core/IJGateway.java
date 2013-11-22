@@ -80,6 +80,7 @@ import org.scijava.InstantiableException;
 import org.scijava.app.App;
 import org.scijava.app.AppService;
 import org.scijava.event.EventService;
+import org.scijava.log.LogService;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.PluginService;
 import org.scijava.plugin.SingletonService;
@@ -159,7 +160,9 @@ public final class IJGateway {
     private IJGateway() {
 
         // set log level
-        System.setProperty("scijava.log.level", "error");
+        if (System.getProperty(LogService.LOG_LEVEL_PROPERTY) == null) {
+            System.setProperty(LogService.LOG_LEVEL_PROPERTY, "error");
+        }
 
         // create ImageJ context with services
         // could also use the more specific new ImageJ here but Context gives as more
