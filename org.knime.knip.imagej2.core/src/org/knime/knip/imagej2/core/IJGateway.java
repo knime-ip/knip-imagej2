@@ -112,9 +112,7 @@ public final class IJGateway {
             boolean.class, File.class, ColorRGB.class};
 
     /**
-     *
      * Core services which are need to run the plugin headless
-     *
      */
     public static final Class<?>[] HEADLESS_IJ_SERVICES = {ModuleService.class, PluginService.class,
             WidgetService.class, AutoscaleService.class, AppService.class, DataTypeService.class, UIService.class};
@@ -129,7 +127,7 @@ public final class IJGateway {
 
     // MEMBERS
 
-    /** singelton instance. */
+    /** singleton instance on IJGateway (maybe headless or not). */
     private static IJGateway instance = null;
 
     /** the one and unique ImageJ context. */
@@ -150,9 +148,9 @@ public final class IJGateway {
     private String m_imagejVersion;
 
     /**
-     * @return the singelton instance of IJGateway
+     * @return the headless instance of IJGateway
      */
-    public static synchronized IJGateway createHeadlessInstance() {
+    public static synchronized IJGateway getHeadlessInstance() {
         if (instance != null) {
             throw new IllegalStateException("IJGateway was already instantiated");
         }
@@ -161,24 +159,17 @@ public final class IJGateway {
 
         return instance;
     }
+
     /**
      * @return the singelton instance of IJGateway
      */
     public static synchronized IJGateway getInstance() {
+
         if (instance == null) {
             instance = new IJGateway(false);
         }
-        return instance;
-    }
 
-    /**
-     * @return Headless instance of this gateway
-     */
-    public static synchronized IJGateway getHeadlessInstance() {
-        if (headless_instance == null) {
-            headless_instance = new IJGateway(true);
-        }
-        return headless_instance;
+        return instance;
     }
 
     /**
@@ -385,6 +376,7 @@ public final class IJGateway {
      * @return
      */
     public boolean isMultipleChoiceObject(final Class<?> type) {
+        return getObjectService().getObjects(type).size() > 0;
     }
 
     /**
@@ -409,7 +401,6 @@ public final class IJGateway {
     private List<Class<? extends Service>> getImageJContextServices(final boolean isHeadless) {
 
         final List services = new ArrayList();
-
 
         // add service types supported by adapters
         for (Class service : IJAdapterProvider.getKnownServiceTypes()) {
