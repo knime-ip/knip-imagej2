@@ -199,9 +199,6 @@ public abstract class AbstractIJNodeDialog extends DefaultNodeSettingsPane {
         if (basicInputColumnBindingDCGs.size() > 0) {
             createNewTab("Advanced Settings");
 
-            createNewGroup("bind columns to ImageJ parameters");
-            closeCurrentGroup();
-
             for (final DialogComponentGroup dcg : basicInputColumnBindingDCGs) {
                 addComponents(dcg);
             }
