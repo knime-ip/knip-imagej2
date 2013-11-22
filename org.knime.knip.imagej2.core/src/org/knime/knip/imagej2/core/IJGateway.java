@@ -132,9 +132,6 @@ public final class IJGateway {
     /** singelton instance. */
     private static IJGateway instance = null;
 
-    /** singleton ob object service */
-    private final ObjectService m_objService;
-
     /** the one and unique ImageJ context. */
     private final Context m_imageJContext;
 
@@ -198,12 +195,6 @@ public final class IJGateway {
         // could also use the more specific new ImageJ here but Context gives as more
         // control of loaded services atm.
         m_imageJContext = new Context(getImageJContextServices(isHeadless));
-        // get object service
-        m_objService = m_imageJContext.getService(ObjectService.class);
-
-        //using the log service comes to late for the initial output on plugin discovery
-        //m_imageJContext.getService(LogService.class).setLevel(LogService.ERROR);
-        final ModuleService moduleService = m_imageJContext.getService(ModuleService.class);
 
         //get version info
         final AppService appService = m_imageJContext.getService(AppService.class);
@@ -212,7 +203,7 @@ public final class IJGateway {
 
         // get list of modules, and filter them to those acceptable to
         // KNIME/KNIP
-        final List<ModuleInfo> moduleInfos = moduleService.getModules();
+        final List<ModuleInfo> moduleInfos = getModuleService().getModules();
         m_supportedModulesInfos = findSupportedModules(moduleInfos);
         m_delegateClassName2ModuleInfo = new HashMap<String, ModuleInfo>(m_supportedModulesInfos.size());
         for (final ModuleInfo info : m_supportedModulesInfos) {
@@ -394,7 +385,6 @@ public final class IJGateway {
      * @return
      */
     public boolean isMultipleChoiceObject(final Class<?> type) {
-        return m_objService.getObjects(type).size() > 0;
     }
 
     /**
