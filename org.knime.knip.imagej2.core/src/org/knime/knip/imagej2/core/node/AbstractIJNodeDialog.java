@@ -48,8 +48,6 @@
  */
 package org.knime.knip.imagej2.core.node;
 
-import imagej.module.Module;
-import imagej.module.ModuleException;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 
@@ -111,18 +109,8 @@ public abstract class AbstractIJNodeDialog extends DefaultNodeSettingsPane {
         m_dummyModel = AbstractIJNodeModel.createImageJDlgModel();
         m_dummyModel.setEnabled(false);
 
-        HarvesterModuleWrapper harvesterModule = null;
-        try {
-            // TODO use info, use module service. createmodule and pass the info to the create method
-            Module module = info.createModule();
-
-            // we can get rid of it as soon as we use moduleservice
-            IJGateway.getImageJContext().inject(module);
-            module.initialize();
-            harvesterModule = new HarvesterModuleWrapper(module);
-        } catch (final ModuleException e) {
-            e.printStackTrace();
-        }
+        HarvesterModuleWrapper harvesterModule =
+                new HarvesterModuleWrapper(IJGateway.getInstance().getModuleService().createModule(info));
 
         m_imageJDialog = new DialogComponentImageJDlg(AbstractIJNodeModel.createImageJDlgModel(), harvesterModule);
         m_useDialog = false;
@@ -159,8 +147,7 @@ public abstract class AbstractIJNodeDialog extends DefaultNodeSettingsPane {
      *
      * @param config will be configured using column boxes for all required DataValues
      *
-     * @return
-     *      the resulting {@link DialogComponentGroup}
+     * @return the resulting {@link DialogComponentGroup}
      */
     @SuppressWarnings("unchecked")
     protected DialogComponentGroup createColumnSelectionDCG(final ModuleItemDataValueConfig config) {

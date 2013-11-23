@@ -114,15 +114,18 @@ public final class IJGateway {
     /**
      * Core services which are need to run the plugin headless
      */
-    public static final Class<?>[] HEADLESS_IJ_SERVICES = {ModuleService.class, PluginService.class,
-            WidgetService.class, AutoscaleService.class, AppService.class, DataTypeService.class, UIService.class};
+    @SuppressWarnings("unchecked")
+    public static final Class<? extends Service>[] HEADLESS_IJ_SERVICES = new Class[]{ModuleService.class,
+            PluginService.class, WidgetService.class, AutoscaleService.class, AppService.class, DataTypeService.class,
+            UIService.class};
 
     /**
      * all services that are supported out of the box. Mainly services that are actually not supported but will do no
      * harm like the MenuService
      */
-    private static final Class<?>[] GUI_IJ_SERVICES = {UIService.class, MenuService.class, ToolService.class,
-            EventService.class, ObjectService.class, SingletonService.class, DatasetService.class,
+    @SuppressWarnings("unchecked")
+    private static final Class<? extends Service>[] GUI_IJ_SERVICES = new Class[]{UIService.class, MenuService.class,
+            ToolService.class, EventService.class, ObjectService.class, SingletonService.class, DatasetService.class,
             ImgUtilityService.class, ImgUtilityService.class, JAIIIOService.class};
 
     // MEMBERS
@@ -147,11 +150,17 @@ public final class IJGateway {
     /** version number of ImageJ. **/
     private String m_imagejVersion;
 
+    /** Singleton on ModuleService */
+    private ModuleService m_moduleService;
+
+    /** Singleton on ObjectService */
+    private ObjectService m_objectService;
+
     /**
-     * @return create a  headless instance of IJGateway
+     * Create a headless instance of the {@link IJGateway}. This instance will be kept as a singleton
      */
     public static synchronized void createHeadlessInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new IJGateway(true);
         }
     }
@@ -183,11 +192,10 @@ public final class IJGateway {
         // control of loaded services atm.
         m_imageJContext = new Context(getImageJContextServices(isHeadless));
 
-
         // TODO:
         // CTR HACK: force lazy initialization of all SingletonServices.
         // This is temporary, until ImageJ fixes the ObjectService registration to work as expected.
-        if(!isHeadless){
+        if (!isHeadless) {
             for (Service s : m_imageJContext.getServiceIndex()) {
                 if (!(s instanceof SingletonService)) {
                     continue;
@@ -212,6 +220,9 @@ public final class IJGateway {
         }
     }
 
+    /**
+     * @return the version of ImageJ2
+     */
     public static String getImageJVersion() {
         return getInstance().m_imagejVersion;
     }
@@ -245,9 +256,9 @@ public final class IJGateway {
      * @param type the type to test
      * @return true if this type can be handled by the ImageJ dialog
      */
-    public static boolean isIJDialogInputType(final Class<?> type) {
+    public static synchronized boolean isIJDialogInputType(final Class<?> type) {
         boolean ret = false;
-        for (final Class c : SUPPORTED_IJ_DIALOG_TYPES) {
+        for (final Class<?> c : SUPPORTED_IJ_DIALOG_TYPES) {
             if (c.isAssignableFrom(type)) {
                 ret = true;
             }
@@ -383,7 +394,7 @@ public final class IJGateway {
 
     /**
      * @param type
-     * @return
+     * @return true if type is a plugin for a multi-type object
      */
     public boolean isMultipleChoiceObject(final Class<?> type) {
         return getObjectService().getObjects(type).size() > 0;
@@ -410,10 +421,10 @@ public final class IJGateway {
      */
     private List<Class<? extends Service>> getImageJContextServices(final boolean isHeadless) {
 
-        final List services = new ArrayList();
+        final List<Class<? extends Service>> services = new ArrayList<Class<? extends Service>>();
 
         // add service types supported by adapters
-        for (Class service : IJAdapterProvider.getKnownServiceTypes()) {
+        for (Class<? extends Service> service : IJAdapterProvider.getKnownServiceTypes()) {
             services.add(service);
         }
 
@@ -433,31 +444,24 @@ public final class IJGateway {
     }
 
     /**
-     * @return
+     * @return {@link ObjectService} (singleton)
      */
     public ObjectService getObjectService() {
-        return m_imageJContext.getService(ObjectService.class);
-    }
-
-    /**
-     * @return
-     */
-    public ModuleService getModuleService() {
-        return m_imageJContext.getService(ModuleService.class);
-    }
-
-    /**
-     * @param type
-     */
-    public <T> T getObject(final Class<T> type, final Object o) {
-        final String s = o.toString();
-        for (T t : getObjectService().getObjects(type)) {
-            if (t.toString().equals(s)) {
-                return t;
-            }
+        if (m_objectService == null) {
+            m_objectService = m_imageJContext.getService(ObjectService.class);
         }
 
-        //TODO throw correct exception
-        return null;
+        return m_objectService;
+    }
+
+    /**
+     * @return {@link ModuleService} (singleton)
+     */
+    public ModuleService getModuleService() {
+        if (m_moduleService == null) {
+            m_moduleService = m_imageJContext.getService(ModuleService.class);
+        }
+
+        return m_moduleService;
     }
 }
