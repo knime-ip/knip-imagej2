@@ -64,6 +64,7 @@ import org.knime.core.data.StringValue;
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
+@SuppressWarnings("rawtypes")
 public class StringInputAdapter extends AbstractBasicInputAdapter<String> {
 
     @Override

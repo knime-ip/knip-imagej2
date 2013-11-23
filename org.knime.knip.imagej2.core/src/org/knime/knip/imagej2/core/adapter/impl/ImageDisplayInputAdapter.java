@@ -54,6 +54,7 @@ import imagej.data.display.DatasetView;
 import imagej.data.display.DefaultDatasetView;
 import imagej.data.display.DefaultImageDisplay;
 import imagej.data.display.ImageDisplay;
+import imagej.display.Display;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
 import net.imglib2.meta.ImgPlus;
@@ -62,13 +63,14 @@ import org.knime.core.data.DataValue;
 import org.knime.knip.base.data.img.ImgPlusValue;
 import org.knime.knip.imagej2.core.IJGateway;
 import org.knime.knip.imagej2.core.adapter.DataValueConfigGuiInfos;
+import org.knime.knip.imagej2.core.adapter.IJInputAdapter;
 import org.knime.knip.imagej2.core.adapter.IJStandardInputAdapter;
 import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
 import org.scijava.ItemIO;
 
 /**
- * TODO Auto-generated
- * 
+ * {@link IJInputAdapter} for {@link Display}s
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -95,6 +97,7 @@ public class ImageDisplayInputAdapter implements IJStandardInputAdapter<ImageDis
             }
 
             @Override
+            @SuppressWarnings({"rawtypes", "unchecked"})
             public void configureModuleItem(final Module module) {
                 ImgPlus imgPlus;
                 if (item.getIOType() == ItemIO.BOTH) {

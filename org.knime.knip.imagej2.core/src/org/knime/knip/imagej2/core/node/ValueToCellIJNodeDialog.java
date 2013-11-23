@@ -65,13 +65,14 @@ import org.knime.knip.imagej2.core.adapter.IJStandardInputAdapter;
  * {@link IJNodeFactory#useValueToCell()} for more details). <br>
  * <br>
  * Supports the processing of multiple columns at once. Appending and replacing of result columns and the creation of a
- * new resul table.
+ * new result table.
  *
  *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
+@SuppressWarnings("javadoc")
 public class ValueToCellIJNodeDialog extends AbstractIJNodeDialog {
 
     /**

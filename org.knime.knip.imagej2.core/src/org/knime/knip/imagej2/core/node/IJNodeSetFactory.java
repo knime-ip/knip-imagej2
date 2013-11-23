@@ -74,6 +74,9 @@ import org.scijava.MenuEntry;
  */
 public class IJNodeSetFactory implements NodeSetFactory {
 
+    /**
+     * Key of IJ Module Class
+     */
     public static final String IMAGEJ_MODULE_CLASS_KEY = "imagej_module_class_key";
 
     /**
@@ -81,11 +84,14 @@ public class IJNodeSetFactory implements NodeSetFactory {
      */
     private static final String CATEGORY_PATH_COMMON_PART = "/community/knip/imagej2";
 
+    /**
+     * Current Version of IJ2
+     */
     public static final String IMAGEJ_VERSION_KEY = "imagej_version_key";
 
-    private final String IMAGEJ_VERSION;// resolve this in the
-
+    // resolve this in the
     // constructor to avoid potential problems with timing dependencies
+    private final String IMAGEJ_VERSION;
 
     /**
      * creates a new instance of the node set factory.

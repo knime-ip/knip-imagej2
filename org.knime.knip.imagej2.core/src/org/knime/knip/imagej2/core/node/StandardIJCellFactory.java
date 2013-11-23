@@ -71,8 +71,8 @@ import org.knime.knip.imagej2.core.imagejdialog.SettingsModelImageJDlg;
 
 /**
  * Standard implementation that can be used for all modules (in contrast to the ValueToCell implementation)
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -98,11 +98,12 @@ public class StandardIJCellFactory extends AbstractIJCellFactory {
     private final HashMap<String, Integer> m_identifier2CellID;
 
     /**
-     * 
+     * TODO
+     *
      * @param moduleInfo
-     * @param dialogModuleSettings {@link #m_dialogModuleSettings}
-     * @param moduleItemConfigs {@link #m_moduleItemConfigs}
-     * @param identifier2CellID {@link #m_identifier2CellID}
+     * @param dialogModuleSettings
+     * @param moduleItemConfigs
+     * @param identifier2CellID
      * @param exec
      */
     public StandardIJCellFactory(final ModuleInfo moduleInfo, final SettingsModelImageJDlg dialogModuleSettings,

@@ -229,6 +229,10 @@ public class IJNodeFactory extends DynamicNodeFactory<AbstractIJNodeModel> {
                     tab.setName("ImageJ Dialog");
                     createdTab = true;
                 }
+                if (tab == null) {
+                    throw new IllegalStateException("Tab shouldn't be null in IJNodeFactory");
+                }
+
                 Option opt = tab.addNewOption();
                 opt.setName(item.getLabel());
 
@@ -354,6 +358,10 @@ public class IJNodeFactory extends DynamicNodeFactory<AbstractIJNodeModel> {
 
         if (nrOutputs != 1) {
             return false;
+        }
+
+        if (item == null) {
+            throw new IllegalStateException("Item shoudln't be null in IJNodeFactory");
         }
 
         //with one KNIME output

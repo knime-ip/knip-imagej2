@@ -89,6 +89,7 @@ import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
+@SuppressWarnings("javadoc")
 public class ValueToCellIJNodeModel extends AbstractIJNodeModel {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(ValueToCellIJNodeModel.class);
@@ -141,6 +142,13 @@ public class ValueToCellIJNodeModel extends AbstractIJNodeModel {
 
     private ModuleItemDataValueConfig m_valueConfig;
 
+    /**
+     * TOOD
+     *
+     * @param moduleInfo
+     * @param nrInDataPorts
+     * @param nrOutDataPorts
+     */
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected ValueToCellIJNodeModel(final ModuleInfo moduleInfo, final int nrInDataPorts, final int nrOutDataPorts) {
         super(moduleInfo, nrInDataPorts, nrOutDataPorts);

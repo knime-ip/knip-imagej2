@@ -95,14 +95,15 @@ import org.scijava.service.Service;
  * uses the adapter extension point to add all input, output and service adapters that are supported by the core
  * implementation. This includes especially the converters for all basic data types that can be handled by the ImageJ
  * parameter dialog.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
 public class CoreAdapterFactory implements IJAdapterFactory {
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public IJOutputAdapter[] getOutputAdapters() {
         return new IJOutputAdapter[]{new DatasetOutputAdapter(), new ImageDisplayOutputAdapter(),
@@ -115,6 +116,7 @@ public class CoreAdapterFactory implements IJAdapterFactory {
                 new ImgOutputAdapter(), new LabelingOutputAdapter()};
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public IJInputAdapter[] getInputAdapters() {
         return new IJInputAdapter[]{new DatasetInputAdapter(), new ImageDisplayInputAdapter(),
@@ -126,6 +128,7 @@ public class CoreAdapterFactory implements IJAdapterFactory {
                 new PLongInputAdapter(), new PShortInputAdapter(), new ImgInputAdapter(), new LabelingInputAdapter()};
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public IJServiceAdapter<? extends Service>[] getServiceAdapters() {
 

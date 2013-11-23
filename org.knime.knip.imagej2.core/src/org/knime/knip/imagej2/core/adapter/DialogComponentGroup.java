@@ -54,7 +54,7 @@ import org.knime.core.node.defaultnodesettings.DialogComponent;
  * container for a group of dialog components that are added to a config dialog. If possible the components in the
  * DialogComponentGroup should be added in the order of their array indices under consideration of the placement and
  * border hints.
- * 
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -64,14 +64,29 @@ public class DialogComponentGroup {
     /**
      * if a class supplies multiple components that should be added to a config dialog it may provide a placement_hint
      * that influences the placement of the components.
-     * 
+     *
      * WRAP_2 means place 2 components horizontal than wrap to the next line ... WRAP_3 same with 3 components
-     * 
+     *
      * @author zinsmaie
      */
     public static enum PLACEMENT_HINT {
-        VERTICAL, HORIZONTAL, HORIZ_WRAP_2, HORIZ_WRAP_3
-    };
+        /**
+         * Vertical {@link PLACEMENT_HINT}
+         */
+        VERTICAL,
+        /**
+         * Horizontal {@link PLACEMENT_HINT}
+         */
+        HORIZONTAL,
+        /**
+         * Horizontal wrap 2 {@link PLACEMENT_HINT}
+         */
+        HORIZ_WRAP_2,
+        /**
+         * Horizontal wrap 3 {@link PLACEMENT_HINT}
+         */
+        HORIZ_WRAP_3
+    }
 
     private final DialogComponent[] m_dialogComponents;
 
@@ -81,7 +96,7 @@ public class DialogComponentGroup {
 
     /**
      * wrap the dialog component such that it is simply added to the dialog.
-     * 
+     *
      * @param dialogComponent
      */
     public DialogComponentGroup(final DialogComponent dialogComponent) {
@@ -91,7 +106,7 @@ public class DialogComponentGroup {
 
     /**
      * wrap the dialog component such that it is added to the dialog with a group border and potentially a border text.
-     * 
+     *
      * @param dialogComponent
      * @param borderText the text of the group border or the empty string for a border without text
      */
@@ -103,7 +118,7 @@ public class DialogComponentGroup {
 
     /**
      * wrap the dialog components such that they are simply added to the. dialog
-     * 
+     *
      * @param dialogComponents
      */
     public DialogComponentGroup(final DialogComponent[] dialogComponents) {
@@ -114,7 +129,7 @@ public class DialogComponentGroup {
     /**
      * wrap the dialog components such that they are added to the dialog with a group border and potentially a border
      * text.
-     * 
+     *
      * @param dialogComponents
      * @param borderText the text of the group border or the empty string for a border without text
      */
@@ -127,7 +142,7 @@ public class DialogComponentGroup {
     /**
      * wrap the dialog components such that they are added to the dialog with a placement hint that specifies their
      * layout.
-     * 
+     *
      * @param dialogComponents
      * @param placement {@link PLACEMENT_HINT}
      */
@@ -139,7 +154,7 @@ public class DialogComponentGroup {
     /**
      * wrap the dialog components such that they are added to the dialog with a placement hint that specifies their
      * layout. Additionally specifies a group border and potentially a border text.
-     * 
+     *
      * @param dialogComponents
      * @param placement {@link PLACEMENT_HINT}
      * @param borderText the text of the group border or the empty string for a border without text

@@ -73,13 +73,14 @@ import org.knime.knip.imagej2.core.adapter.ModuleItemRowConfig;
 /**
  * Encapsulates the main functionality of basic input adapters. Provides two DialogComponents, a checkbox that activates
  * the column binding of a parameter and a column selection component to select an appropriate column
- * 
- * 
+ *
+ *
  * @param <IJ_OBJ>
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractBasicInputAdapter<IJ_OBJ> implements IJAdvancedInputAdapter<IJ_OBJ> {
 
     /** by default column binding for basic input types is not active. */
@@ -87,24 +88,36 @@ public abstract class AbstractBasicInputAdapter<IJ_OBJ> implements IJAdvancedInp
 
     /**
      * helper method to retrieve a type dependent infix for the settings string.
-     * 
+     *
      * @return a type dependent infix
      */
     protected abstract String getSettingsNameInfix();
 
     /**
      * helper method to retrieve the class of the DataValue that is used by the adapter.
-     * 
+     *
      * @return class of the DataValue, that is used by the adapter
      */
     protected abstract Class<? extends DataValue> getDataValueClass();
 
-    /** actual configuration of the parameter. */
+    /**
+     * Configuration of the parameters.
+     *
+     * @param module
+     *          module to be configured
+     * @param row
+     *         row in table
+     * @param item
+     *          dialog item used
+     * @param columnIndex
+     *          index of column of interest
+     *
+     */
     protected abstract void configModuleItem(Module module, DataRow row, ModuleItem item, int columnIndex);
 
     /**
      * creates a column selection and a checkbox that activates/deactivates it.
-     * 
+     *
      * {@inheritDoc}
      */
     @Override
@@ -174,7 +187,7 @@ public abstract class AbstractBasicInputAdapter<IJ_OBJ> implements IJAdvancedInp
     }
 
     /**
-     * 
+     *
      * @param name becomes part of the settings model identifier
      * @return a column selection component
      */
@@ -185,7 +198,7 @@ public abstract class AbstractBasicInputAdapter<IJ_OBJ> implements IJAdvancedInp
     /**
      * create the settings model for the activate checkbox and bind it to the column selection such that the column
      * selection dialog component can be activated and deactivated by the user.
-     * 
+     *
      * @param name becomes part of the settings model identifier
      * @param colModel the column model that should be activated and deactivated
      * @return a boolean settings model for a checkbox that activates / deactivates the columns selection

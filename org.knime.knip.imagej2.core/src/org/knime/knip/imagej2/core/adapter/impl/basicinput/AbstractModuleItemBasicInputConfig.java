@@ -52,17 +52,19 @@ import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.knip.imagej2.core.adapter.impl.AbstractModuleItemColumnConfig;
 
 /**
- * the class adds the {@link AbstractModuleItemBasicInputConfig#active() isActive} method to detect the usage of basic
- * input adapters in order to warn the user about the decreased error detection (min, max conditions etc will not be
- * checked if parameters come from tables).
- * 
- * 
+ * the class adds isActive method to detect the usage of basic input adapters in order to warn the user about the
+ * decreased error detection (min, max conditions etc will not be checked if parameters come from tables).
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
 public abstract class AbstractModuleItemBasicInputConfig extends AbstractModuleItemColumnConfig {
 
+    /**
+     * @param settingsModels
+     */
     public AbstractModuleItemBasicInputConfig(final SettingsModel[] settingsModels) {
         super(settingsModels);
     }

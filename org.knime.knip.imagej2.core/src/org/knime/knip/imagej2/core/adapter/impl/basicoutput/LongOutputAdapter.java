@@ -59,12 +59,12 @@ import org.knime.knip.imagej2.core.adapter.IJOutputAdapterInstance;
 
 /**
  * Converts ImageJ output parameters of type {@link java.lang.Long Long} to KNIME {@link LongValue}/{@link LongCell}.
- * 
- * 
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
+@SuppressWarnings("unchecked")
 public class LongOutputAdapter implements IJOutputAdapter<Long> {
 
     @Override

@@ -69,6 +69,7 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.meta.DefaultTypedAxis;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.ops.img.UnaryObjectFactory;
+import net.imglib2.ops.operation.UnaryOperation;
 import net.imglib2.ops.operation.UnaryOutputOperation;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
@@ -80,9 +81,8 @@ import net.imglib2.type.numeric.real.FloatType;
 
 import org.knime.knip.core.ops.metadata.DimSwapper;
 
-// TODO has to be replaced if imglib2 has this as fast routines
 /**
- * TODO Auto-generated
+ * {@link UnaryOperation} to create an {@link ImagePlus} from an {@link ImgPlus}
  *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
@@ -246,12 +246,12 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
      * (index 0), Z (index 1), Time (index 2). Use setMapping if you want to change this.
      *
      * @param img
-     * @return
+     *
+     * @return true if mapping is valid
      */
     public <T> boolean validateMapping(final ImgPlus<T> img) {
         for (int d = 0; d < img.numDimensions(); d++) {
-            Integer i = null;
-            if ((i = m_mapping.get(((DefaultTypedAxis)img.axis(d)).type())) == null) {
+            if (m_mapping.get(((DefaultTypedAxis)img.axis(d)).type()) == null) {
                 return false;
             }
         }

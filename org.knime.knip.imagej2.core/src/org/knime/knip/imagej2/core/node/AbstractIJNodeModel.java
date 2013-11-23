@@ -113,7 +113,7 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
         return new SettingsModelString("ItemValueConfig_" + identifier, "");
     }
 
-    /*
+    /**
      * needed to implement TableCellViewProvider data table for the table cell
      * view
      */
@@ -134,10 +134,18 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
      */
     protected HashMap<String, Class<? extends DataValue>> m_columnSelectionDataValues;
 
+    /**
+     * {@link ModuleInfo} of the wrapped {@link Module}
+     */
     protected final ModuleInfo m_moduleInfo;
 
     //constructor
 
+    /**
+     * @param moduleInfo {@link ModuleInfo} of the wrapped {@link Module}
+     * @param nrInDataPorts number of inports
+     * @param nrOutDataPorts number of out ports
+     */
     protected AbstractIJNodeModel(final ModuleInfo moduleInfo, final int nrInDataPorts, final int nrOutDataPorts) {
         super(nrInDataPorts, nrOutDataPorts);
         m_moduleInfo = moduleInfo;
@@ -150,9 +158,8 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
      * creates the actual data table this method is called from {@link #execute(BufferedDataTable[], ExecutionContext)}.
      *
      * @param inData
-     * @param cellFac
      * @param exec
-     * @return
+     * @return outgoing {@link BufferedDataTable}
      * @throws CanceledExecutionException
      */
     protected abstract BufferedDataTable[] createResultTable(final BufferedDataTable[] inData,

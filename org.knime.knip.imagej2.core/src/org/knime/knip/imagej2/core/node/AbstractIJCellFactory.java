@@ -92,6 +92,10 @@ public abstract class AbstractIJCellFactory implements CellFactory {
 
     private final ExecutionContext m_exec;
 
+    /**
+     * Create a new {@link AbstractIJCellFactory} which uses the given {@link ExecutionContext}
+     * @param exec
+     */
     public AbstractIJCellFactory(final ExecutionContext exec) {
         m_missingCellCount = 0;
         m_exec = exec;

@@ -64,12 +64,13 @@ import org.knime.knip.imagej2.core.adapter.IJOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.IJOutputAdapterInstance;
 
 /**
- * TODO Auto-generated
- * 
+ * {@link IJOutputAdapter} for {@link Img}
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ImgOutputAdapter implements IJOutputAdapter<Img> {
 
     @Override

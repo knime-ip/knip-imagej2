@@ -60,12 +60,12 @@ import org.knime.knip.imagej2.core.adapter.IJOutputAdapterInstance;
 /**
  * Converts ImageJ output parameters of type {@link java.lang.Boolean Boolean} to KNIME {@link BooleanValue}/
  * {@link BooleanCell}.
- * 
- * 
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
+@SuppressWarnings("unchecked")
 public class BooleanOutputAdapter implements IJOutputAdapter<Boolean> {
 
     @Override
@@ -98,7 +98,7 @@ public class BooleanOutputAdapter implements IJOutputAdapter<Boolean> {
                 } else {
                     return new DataCell[]{BooleanCell.FALSE};
                 }
-            };
+            }
         };
     }
 }

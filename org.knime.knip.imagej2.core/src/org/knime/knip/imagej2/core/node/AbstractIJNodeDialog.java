@@ -158,7 +158,9 @@ public abstract class AbstractIJNodeDialog extends DefaultNodeSettingsPane {
      * {@link AbstractIJNodeModel#addColumnSelectionSettingsModel(ModuleItemDataValueConfig)} method of the node model.
      *
      * @param config will be configured using column boxes for all required DataValues
+     *
      * @return
+     *      the resulting {@link DialogComponentGroup}
      */
     @SuppressWarnings("unchecked")
     protected DialogComponentGroup createColumnSelectionDCG(final ModuleItemDataValueConfig config) {

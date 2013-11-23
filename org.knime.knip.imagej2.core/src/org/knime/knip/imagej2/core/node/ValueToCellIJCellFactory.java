@@ -71,9 +71,9 @@ import org.knime.knip.imagej2.core.imagejdialog.SettingsModelImageJDlg;
 /**
  * Special implementation that uses ValueToCell GUI components in the dialog and allows to process multiple input
  * columns at once. Only applicable if certain conditions like only one ImageJ in and output... are fulfilled (see
- * {@link IJNodeFactory#useValueToCell()} for more details).
- * 
- * 
+ * {@link IJNodeFactory}#useValueToCell() for more details).
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -118,7 +118,7 @@ public class ValueToCellIJCellFactory extends AbstractIJCellFactory {
      * selectedColIndices provide the indices of the input columns and colNames provides (in the same order) the names
      * of the resulting columns. Additionally ImageJDialog settings can be resolved a.) with the ImageJ dialog settings
      * or b.) with moduleItemConfigs from the column binding tab.
-     * 
+     *
      * @param moduleInfo
      * @param dialogModuleSettings {@link #m_dialogModuleSettings}
      * @param moduleItemConfigs {@link #m_moduleItemConfigs}
@@ -127,6 +127,7 @@ public class ValueToCellIJCellFactory extends AbstractIJCellFactory {
      * @param colNames {@link #m_colNames}
      * @param exec
      */
+    @SuppressWarnings("javadoc")
     public ValueToCellIJCellFactory(final ModuleInfo moduleInfo, final SettingsModelImageJDlg dialogModuleSettings,
                                     final List<ModuleItemConfig> moduleItemConfigs,
                                     final ModuleItemDataValueConfig valueConfig, final int[] selectedColIndices,
@@ -145,6 +146,7 @@ public class ValueToCellIJCellFactory extends AbstractIJCellFactory {
      * executes the module. The {@link #m_valueConfig} is configured using the DataValues from the
      * {@link #m_selectedColIndices}. Additionally basic ImageJ dialog parameters can be resolved.
      */
+    @SuppressWarnings("javadoc")
     @Override
     public DataCell[] getCells(final DataRow row) {
         final List<DataCell> resCells = new ArrayList<DataCell>();

@@ -79,6 +79,11 @@ public class StandardIJNodeDialog extends AbstractIJNodeDialog {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(StandardIJNodeDialog.class);
 
+    /**
+     * Creates a {@link StandardIJNodeDialog}
+     *
+     * @param moduleInfo {@link ModuleInfo} which will be used to create the dialog panel
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public StandardIJNodeDialog(final ModuleInfo moduleInfo) {
         super(moduleInfo);

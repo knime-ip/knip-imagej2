@@ -56,18 +56,21 @@ import net.imglib2.meta.ImgPlus;
 import org.knime.core.data.DataValue;
 import org.knime.knip.base.data.img.ImgPlusValue;
 import org.knime.knip.imagej2.core.adapter.DataValueConfigGuiInfos;
+import org.knime.knip.imagej2.core.adapter.IJInputAdapter;
 import org.knime.knip.imagej2.core.adapter.IJStandardInputAdapter;
 import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
 import org.scijava.ItemIO;
 
 /**
- * TODO Auto-generated
- * 
+ * {@link IJInputAdapter} for {@link Img}
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
+@SuppressWarnings("rawtypes")
 public class ImgInputAdapter implements IJStandardInputAdapter<Img> {
+
 
     @Override
     public Class<Img> getIJType() {

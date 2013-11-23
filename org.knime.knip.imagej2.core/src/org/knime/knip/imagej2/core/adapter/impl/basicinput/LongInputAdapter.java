@@ -58,8 +58,8 @@ import org.knime.core.data.LongValue;
 /**
  * Configures a ModuleItem of ImageJ type {@link java.lang.Long Long} with values from a user selected {@link LongValue}
  * compatible column.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -77,6 +77,7 @@ public class LongInputAdapter extends AbstractBasicInputAdapter<Long> {
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     protected void
             configModuleItem(final Module module, final DataRow row, final ModuleItem item, final int columnIndex) {
         final Long value = ((LongValue)row.getCell(columnIndex)).getLongValue();

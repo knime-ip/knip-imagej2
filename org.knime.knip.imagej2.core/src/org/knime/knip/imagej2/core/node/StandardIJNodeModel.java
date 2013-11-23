@@ -98,6 +98,13 @@ public class StandardIJNodeModel extends AbstractIJNodeModel {
         return new SettingsModelBoolean("append_columns", false);
     }
 
+    /**
+     * TODO
+     *
+     * @param moduleInfo
+     * @param nrInputPorts
+     * @param nrOutputPorts
+     */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public StandardIJNodeModel(final ModuleInfo moduleInfo, final int nrInputPorts, final int nrOutputPorts) {
         super(moduleInfo, nrInputPorts, nrOutputPorts);

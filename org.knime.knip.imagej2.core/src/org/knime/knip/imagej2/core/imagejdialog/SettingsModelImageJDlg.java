@@ -143,6 +143,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     protected <T extends SettingsModel> T createClone() {
         return (T)new SettingsModelImageJDlg(m_configName);
     }

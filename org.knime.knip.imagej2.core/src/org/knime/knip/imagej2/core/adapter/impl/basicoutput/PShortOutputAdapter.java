@@ -60,12 +60,12 @@ import org.knime.knip.imagej2.core.adapter.IJOutputAdapterInstance;
 
 /**
  * Converts ImageJ output parameters of type primitive short to KNIME {@link IntValue}/{@link IntCell}.
- * 
- * 
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class PShortOutputAdapter implements IJOutputAdapter {
 
     private final NodeLogger LOGGER = NodeLogger.getLogger(PShortOutputAdapter.class);
