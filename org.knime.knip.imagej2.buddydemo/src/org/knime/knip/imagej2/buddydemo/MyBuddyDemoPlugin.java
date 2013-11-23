@@ -34,7 +34,7 @@ import org.scijava.plugin.Plugin;
  * Notes for buddy class loading
  * 
  * the manifest of org.knime.knip.imagej.core contains the entry "Eclipse-BuddyPolicy: registered" to indicate that it may use the
- * class loaders of registred plugins as well to find classes.
+ * class loaders of registered plugins as well to find classes.
  * 
  * Therefore to use buddy loading we have to add "Eclipse-RegisterBuddy:" with "org.knime.knip.imagej.core" to register the buddydemo plugin
  * and "help" imagej.core with class loading.

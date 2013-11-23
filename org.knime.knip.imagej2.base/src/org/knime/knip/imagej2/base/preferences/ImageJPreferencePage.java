@@ -69,8 +69,8 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
  * Preference page of the KNIME ImageJ plugin allows to install ImageJ plugins from local jar files. This class is
  * mainly responsible for the creation of the GUI and uses the {@link PluginListController} and the
  * {@link PluginFolderSelectionController} to do things.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -96,6 +96,9 @@ public class ImageJPreferencePage extends PreferencePage implements IWorkbenchPr
      */
     private final PluginListController m_listController = new PluginListController();
 
+    /**
+     * Constructor for Preference Page
+     */
     public ImageJPreferencePage() {
         super();
         noDefaultAndApplyButton();
@@ -213,7 +216,7 @@ public class ImageJPreferencePage extends PreferencePage implements IWorkbenchPr
     }
 
     /**
-     * 
+     *
      * @param parent
      * @return composite[plugin list, add and remove button]
      */
@@ -300,12 +303,23 @@ public class ImageJPreferencePage extends PreferencePage implements IWorkbenchPr
 
     }
 
+    /**
+     * Select directory pressed
+     *
+     * @param pluginList
+     * @param pathLabel
+     */
     protected void selectDirButtonPressed(final List pluginList, final Label pathLabel) {
         m_folderSelectionController.selectDirButtonPressed(pathLabel, getShell());
         PluginListController.resetPluginManagement();
         m_listController.reload(pluginList);
     }
 
+    /**
+     * Add Plugin Button pressed
+     *
+     * @param pluginList
+     */
     protected void addButtonPressed(final List pluginList) {
         final boolean addedSomething = m_listController.addButtonPressed(pluginList, getShell());
         if (addedSomething) {
@@ -315,6 +329,11 @@ public class ImageJPreferencePage extends PreferencePage implements IWorkbenchPr
         }
     }
 
+    /**
+     * Remove button pressed
+     *
+     * @param pluginList
+     */
     protected void removeButtonPressed(final List pluginList) {
         m_listController.removeButtonPressed(pluginList);
         m_selectDirButton.setEnabled(false);
@@ -322,6 +341,13 @@ public class ImageJPreferencePage extends PreferencePage implements IWorkbenchPr
         setMessage("to complete please restart KNIME", INFORMATION);
     }
 
+    /**
+     * Initial Data Import
+     *
+     * @param pluginList
+     * @param pathLabel
+     *
+     */
     protected void initialDataImport(final List pluginList, final Label pathLabel) {
         m_folderSelectionController.reload(pathLabel);
         m_listController.reload(pluginList);
