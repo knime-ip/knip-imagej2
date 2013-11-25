@@ -130,10 +130,12 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
             case 4:
                 m_mapping.put(Axes.Z, 2);
                 m_mapping.put(Axes.TIME, 3);
+                break;
             case 5:
                 m_mapping.put(Axes.CHANNEL, 2);
                 m_mapping.put(Axes.Z, 3);
                 m_mapping.put(Axes.TIME, 4);
+                break;
             default:
                 throw new IllegalArgumentException(
                         "input image has more than 5 dimensions, this is not supported by ImageJ ImagePlus");
@@ -246,8 +248,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
      * (index 0), Z (index 1), Time (index 2). Use setMapping if you want to change this.
      *
      * @param img
-     *
-     * @return true if mapping is valid
+     * @return
      */
     public <T> boolean validateMapping(final ImgPlus<T> img) {
         for (int d = 0; d < img.numDimensions(); d++) {
@@ -265,6 +266,24 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
      */
     public void setMapping(final Map<AxisType, Integer> mapping) {
         m_mapping = mapping;
+    }
+
+    /**
+     * Infers a mapping for the argument picture
+     *
+     * @param <T> ImgPlus the mapping shall be based on
+     * @return True when successful, equal to {@link #ImgToIJ.validateMapping}
+     */
+    public <T> boolean inferMapping(final ImgPlus<T> img) {
+        HashMap<AxisType, Integer> newMapping = new HashMap<AxisType, Integer>();
+
+        for (int d = 0; d < img.numDimensions(); d++) {
+            newMapping.put(img.axis(d).type(), d);
+        }
+
+        m_mapping = newMapping;
+        return validateMapping(img);
+
     }
 
     private static ImageProcessor createImageProcessor(final Img<? extends RealType<?>> op) {
