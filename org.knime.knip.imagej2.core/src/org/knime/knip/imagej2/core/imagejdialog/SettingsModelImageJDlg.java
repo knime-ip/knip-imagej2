@@ -55,6 +55,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -73,13 +75,16 @@ import org.knime.core.node.port.PortObjectSpec;
  * get added to an {@link ExtendedInputPanel} and presented to the user with the associated
  * {@link DialogComponentImageJDlg}. This SettingsModel allows to make a configuration persistent in a {@link Config}
  * object.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
 public class SettingsModelImageJDlg extends SettingsModel {
+
+    /* prefix if the class name of a module item has been serialized instead of the module item itself*/
+    private static final String CLASS_PREFIX = "class:";
 
     /**
      * the data values that are set via the Dialog. Associates an item name with its data value.
@@ -87,6 +92,8 @@ public class SettingsModelImageJDlg extends SettingsModel {
     private final Map<String, Object> m_itemName2Value;
 
     private static final String ITEM_KEYS_KEY = "SMIJD_ItemKey";
+
+    private static final String ITEM_TYPES_KEY = "SMIJD_ItemType";
 
     private final String m_configName;
 
@@ -100,7 +107,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
 
     /**
      * sets the values of the ModuleItems that are handled by this SettingsModel and changes their status to resolved.
-     * 
+     *
      * @param module a partially resolved Module where the basic input parameters have been configured and resolved
      */
     public void configureModule(final Module module) {
@@ -129,7 +136,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
     /**
      * sets the value of the item with the specified name in the model. E.g. could set the value of an input parameter
      * threshold that is handled in a {@link DialogComponentImageJDlg}.
-     * 
+     *
      * @param itemName identifies an item by name
      * @param value new value of the identified item
      */
@@ -138,6 +145,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     protected <T extends SettingsModel> T createClone() {
         return (T)new SettingsModelImageJDlg(m_configName);
     }
@@ -187,17 +195,41 @@ public class SettingsModelImageJDlg extends SettingsModel {
     @Override
     protected void loadSettingsForModel(final NodeSettingsRO settings) throws InvalidSettingsException {
 
-        final String[] keyValues = settings.getStringArray(ITEM_KEYS_KEY);
+        final String[] keys = settings.getStringArray(ITEM_KEYS_KEY);
+        final String[] types = settings.getStringArray(ITEM_TYPES_KEY);
 
-        for (final String key : keyValues) {
-
-            final String itemString = settings.getString(key);
-            final Object item = fromBase64String(itemString);
+        for (int i = 0; i < keys.length; i++) {
+            final Object item;
+            if (types.equals("null")) {
+                item = null;
+            } else if (types[i].equals(Byte.class.getSimpleName())) {
+                item = settings.getByte(keys[i]);
+            } else if (types[i].equals(Character.class.getSimpleName())) {
+                item = settings.getChar(keys[i]);
+            } else if (types[i].equals(Short.class.getSimpleName())) {
+                item = settings.getShort(keys[i]);
+            } else if (types[i].equals(Integer.class.getSimpleName())) {
+                item = settings.getInt(keys[i]);
+            } else if (types[i].equals(Long.class.getSimpleName())) {
+                item = settings.getLong(keys[i]);
+            } else if (types[i].equals(Float.class.getSimpleName())) {
+                item = settings.getFloat(keys[i]);
+            } else if (types[i].equals(Double.class.getSimpleName())) {
+                item = settings.getDouble(keys[i]);
+            } else if (types[i].equals(String.class.getSimpleName())) {
+                item = settings.getString(keys[i]);
+            } else if (types[i].equals(Boolean.class.getSimpleName())) {
+                item = settings.getBoolean(keys[i]);
+            } else {
+                final String itemString = settings.getString(keys[i]);
+                item = stringToObject(itemString);
+            }
 
             if (item != null) {
-                m_itemName2Value.put(key, item);
+                m_itemName2Value.put(keys[i], item);
             } else {
-                throw new InvalidSettingsException("The item with the identifier " + key + " could not be restored.");
+                throw new InvalidSettingsException("The item with the identifier " + keys[i]
+                        + " could not be restored.");
             }
 
         }
@@ -209,72 +241,132 @@ public class SettingsModelImageJDlg extends SettingsModel {
     @Override
     protected void saveSettingsForModel(final NodeSettingsWO settings) {
 
-        final String[] keyValues = m_itemName2Value.keySet().toArray(new String[]{});
-        settings.addStringArray(ITEM_KEYS_KEY, keyValues);
+        final String[] keys = m_itemName2Value.keySet().toArray(new String[]{});
+        final String[] types = new String[keys.length];
+        settings.addStringArray(ITEM_KEYS_KEY, keys);
 
-        for (final String key : m_itemName2Value.keySet()) {
-
-            final Object item = m_itemName2Value.get(key);
-            final String itemString = toBase64String(item);
-
-            if (!itemString.isEmpty()) {
-                settings.addString(key, itemString);
+        for (int i = 0; i < keys.length; i++) {
+            final Object item = m_itemName2Value.get(keys[i]);
+            if (item == null) {
+                types[i] = "null";
+            } else if (item instanceof Byte) {
+                settings.addByte(keys[i], (Byte)item);
+                types[i] = Byte.class.getSimpleName();
+            } else if (item instanceof Character) {
+                settings.addChar(keys[i], (Character)item);
+                types[i] = Character.class.getSimpleName();
+            } else if (item instanceof Short) {
+                settings.addShort(keys[i], (Short)item);
+                types[i] = Short.class.getSimpleName();
+            } else if (item instanceof Integer) {
+                settings.addInt(keys[i], (Integer)item);
+                types[i] = Integer.class.getSimpleName();
+            } else if (item instanceof Long) {
+                settings.addLong(keys[i], (Long)item);
+                types[i] = Long.class.getSimpleName();
+            } else if (item instanceof Float) {
+                settings.addFloat(keys[i], (Float)item);
+                types[i] = Float.class.getSimpleName();
+            } else if (item instanceof Double) {
+                settings.addDouble(keys[i], (Double)item);
+                types[i] = Double.class.getSimpleName();
+            } else if (item instanceof String) {
+                settings.addString(keys[i], (String)item);
+                types[i] = String.class.getSimpleName();
+            } else if (item instanceof Boolean) {
+                settings.addBoolean(keys[i], (Boolean)item);
+                types[i] = Boolean.class.getSimpleName();
+            } else {
+                final String itemString = objectToString(item);
+                types[i] = "OTHER";
+                if (!itemString.isEmpty()) {
+                    settings.addString(keys[i], itemString);
+                }
             }
-
         }
+        settings.addStringArray(ITEM_TYPES_KEY, types);
     }
 
     /**
      * encodes the bytes of an object as a base 64 string.
-     * 
+     *
      * @param object
      * @return a string representation of an object in base 64 encoding
      */
-    private String toBase64String(final Object object) {
-        String ret = "";
-
+    private String objectToString(final Object object) {
         try {
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            final ObjectOutputStream out = new ObjectOutputStream(baos);
-            out.writeObject(object);
-            baos.flush();
-            out.close();
-            baos.close();
+            //use java serialization, if object is serializable
+            if (object instanceof Serializable) {
+                final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                final ObjectOutputStream out = new ObjectOutputStream(baos);
+                out.writeObject(object);
+                baos.flush();
+                out.close();
+                baos.close();
 
-            final byte[] byteObject = baos.toByteArray();
-            new Base64();
-            final byte[] encodedObject = Base64.encode(byteObject);
+                final byte[] byteObject = baos.toByteArray();
+                new Base64();
+                final byte[] encodedObject = Base64.encode(byteObject);
 
-            ret = new String(encodedObject);
+                return new String(encodedObject);
+            }
+
+            //if there is an empty default constructor, just write the class name and re-instantiate the object later
+            Constructor<?>[] constructors = object.getClass().getConstructors();
+            boolean hasPublicDefaultConstructor = false;
+            for (Constructor<?> constr : constructors) {
+                if (constr.getParameterTypes().length == 0) {
+                    hasPublicDefaultConstructor = true;
+                    break;
+                }
+            }
+            if (hasPublicDefaultConstructor) {
+                return CLASS_PREFIX + object.getClass().getCanonicalName();
+            }
+
         } catch (final IOException e) {
             e.printStackTrace();
         }
+        throw new RuntimeException("Object of class " + object.getClass().getCanonicalName()
+                + " can not be serialized.");
 
-        return ret;
     }
 
     /**
      * @param stringRepresentation base64 encoded string representation of the bytecode of an object
      * @return the decoded object
      */
-    private Object fromBase64String(final String stringRepresentation) {
-        Object ret = null;
+    private Object stringToObject(final String stringRepresentation) {
 
-        new Base64();
-        final byte[] decodedObject = Base64.decode(stringRepresentation.getBytes());
+        if (stringRepresentation.startsWith(CLASS_PREFIX)) {
+            //if only the class name has been serialized re-instantiate from the class name
+            try {
+                return Class.forName(stringRepresentation.substring(CLASS_PREFIX.length())).newInstance();
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            //restore object via java serialization
+            Object ret = null;
+            new Base64();
+            final byte[] decodedObject = Base64.decode(stringRepresentation.getBytes());
 
-        try {
-            final ByteArrayInputStream bis = new ByteArrayInputStream(decodedObject);
-            ObjectInputStream ois;
-            ois = new ObjectInputStream(bis);
-            ret = ois.readObject();
-        } catch (final IOException e) {
-            e.printStackTrace();
-        } catch (final ClassNotFoundException e) {
-            e.printStackTrace();
+            try {
+                final ByteArrayInputStream bis = new ByteArrayInputStream(decodedObject);
+                ObjectInputStream ois;
+                ois = new ObjectInputStream(bis);
+                ret = ois.readObject();
+            } catch (final IOException e) {
+                e.printStackTrace();
+            } catch (final ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            return ret;
         }
-
-        return ret;
     }
 
     @Override

@@ -54,15 +54,18 @@ import imagej.module.ModuleItem;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.defaultnodesettings.SettingsModel;
+import org.knime.knip.imagej2.core.imagejdialog.DialogComponentImageJDlg;
+import org.knime.knip.imagej2.core.node.AbstractIJNodeModel;
 
 /**
- * 
+ *
  * Supports the binding of row values to {@link ModuleItem}s and provides a basic implementation to make settings like
  * column selections persistent.
- * 
- * ModuleItemColumnConfigs connect the {@link IJNodeModel} and the {@link IJNodeDialog} in the same way as
- * SettingsModels.
- * 
+ *
+ * ModuleItemColumnConfigs connect the {@link AbstractIJNodeModel} and the {@link DialogComponentImageJDlg} in the same way as
+ * {@link SettingsModel}s.
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -79,7 +82,7 @@ public interface ModuleItemRowConfig extends PersistentModuleItemConfig {
      * sets the inSpecs to allow the selection of columns from the set of columns available at the input port. A typical
      * implementation would e.g. trigger a column auto selection to bind columns to the {@link ModuleItem} /s that will
      * be configured
-     * 
+     *
      * @param inSpecs specification of the table at the input port
      * @param module that should be configured
      * @return true if a column could be set that can be used to configure the {@link ModuleItem}s that are supported by

@@ -54,8 +54,8 @@ import org.knime.core.data.DataValue;
  * Allows the configuration of Module parts with DataValues. The DataValues can be set using
  * {@link #setConfigurationData(DataValue[])} are must be in the order and of the type described by
  * {@link #getGuiMetaInfo()}
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -63,7 +63,8 @@ import org.knime.core.data.DataValue;
 public interface ModuleItemDataValueConfig extends ModuleItemConfig {
 
     /**
-     * {@inheritDoc}
+     * @param dataValues
+     *          the datavalues to set
      */
     public void setConfigurationData(DataValue[] dataValues);
 

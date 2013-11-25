@@ -65,8 +65,8 @@ import org.knime.knip.imagej2.core.adapter.IJOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.IJOutputAdapterInstance;
 
 /**
- * TODO Auto-generated
- * 
+ * {@link IJOutputAdapter} for {@link Dataset}s
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -78,6 +78,7 @@ public class DatasetOutputAdapter implements IJOutputAdapter<Dataset> {
         return Dataset.class;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Class<? extends DataValue>[] getDataValueTypes() {
         return new Class[]{ImgPlusValue.class};
@@ -99,6 +100,7 @@ public class DatasetOutputAdapter implements IJOutputAdapter<Dataset> {
         return new IJOutputAdapterInstance<Dataset>() {
             final ImgPlusCellFactory factory = new ImgPlusCellFactory(exec);
 
+            @SuppressWarnings({"rawtypes", "unchecked"})
             @Override
             public DataCell[] getDataCells(final Dataset ijObject) {
                 final ImgPlus tmp = ijObject.getImgPlus();

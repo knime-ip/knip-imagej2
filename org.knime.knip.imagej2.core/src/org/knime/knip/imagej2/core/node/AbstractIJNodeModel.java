@@ -86,9 +86,9 @@ import org.scijava.service.Service;
 
 /**
  * Provides a basic set of methods that are common to all IJNodeModels:
- * 
- * 
- * 
+ *
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -113,7 +113,7 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
         return new SettingsModelString("ItemValueConfig_" + identifier, "");
     }
 
-    /*
+    /**
      * needed to implement TableCellViewProvider data table for the table cell
      * view
      */
@@ -121,7 +121,7 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
 
     //might be paired with a dummy settings model if no ImageJ dialog exists
     /** settings model of the ImageJ dialog. */
-    protected SettingsModelImageJDlg m_imageJDlGSettingsModel = createImageJDlgModel();
+    protected SettingsModelImageJDlg m_imageJDlGSettingsModel;
 
     /**
      * settings models of column selection combo boxes. The key string has to be the unique identifier of the ModuleItem
@@ -134,24 +134,32 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
      */
     protected HashMap<String, Class<? extends DataValue>> m_columnSelectionDataValues;
 
+    /**
+     * {@link ModuleInfo} of the wrapped {@link Module}
+     */
     protected final ModuleInfo m_moduleInfo;
 
     //constructor
 
+    /**
+     * @param moduleInfo {@link ModuleInfo} of the wrapped {@link Module}
+     * @param nrInDataPorts number of inports
+     * @param nrOutDataPorts number of out ports
+     */
     protected AbstractIJNodeModel(final ModuleInfo moduleInfo, final int nrInDataPorts, final int nrOutDataPorts) {
         super(nrInDataPorts, nrOutDataPorts);
         m_moduleInfo = moduleInfo;
         m_columnSelectionSettingsModels = new LinkedHashMap<String, SettingsModelString>();
         m_columnSelectionDataValues = new HashMap<String, Class<? extends DataValue>>();
+        m_imageJDlGSettingsModel = createImageJDlgModel();
     }
 
     /**
      * creates the actual data table this method is called from {@link #execute(BufferedDataTable[], ExecutionContext)}.
-     * 
+     *
      * @param inData
-     * @param cellFac
      * @param exec
-     * @return
+     * @return outgoing {@link BufferedDataTable}
      * @throws CanceledExecutionException
      */
     protected abstract BufferedDataTable[] createResultTable(final BufferedDataTable[] inData,
@@ -170,7 +178,7 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
      * Adds settings models for column binding combo boxes to the node model. The settings models fit the data values
      * that are required by the {@link ModuleItemDataValueConfig}. This methods should be used in combination with the
      * {@link AbstractIJNodeDialog#createColumnSelectionDCG(ModuleItemDataValueConfig)} method.
-     * 
+     *
      * @param config
      */
     protected void addColumnSelectionSettingsModel(final ModuleItemDataValueConfig config) {
@@ -185,7 +193,7 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
     /**
      * convenience method that tests all settings models of column binding combo boxes against the in spec and tries to
      * configure them with auto column selection if necessary.
-     * 
+     *
      * @param inSpec
      * @throws InvalidSettingsException is thrown when no appropriate column could be found
      */
@@ -209,7 +217,7 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
      * creates a map from unique parameter identifier to column index for all settings models of column binding combo
      * boxes. This map allows to retrieve selected column for an input parameter and allows thus the per row
      * configuration with DataValues.
-     * 
+     *
      * @param inSpec
      * @return a mapping from unique parameter identifiers to the indices of the columns that are bound to the
      *         parameters
@@ -264,7 +272,7 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
     /**
      * tests if the provided inSpecs fulfill the requirements of the ImageJ plugin and if further configuration via the
      * KNIME node configuration dialog are required.
-     * 
+     *
      * @param inSpec
      * @throws InvalidSettingsException
      */
@@ -302,7 +310,7 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
      * {@link ModuleItemRowConfig} and {@link ModuleItemDataValueConfig}. The module item configs are called in preTest
      * mode => the data doesn't have to be set in order to get resolved status but configuration information like table
      * specs.
-     * 
+     *
      * @param module
      * @param inSpec
      * @throws InvalidSettingsException
@@ -323,7 +331,7 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
      * creates a Module based on the provided moduleInfo and sets values for the ModuleItems that can be resolved with
      * the provided dialogModuleSettings. (These are the ModuleItems that can be set in the associated
      * {@link DialogComponentImageJDlg})
-     * 
+     *
      * @param moduleInfo specification of the module that should be returned
      * @param dialogModuleSettings SettingsModel of a {@link DialogComponentImageJDlg}
      * @return a partially configured Module that is created based on the provided ModuleInfo and has been configured
@@ -347,7 +355,7 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
 
     /**
      * Tests for the specified module if all required parameters are set to resolved (except for services)
-     * 
+     *
      * @param module
      * @throws InvalidSettingsException if one or more parameters could not be resolved
      *             {@link #resolveConfigs(Module, DataTableSpec)}

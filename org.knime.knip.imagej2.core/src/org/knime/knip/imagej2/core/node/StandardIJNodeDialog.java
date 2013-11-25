@@ -69,8 +69,8 @@ import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
  * Creates a standard module dialog that displays the ImageJ dialog (if one exists), allows the binding of column values
  * to ImageJ dialog settings and resolves additional parameters (e.g. input image) with column bindings. Supports
  * appending new results to the table and the creation of a new table.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -79,6 +79,11 @@ public class StandardIJNodeDialog extends AbstractIJNodeDialog {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(StandardIJNodeDialog.class);
 
+    /**
+     * Creates a {@link StandardIJNodeDialog}
+     *
+     * @param moduleInfo {@link ModuleInfo} which will be used to create the dialog panel
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public StandardIJNodeDialog(final ModuleInfo moduleInfo) {
         super(moduleInfo);

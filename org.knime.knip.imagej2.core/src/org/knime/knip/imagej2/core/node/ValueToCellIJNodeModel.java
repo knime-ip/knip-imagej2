@@ -83,12 +83,13 @@ import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
  * Special implementation that uses ValueToCell GUI components in the dialog and allows to process multiple input
  * columns at once. Only applicable if certain conditions like only one ImageJ in and output... are fulfilled (see
  * {@link IJNodeFactory#useValueToCell()} for more details).
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
+@SuppressWarnings("javadoc")
 public class ValueToCellIJNodeModel extends AbstractIJNodeModel {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(ValueToCellIJNodeModel.class);
@@ -141,6 +142,13 @@ public class ValueToCellIJNodeModel extends AbstractIJNodeModel {
 
     private ModuleItemDataValueConfig m_valueConfig;
 
+    /**
+     * TOOD
+     *
+     * @param moduleInfo
+     * @param nrInDataPorts
+     * @param nrOutDataPorts
+     */
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected ValueToCellIJNodeModel(final ModuleInfo moduleInfo, final int nrInDataPorts, final int nrOutDataPorts) {
         super(moduleInfo, nrInDataPorts, nrOutDataPorts);
@@ -215,9 +223,9 @@ public class ValueToCellIJNodeModel extends AbstractIJNodeModel {
     /**
      * tests the provided inSpecs and configures the node with the columns if possible. Else asks for further user
      * interaction, e.g. to set values for required parameters.
-     * 
+     *
      * {@inheritDoc}
-     * 
+     *
      */
     @Override
     protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
@@ -363,7 +371,7 @@ public class ValueToCellIJNodeModel extends AbstractIJNodeModel {
 
     /**
      * creates column names for the selected column indices by appending the column suffix to the original column name.
-     * 
+     *
      * @param inSpec
      * @return column names for result columns
      */

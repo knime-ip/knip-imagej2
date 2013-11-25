@@ -66,6 +66,8 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
 import org.knime.knip.imagej2.core.adapter.IJInputAdapter;
@@ -75,8 +77,8 @@ import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
 
 /**
  * Standard implementation that can be used for all modules (in contrast to the ValueToCell implementation)
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -96,6 +98,13 @@ public class StandardIJNodeModel extends AbstractIJNodeModel {
         return new SettingsModelBoolean("append_columns", false);
     }
 
+    /**
+     * TODO
+     *
+     * @param moduleInfo
+     * @param nrInputPorts
+     * @param nrOutputPorts
+     */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public StandardIJNodeModel(final ModuleInfo moduleInfo, final int nrInputPorts, final int nrOutputPorts) {
         super(moduleInfo, nrInputPorts, nrOutputPorts);
@@ -118,9 +127,9 @@ public class StandardIJNodeModel extends AbstractIJNodeModel {
     /**
      * tests the provided inSpecs and configures the node with the columns if possible. Else asks for further user
      * interaction, e.g. to set values for required parameters.
-     * 
+     *
      * {@inheritDoc}
-     * 
+     *
      */
     @Override
     protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
@@ -222,6 +231,33 @@ public class StandardIJNodeModel extends AbstractIJNodeModel {
     @Override
     protected List<ModuleItemConfig> getModuleItemConfigs() {
         return m_moduleItemConfigs;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveSettingsTo(final NodeSettingsWO settings) {
+        super.saveSettingsTo(settings);
+        m_appendColumns.saveSettingsTo(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        super.validateSettings(settings);
+        m_appendColumns.validateSettings(settings);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
+        super.loadValidatedSettingsFrom(settings);
+        m_appendColumns.loadSettingsFrom(settings);
     }
 
 }

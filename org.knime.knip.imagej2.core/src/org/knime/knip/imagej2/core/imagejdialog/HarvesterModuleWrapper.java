@@ -55,16 +55,18 @@ import imagej.module.ModuleItem;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.knime.knip.imagej2.core.IJGateway;
+import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
+import org.knime.knip.imagej2.core.adapter.IJInputAdapter;
+import org.knime.knip.imagej2.core.adapter.IJStandardInputAdapter;
 
 /**
  * encapsulates a module and blocks the calls to most setters and executing methods like run and preview.. .Therefore it
  * is save to use this class during harvesting without e.g. triggering the preview method
- * 
+ *
  * Basically it works like a read only version of the object with the exception that certain set calls have to be
  * implemented because the module is used as data basis by the widgets.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -84,16 +86,10 @@ public class HarvesterModuleWrapper implements Module {
 
         //ignore all items that cannot be part of the input panel
         for (final ModuleItem<?> item : m_module.getInfo().inputs()) {
-            boolean dialogSupportedType = false;
-
-            for (final Class<?> c : IJGateway.SUPPORTED_IJ_DIALOG_TYPES) {
-                if (c.isAssignableFrom(item.getType())) {
-                    dialogSupportedType = true;
-                    break;
-                }
-            }
-
-            if (!dialogSupportedType) {
+            IJInputAdapter<?> o = IJAdapterProvider.getInputAdapter(item.getType());
+            //do not allow those items, that are IJStandardInputAdapter (like image input etc.)
+            //if there is NO input adapter, allow them and hope that imagej provides a dialog component (TODO: is this the right approach?? what if there is no input adapter AND imagej DOESN'T provide any widget)
+            if (o != null && o instanceof IJStandardInputAdapter) {
                 m_notHarvested.add(item.getName());
             }
         }

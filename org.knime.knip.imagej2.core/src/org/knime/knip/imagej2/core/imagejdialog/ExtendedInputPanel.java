@@ -50,6 +50,7 @@ package org.knime.knip.imagej2.core.imagejdialog;
 
 import imagej.ui.swing.widget.SwingInputPanel;
 import imagej.ui.swing.widget.SwingInputWidget;
+import imagej.widget.InputHarvester;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
 
@@ -59,12 +60,11 @@ import java.util.Map;
 import javax.swing.JPanel;
 
 /**
- * Can be used with an ImageJ {@link imagej.ext.module.ui#InputHarvester InputHarvester} to create widgets for a
- * parameter dialog. Only standard widgets like Number, TextField ... are supported, the
- * {@link ExtendedInputPanel#addObject addObject} method is not functional, because none basic parameters are not
- * resolved via the {@link DialogComponentImageJDlg}
- * 
- * 
+ * Can be used with an ImageJ {@link InputHarvester} to create widgets for a parameter dialog. Only standard widgets
+ * like Number, TextField ... are supported, the {@link ExtendedInputPanel} addObject method is not functional, because
+ * none basic parameters are not resolved via the {@link DialogComponentImageJDlg}
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -82,7 +82,7 @@ public class ExtendedInputPanel extends SwingInputPanel {
     }
 
     /**
-     * 
+     *
      * @param name name of the ModuleItem that is controlled by the widget
      * @param value the new value to which the model of the widget should be set
      */

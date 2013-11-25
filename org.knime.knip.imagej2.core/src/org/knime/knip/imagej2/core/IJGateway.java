@@ -51,9 +51,12 @@ package org.knime.knip.imagej2.core;
 import imagej.app.ImageJApp;
 import imagej.command.CommandInfo;
 import imagej.command.DynamicCommand;
+import imagej.data.DatasetService;
 import imagej.data.autoscale.AutoscaleService;
 import imagej.data.types.DataTypeService;
 import imagej.menu.MenuService;
+import imagej.module.MethodCallException;
+import imagej.module.ModuleException;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 import imagej.module.ModuleService;
@@ -61,6 +64,8 @@ import imagej.tool.ToolService;
 import imagej.ui.UIService;
 import imagej.util.ColorRGB;
 import imagej.widget.WidgetService;
+import io.scif.img.ImgUtilityService;
+import io.scif.services.JAIIIOService;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -75,7 +80,10 @@ import org.scijava.InstantiableException;
 import org.scijava.app.App;
 import org.scijava.app.AppService;
 import org.scijava.event.EventService;
+import org.scijava.log.LogService;
+import org.scijava.object.ObjectService;
 import org.scijava.plugin.PluginService;
+import org.scijava.plugin.SingletonService;
 import org.scijava.service.Service;
 import org.scijava.util.ClassUtils;
 
@@ -104,15 +112,25 @@ public final class IJGateway {
             boolean.class, File.class, ColorRGB.class};
 
     /**
+     * Core services which are need to run the plugin headless
+     */
+    @SuppressWarnings("unchecked")
+    public static final Class<? extends Service>[] HEADLESS_IJ_SERVICES = new Class[]{ModuleService.class,
+            PluginService.class, WidgetService.class, AutoscaleService.class, AppService.class, DataTypeService.class,
+            UIService.class};
+
+    /**
      * all services that are supported out of the box. Mainly services that are actually not supported but will do no
      * harm like the MenuService
      */
-    private static final Class<?>[] SUPPORTED_IJ_SERVICE_TYPES = {MenuService.class, ToolService.class,
-            EventService.class};
+    @SuppressWarnings("unchecked")
+    private static final Class<? extends Service>[] GUI_IJ_SERVICES = new Class[]{UIService.class, MenuService.class,
+            ToolService.class, EventService.class, ObjectService.class, SingletonService.class, DatasetService.class,
+            ImgUtilityService.class, ImgUtilityService.class, JAIIIOService.class};
 
     // MEMBERS
 
-    /** singelton instance. */
+    /** singleton instance on IJGateway (maybe headless or not). */
     private static IJGateway instance = null;
 
     /** the one and unique ImageJ context. */
@@ -132,31 +150,60 @@ public final class IJGateway {
     /** version number of ImageJ. **/
     private String m_imagejVersion;
 
+    /** Singleton on ModuleService */
+    private ModuleService m_moduleService;
+
+    /** Singleton on ObjectService */
+    private ObjectService m_objectService;
+
+    /**
+     * Create a headless instance of the {@link IJGateway}. This instance will be kept as a singleton
+     */
+    public static synchronized void createHeadlessInstance() {
+        if (instance == null) {
+            instance = new IJGateway(true);
+        }
+    }
+
     /**
      * @return the singelton instance of IJGateway
      */
     public static synchronized IJGateway getInstance() {
+
         if (instance == null) {
-            instance = new IJGateway();
+            instance = new IJGateway(false);
         }
+
         return instance;
     }
 
     /**
      * creates the ImageJ context and initializes the list of supported modules.
      */
-    private IJGateway() {
+    private IJGateway(final boolean isHeadless) {
 
         // set log level
-        System.setProperty("scijava.log.level", "error");
+        if (System.getProperty(LogService.LOG_LEVEL_PROPERTY) == null) {
+            System.setProperty(LogService.LOG_LEVEL_PROPERTY, "error");
+        }
 
         // create ImageJ context with services
         // could also use the more specific new ImageJ here but Context gives as more
         // control of loaded services atm.
-        m_imageJContext = new Context(getImageJContextServices());
-        //using the log service comes to late for the initial output on plugin discovery
-        //m_imageJContext.getService(LogService.class).setLevel(LogService.ERROR);
-        final ModuleService moduleService = m_imageJContext.getService(ModuleService.class);
+        m_imageJContext = new Context(getImageJContextServices(isHeadless));
+
+        // TODO:
+        // CTR HACK: force lazy initialization of all SingletonServices.
+        // This is temporary, until ImageJ fixes the ObjectService registration to work as expected.
+        if (!isHeadless) {
+            for (Service s : m_imageJContext.getServiceIndex()) {
+                if (!(s instanceof SingletonService)) {
+                    continue;
+                }
+
+                ((SingletonService<?>)s).getInstances();
+            }
+        }
 
         //get version info
         final AppService appService = m_imageJContext.getService(AppService.class);
@@ -165,7 +212,7 @@ public final class IJGateway {
 
         // get list of modules, and filter them to those acceptable to
         // KNIME/KNIP
-        final List<ModuleInfo> moduleInfos = moduleService.getModules();
+        final List<ModuleInfo> moduleInfos = getModuleService().getModules();
         m_supportedModulesInfos = findSupportedModules(moduleInfos);
         m_delegateClassName2ModuleInfo = new HashMap<String, ModuleInfo>(m_supportedModulesInfos.size());
         for (final ModuleInfo info : m_supportedModulesInfos) {
@@ -173,6 +220,9 @@ public final class IJGateway {
         }
     }
 
+    /**
+     * @return the version of ImageJ2
+     */
     public static String getImageJVersion() {
         return getInstance().m_imagejVersion;
     }
@@ -206,9 +256,9 @@ public final class IJGateway {
      * @param type the type to test
      * @return true if this type can be handled by the ImageJ dialog
      */
-    public static boolean isIJDialogInputType(final Class<?> type) {
+    public static synchronized boolean isIJDialogInputType(final Class<?> type) {
         boolean ret = false;
-        for (final Class c : SUPPORTED_IJ_DIALOG_TYPES) {
+        for (final Class<?> c : SUPPORTED_IJ_DIALOG_TYPES) {
             if (c.isAssignableFrom(type)) {
                 ret = true;
             }
@@ -242,7 +292,7 @@ public final class IJGateway {
                         for (final ModuleItem<?> item : info.inputs()) {
                             final Class<?> type = item.getType();
                             hasInOrOutput = true;
-                            if (!isSupportedInputType(type)) {
+                            if (!isSupportedInputType(info, type)) {
                                 inputsOK = false;
                                 break;
                             }
@@ -306,8 +356,10 @@ public final class IJGateway {
      *
      * @param type
      * @return true if KNIME can handle the specified input type e.g. with an adapter or the ImageJ parameter dialog
+     * @throws ModuleException
+     * @throws MethodCallException
      */
-    private static boolean isSupportedInputType(final Class<?> type) {
+    private boolean isSupportedInputType(final ModuleInfo info, final Class<?> type) {
 
         // test for classes that can be mapped to the image j generated dialog
         for (final Class<?> candidate : SUPPORTED_IJ_DIALOG_TYPES) {
@@ -317,7 +369,7 @@ public final class IJGateway {
         }
 
         // test for supported services
-        for (final Class<?> candidate : SUPPORTED_IJ_SERVICE_TYPES) {
+        for (final Class<?> candidate : GUI_IJ_SERVICES) {
             if (candidate.isAssignableFrom(type)) {
                 return true;
             }
@@ -333,7 +385,19 @@ public final class IJGateway {
             return true;
         }
 
+        // check for objects with lists
+        if (isMultipleChoiceObject(type)) {
+            return true;
+        }
         return false;
+    }
+
+    /**
+     * @param type
+     * @return true if type is a plugin for a multi-type object
+     */
+    public boolean isMultipleChoiceObject(final Class<?> type) {
+        return getObjectService().getObjects(type).size() > 0;
     }
 
     /**
@@ -355,29 +419,49 @@ public final class IJGateway {
     /**
      * @return all services that the created ImageJ context should support
      */
-    private List<Class<? extends Service>> getImageJContextServices() {
-        final Class<?>[] coreServices =
-                {ModuleService.class, PluginService.class, WidgetService.class, AutoscaleService.class,
-                        AppService.class, DataTypeService.class, UIService.class};
+    private List<Class<? extends Service>> getImageJContextServices(final boolean isHeadless) {
 
-        final List services = new ArrayList();
-
-        // add general supported service types
-        for (int i = 0; i < SUPPORTED_IJ_SERVICE_TYPES.length; i++) {
-            services.add(SUPPORTED_IJ_SERVICE_TYPES[i]);
-        }
+        final List<Class<? extends Service>> services = new ArrayList<Class<? extends Service>>();
 
         // add service types supported by adapters
-        for (Class service : IJAdapterProvider.getKnownServiceTypes()) {
+        for (Class<? extends Service> service : IJAdapterProvider.getKnownServiceTypes()) {
             services.add(service);
         }
 
         // add the core services needed for plugin discovery or core functionalities of the plugin
-        for (int i = 0; i < coreServices.length; i++) {
-            services.add(coreServices[i]);
+        for (int i = 0; i < HEADLESS_IJ_SERVICES.length; i++) {
+            services.add(HEADLESS_IJ_SERVICES[i]);
+        }
+
+        if (!isHeadless) {
+            // add general supported service types
+            for (int i = 0; i < GUI_IJ_SERVICES.length; i++) {
+                services.add(GUI_IJ_SERVICES[i]);
+            }
         }
 
         return services;
     }
 
+    /**
+     * @return {@link ObjectService} (singleton)
+     */
+    public ObjectService getObjectService() {
+        if (m_objectService == null) {
+            m_objectService = m_imageJContext.getService(ObjectService.class);
+        }
+
+        return m_objectService;
+    }
+
+    /**
+     * @return {@link ModuleService} (singleton)
+     */
+    public ModuleService getModuleService() {
+        if (m_moduleService == null) {
+            m_moduleService = m_imageJContext.getService(ModuleService.class);
+        }
+
+        return m_moduleService;
+    }
 }

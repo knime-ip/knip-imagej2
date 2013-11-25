@@ -77,143 +77,133 @@ import org.knime.knip.imagej1.plugin.reg.TurboReg_.TransformationType;
 
 /**
  * Registration powered by EPFL Laussanne
- * 
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
- * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael
- *         Zinsmaier</a>
+ * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
-public class StackRegNodeFactory<T extends RealType<T>>
-		extends
-		GenericValueToCellNodeFactory<ImgPlusValue<T>, ValueToCellNodeModel<ImgPlusValue<T>, ImgPlusCell<T>>> {
+public class StackRegNodeFactory<T extends RealType<T>> extends
+        GenericValueToCellNodeFactory<ImgPlusValue<T>, ValueToCellNodeModel<ImgPlusValue<T>, ImgPlusCell<T>>> {
 
-	private static SettingsModelString createTransformationTypeModel() {
-		return new SettingsModelString("transformation_type", "");
-	}
+    private static SettingsModelString createTransformationTypeModel() {
+        return new SettingsModelString("transformation_type", "");
+    }
 
-	private static SettingsModelDimSelection createDimSelectionModel() {
-		return new SettingsModelDimSelection("dim_selection", "X", "Y", "Z");
-	}
+    private static SettingsModelDimSelection createDimSelectionModel() {
+        return new SettingsModelDimSelection("dim_selection", "X", "Y", "Z");
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ValueToCellNodeModel<ImgPlusValue<T>, ImgPlusCell<T>> createNodeModel() {
-		return new ValueToCellNodeModel<ImgPlusValue<T>, ImgPlusCell<T>>() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ValueToCellNodeModel<ImgPlusValue<T>, ImgPlusCell<T>> createNodeModel() {
+        return new ValueToCellNodeModel<ImgPlusValue<T>, ImgPlusCell<T>>() {
 
-			private final SettingsModelString m_transformationType = createTransformationTypeModel();
+            private final SettingsModelString m_transformationType = createTransformationTypeModel();
 
-			private final SettingsModelDimSelection m_dimSelection = createDimSelectionModel();
+            private final SettingsModelDimSelection m_dimSelection = createDimSelectionModel();
 
-			private ImgPlusCellFactory m_imgCellFactory;
+            private ImgPlusCellFactory m_imgCellFactory;
 
-			@Override
-			protected void addSettingsModels(
-					final List<SettingsModel> settingsModels) {
-				settingsModels.add(m_transformationType);
-				settingsModels.add(m_dimSelection);
+            @Override
+            protected void addSettingsModels(final List<SettingsModel> settingsModels) {
+                settingsModels.add(m_transformationType);
+                settingsModels.add(m_dimSelection);
 
-			}
+            }
 
-			/**
-			 * {@inheritDoc}
-			 */
-			@Override
-			protected void prepareExecute(final ExecutionContext exec) {
-				m_imgCellFactory = new ImgPlusCellFactory(exec);
-			}
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            protected void prepareExecute(final ExecutionContext exec) {
+                m_imgCellFactory = new ImgPlusCellFactory(exec);
+            }
 
-			@Override
-			protected ImgPlusCell<T> compute(final ImgPlusValue<T> cellValue)
-					throws IOException {
+            @Override
+            protected ImgPlusCell<T> compute(final ImgPlusValue<T> cellValue) throws IOException {
 
-				// TODO: Logger
+                // TODO: Logger
 
-				final StackRegOp<T> op = new StackRegOp<T>(
-						TransformationType.valueOf(m_transformationType
-								.getStringValue()));
+                final StackRegOp<T> op =
+                        new StackRegOp<T>(TransformationType.valueOf(m_transformationType.getStringValue()));
 
-				Img<T> out = null;
-				try {
-					out = SubsetOperations.iterate(op, m_dimSelection
-							.getSelectedDimIndices(cellValue.getImgPlus()),
-							cellValue.getImgPlus(), ImgUtils
-									.createEmptyImg(cellValue.getImgPlus()),
-							getExecutorService());
-				} catch (final InterruptedException e) {
-					e.printStackTrace();
-				} catch (final ExecutionException e) {
-					e.printStackTrace();
-				}
+                Img<T> out = null;
+                try {
+                    out =
+                            SubsetOperations.iterate(op, m_dimSelection.getSelectedDimIndices(cellValue.getImgPlus()),
+                                                     cellValue.getImgPlus(),
+                                                     ImgUtils.createEmptyImg(cellValue.getImgPlus()),
+                                                     getExecutorService());
+                } catch (final InterruptedException e) {
+                    e.printStackTrace();
+                } catch (final ExecutionException e) {
+                    e.printStackTrace();
+                }
 
-				return m_imgCellFactory.createCell(out, cellValue.getImgPlus());
-			}
-		};
-	}
+                return m_imgCellFactory.createCell(out, cellValue.getImgPlus());
+            }
+        };
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NodeView<ValueToCellNodeModel<ImgPlusValue<T>, ImgPlusCell<T>>> createNodeView(
-			final int viewIndex,
-			final ValueToCellNodeModel<ImgPlusValue<T>, ImgPlusCell<T>> nodeModel) {
-		return new TableCellViewNodeView<ValueToCellNodeModel<ImgPlusValue<T>, ImgPlusCell<T>>>(
-				nodeModel);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeView<ValueToCellNodeModel<ImgPlusValue<T>, ImgPlusCell<T>>>
+            createNodeView(final int viewIndex, final ValueToCellNodeModel<ImgPlusValue<T>, ImgPlusCell<T>> nodeModel) {
+        return new TableCellViewNodeView<ValueToCellNodeModel<ImgPlusValue<T>, ImgPlusCell<T>>>(nodeModel);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ValueToCellNodeDialog<ImgPlusValue<T>> createNodeDialog() {
-		return new ValueToCellNodeDialog<ImgPlusValue<T>>() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ValueToCellNodeDialog<ImgPlusValue<T>> createNodeDialog() {
+        return new ValueToCellNodeDialog<ImgPlusValue<T>>() {
 
-			@Override
-			public void addDialogComponents() {
-				//
-			}
-		};
-	}
+            @Override
+            public void addDialogComponents() {
+                //
+            }
+        };
+    }
 
 }
 
-class StackRegOp<T extends RealType<T>> implements
-		UnaryOutputOperation<ImgPlus<T>, Img<T>> {
+class StackRegOp<T extends RealType<T>> implements UnaryOutputOperation<ImgPlus<T>, Img<T>> {
 
-	private final TransformationType m_transformation;
+    private final TransformationType m_transformation;
 
-	public StackRegOp(final TransformationType transformation) {
-		m_transformation = transformation;
-	}
+    public StackRegOp(final TransformationType transformation) {
+        m_transformation = transformation;
+    }
 
-	@Override
-	public Img<T> compute(final ImgPlus<T> in, final Img<T> out) {
-		final IJPlugin plugin = new IJPlugin(new StackReg_(m_transformation),
-				"transformation=[Rigid Body]");
+    @Override
+    public Img<T> compute(final ImgPlus<T> in, final Img<T> out) {
+        final IJPlugin plugin = new IJPlugin(new StackReg_(m_transformation), "transformation=[Rigid Body]");
 
-		plugin.runOn(in, out, in.firstElement().createVariable());
+        plugin.runOn(in, out, in.firstElement().createVariable());
 
-		return out;
-	}
+        return out;
+    }
 
-	@Override
-	public UnaryOutputOperation<ImgPlus<T>, Img<T>> copy() {
-		return new StackRegOp<T>(m_transformation);
-	}
+    @Override
+    public UnaryOutputOperation<ImgPlus<T>, Img<T>> copy() {
+        return new StackRegOp<T>(m_transformation);
+    }
 
-	@Override
-	public UnaryObjectFactory<ImgPlus<T>, Img<T>> bufferFactory() {
-		return new UnaryObjectFactory<ImgPlus<T>, Img<T>>() {
+    @Override
+    public UnaryObjectFactory<ImgPlus<T>, Img<T>> bufferFactory() {
+        return new UnaryObjectFactory<ImgPlus<T>, Img<T>>() {
 
-			@Override
-			public Img<T> instantiate(final ImgPlus<T> src) {
-				final long[] dims = new long[src.numDimensions()];
-				src.dimensions(dims);
-				return src.factory().create(dims,
-						src.firstElement().createVariable());
-			}
-		};
-	}
+            @Override
+            public Img<T> instantiate(final ImgPlus<T> src) {
+                final long[] dims = new long[src.numDimensions()];
+                src.dimensions(dims);
+                return src.factory().create(dims, src.firstElement().createVariable());
+            }
+        };
+    }
 }

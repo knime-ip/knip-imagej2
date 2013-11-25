@@ -65,21 +65,21 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
 
-// TODO has to be replaced if imglib2 has this as fast routines
 /**
- * TODO Auto-generated
- * 
+ * This class provides functionality to create an {@link Img} from an {@link ImagePlus}
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
+ * @param <T>
  */
 public final class IJToImg<T extends RealType<T> & NativeType<T>> implements UnaryOutputOperation<ImagePlus, Img<T>> {
 
     /**
      * Creates Bit-, UnsignedByte-, UnsignedShort- or FloatType depending on the ImagePlus bit depth.
-     * 
-     * @param op
-     * @return
+     *
+     * @param op query {@link ImagePlus} for which the matching type will be determined
+     * @return the matching type
      */
     public static final RealType<?> createMatchingType(final ImagePlus op) {
         switch (op.getBitDepth()) {
@@ -104,10 +104,18 @@ public final class IJToImg<T extends RealType<T> & NativeType<T>> implements Una
 
     private final int m_numDimensions;
 
+    /**
+     * @param type type of the input
+     */
     public IJToImg(final T type) {
         this(type, false, -1);
     }
 
+    /**
+     * @param type the type of the IJ
+     * @param scale scaling
+     * @param numDimensions number of dimensions
+     */
     public IJToImg(final T type, final boolean scale, final int numDimensions) {
         m_type = type;
         m_scale = scale;

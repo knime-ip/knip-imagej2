@@ -59,12 +59,12 @@ import java.util.StringTokenizer;
 
 import net.imglib2.Interval;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.img.ImgView;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.ImgPlusMetadata;
 import net.imglib2.meta.MetadataUtil;
 import net.imglib2.ops.operation.SubsetOperations;
 import net.imglib2.ops.operation.iterableinterval.unary.Inset;
-import net.imglib2.ops.operation.subset.views.ImgPlusView;
 import net.imglib2.type.numeric.RealType;
 
 import org.knime.core.data.DataColumnSpec;
@@ -280,8 +280,7 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                                                                  new DefaultImgMetadata(subsetview.numDimensions()));
 
                     matchingType =
-                            m_macro.runOn(new ImgPlusView<T>(subsetview, img.factory(), meta),
-                                          matchingType);
+                            m_macro.runOn(new ImgPlus<T>(new ImgView<T>(subsetview, img.factory()), meta), matchingType);
                     if (m_macro.resImgPlus() == null) {
                         throw new IllegalArgumentException("The specified macro didn't return an image.");
                     }

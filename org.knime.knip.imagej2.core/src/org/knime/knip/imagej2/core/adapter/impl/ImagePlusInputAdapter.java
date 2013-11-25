@@ -57,14 +57,15 @@ import net.imglib2.ops.operation.Operations;
 import org.knime.core.data.DataValue;
 import org.knime.knip.base.data.img.ImgPlusValue;
 import org.knime.knip.imagej2.core.adapter.DataValueConfigGuiInfos;
+import org.knime.knip.imagej2.core.adapter.IJInputAdapter;
 import org.knime.knip.imagej2.core.adapter.IJStandardInputAdapter;
 import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
 import org.knime.knip.imagej2.core.util.ImgToIJ;
 import org.scijava.ItemIO;
 
 /**
- * TODO Auto-generated
- * 
+ * {@link IJInputAdapter} for {@link ImagePlus}
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -89,6 +90,7 @@ public class ImagePlusInputAdapter implements IJStandardInputAdapter<ImagePlus> 
                 }
             }
 
+            @SuppressWarnings({"rawtypes", "unchecked"})
             @Override
             public void configureModuleItem(final Module module) {
                 final ImgToIJ convert = new ImgToIJ();

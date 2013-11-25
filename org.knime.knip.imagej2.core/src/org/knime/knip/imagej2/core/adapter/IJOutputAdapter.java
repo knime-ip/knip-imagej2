@@ -57,8 +57,8 @@ import org.knime.core.node.ExecutionContext;
  * conversion is executed by an {@link IJOutputAdapterInstance} which is created once per execution context. <br>
  * <br>
  * Interface for an output adapter that converts a certain ImageJ type into one or multiple columns of a KNIME table
- * 
- * 
+ *
+ *
  * @param <IJ_OBJ>
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
@@ -69,11 +69,11 @@ public interface IJOutputAdapter<IJ_OBJ> extends IJAdapter<IJ_OBJ> {
     /**
      * creates a instance of the core functionality of an output adapter. This instance is bound to the specified
      * execution context.
-     * 
+     *
      * It is important that an actual new instance is returned (not a reference of a shared object...)
-     * 
+     *
      * @param exec context of the node execution for which the adapter instance is created
-     * 
+     *
      * @return an object that encapsulates the core functionality of the output adapter and that can be parameterized
      *         per execution
      */
@@ -81,13 +81,13 @@ public interface IJOutputAdapter<IJ_OBJ> extends IJAdapter<IJ_OBJ> {
 
     /**
      * @return the DataValues that will be returned during the conversion. E.g. IntValue, StringValue if
-     *         {@link getDataCells} returns an int and string data cell
+     *         getDataCells returns an int and string data cell
      */
     Class<? extends DataValue>[] getDataValueTypes();
 
     /**
      * @return the DataTypes that will be returned during the conversion. E.g. IntValue, StringValue if
-     *         {@link getDataCells} returns an int and string data cell
+     *         getDataCells returns an int and string data cell
      */
     DataType[] getDataTypes();
 

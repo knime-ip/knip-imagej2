@@ -67,8 +67,8 @@ import org.knime.knip.imagej2.core.IJGateway;
  * of the ImageJ parameter dialog to configure the basic input parameters inside the configuration dialog of KNIME
  * nodes. To handle data persistence and communication between the node dialog and the node model
  * {@link SettingsModelImageJDlg} is used.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -83,7 +83,7 @@ public class DialogComponentImageJDlg extends DialogComponent {
     /**
      * creates a DialogComponent that encapsulates an ImageJ2 parameter dialog to allow the configration of basic input
      * parameters in the KNIME node dialog.
-     * 
+     *
      * @param model associated settings model to connect the node dialog to the node model
      * @param harvesterModule the module that should be 'harvested' to create the dialog
      */
@@ -148,7 +148,7 @@ public class DialogComponentImageJDlg extends DialogComponent {
 
     @Override
     public void setToolTipText(final String text) {
-        // TODO Auto-generated method stub
+        //
     }
 
     /**

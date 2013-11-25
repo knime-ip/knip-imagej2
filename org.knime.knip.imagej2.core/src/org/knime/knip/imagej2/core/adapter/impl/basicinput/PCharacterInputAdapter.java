@@ -58,12 +58,13 @@ import org.knime.core.data.StringValue;
 /**
  * Configures a ModuleItem of ImageJ type primitive char with values from a user selected {@link StringValue} compatible
  * column.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
+@SuppressWarnings("rawtypes")
 public class PCharacterInputAdapter extends AbstractBasicInputAdapter {
 
     @Override

@@ -65,11 +65,11 @@ import org.scijava.service.Service;
 /**
  * collects all available {@link IJAdapterFactory} instances from the extension point and provides access to the
  * included in and output adapters.
- * 
+ *
  * implements a singelton pattern
- * 
- * 
- * 
+ *
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -91,11 +91,11 @@ public final class IJAdapterProvider {
      */
     private final List<IJAdapterFactory> m_factories = new ArrayList<IJAdapterFactory>();
 
-    private final Map<Class<?>, IJOutputAdapter<?>> m_OutputAdapters = new HashMap<Class<?>, IJOutputAdapter<?>>();
+    private final Map<Class<?>, IJOutputAdapter<?>> m_outputAdapters = new HashMap<Class<?>, IJOutputAdapter<?>>();
 
-    private final Map<Class<?>, IJInputAdapter<?>> m_InputAdapters = new HashMap<Class<?>, IJInputAdapter<?>>();
+    private final Map<Class<?>, IJInputAdapter<?>> m_inputAdapters = new HashMap<Class<?>, IJInputAdapter<?>>();
 
-    private final Set<Class<? extends Service>> m_ServiceAdapters = new HashSet<Class<? extends Service>>();
+    private final Set<Class<? extends Service>> m_serviceAdapters = new HashSet<Class<? extends Service>>();
 
     /** the single instance of this class. */
     private static IJAdapterProvider m_instance;
@@ -124,49 +124,50 @@ public final class IJAdapterProvider {
      * @return ImageJ types that can be processed with registered InputAdapters
      */
     public static Set<Class<?>> getKnownInputTypes() {
-        return getInstance().m_InputAdapters.keySet();
+        return getInstance().m_inputAdapters.keySet();
     }
 
     /**
      * @return ImageJ types that can be processed with registered OutputAdapters
      */
     public static Set<Class<?>> getKnownOutputTypes() {
-        return getInstance().m_OutputAdapters.keySet();
+        return getInstance().m_outputAdapters.keySet();
     }
 
     /**
      * @return ImageJ Services that are supported by Input and/or Output adapters
      */
     public static Set<Class<? extends Service>> getKnownServiceTypes() {
-        return getInstance().m_ServiceAdapters;
+        return getInstance().m_serviceAdapters;
     }
 
     /**
      * returns the first registred adapter that handles this type.
-     * 
+     *
      * @param <IJ_OBJ> an ImageJ type
      * @param type the class of the ImageJ type
      * @return an input adapter that handles the specified type
      */
+    @SuppressWarnings("unchecked")
     public static <IJ_OBJ> IJInputAdapter<IJ_OBJ> getInputAdapter(final Class<IJ_OBJ> type) {
-        final Object o = getInstance().m_InputAdapters.get(type);
+        Object o = getInstance().m_inputAdapters.get(type);
 
         if (o != null) {
             return (IJInputAdapter<IJ_OBJ>)o;
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
      * returns the first registred adapter that handles this type.
-     * 
+     *
      * @param <IJ_OBJ> an ImageJ type
      * @param type the class of the ImageJ type
      * @return an output adapter that handles the specified type
      */
+    @SuppressWarnings("unchecked")
     public static <IJ_OBJ> IJOutputAdapter<IJ_OBJ> getOutputAdapter(final Class<IJ_OBJ> type) {
-        final Object o = getInstance().m_OutputAdapters.get(type);
+        final Object o = getInstance().m_outputAdapters.get(type);
 
         if (o != null) {
             return (IJOutputAdapter<IJ_OBJ>)o;
@@ -184,34 +185,35 @@ public final class IJAdapterProvider {
     /**
      * collect the concrete adapters from the factories. The ImageJ input/output type identifies the adapter
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private void collectAdapters() {
         for (final IJAdapterFactory factory : m_factories) {
             // Output
             for (final IJOutputAdapter<?> outputAdapter : factory.getOutputAdapters()) {
-                if (m_OutputAdapters.containsKey(outputAdapter.getIJType())) {
+                if (m_outputAdapters.containsKey(outputAdapter.getIJType())) {
                     LOGGER.warn("An ImageJ output to KNIME converter for the ImageJ type " + outputAdapter.getIJType()
                             + " already exists.");
                 } else {
-                    m_OutputAdapters.put(outputAdapter.getIJType(), outputAdapter);
+                    m_outputAdapters.put(outputAdapter.getIJType(), outputAdapter);
                 }
             }
             // Input
             for (final IJInputAdapter inputAdapter : factory.getInputAdapters()) {
-                if (m_InputAdapters.containsKey(inputAdapter.getIJType())) {
+                if (m_inputAdapters.containsKey(inputAdapter.getIJType())) {
                     LOGGER.warn("An KNIME to ImageJ input converter for the ImageJ type " + inputAdapter.getIJType()
                             + " already exists.");
                 } else {
-                    m_InputAdapters.put(inputAdapter.getIJType(), inputAdapter);
+                    m_inputAdapters.put(inputAdapter.getIJType(), inputAdapter);
                 }
             }
             // Service note service adapters are just collected to inform the
             // gateway about supported services
             for (final IJServiceAdapter serviceAdapter : factory.getServiceAdapters()) {
-                if (m_ServiceAdapters.contains(serviceAdapter.getIJType())) {
+                if (m_serviceAdapters.contains(serviceAdapter.getIJType())) {
                     LOGGER.warn("A service adapter for the ImageJ type " + serviceAdapter.getIJType()
                             + " already exists.");
                 } else {
-                    m_ServiceAdapters.add(serviceAdapter.getIJType());
+                    m_serviceAdapters.add(serviceAdapter.getIJType());
                 }
             }
 

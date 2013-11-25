@@ -48,7 +48,6 @@
  */
 package org.knime.knip.imagej2.core.node;
 
-import imagej.module.ModuleException;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 
@@ -79,8 +78,8 @@ import org.knime.knip.imagej2.core.imagejdialog.SettingsModelImageJDlg;
  * Provides a basic set of methods that are common to all IJNodeDialogs: Handling of the ImageJ dialog for basic
  * parameters, creation of combo box selection dialog components for {@link ModuleItemDataValueConfig}s, creation of the
  * column binding tab.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -97,24 +96,21 @@ public abstract class AbstractIJNodeDialog extends DefaultNodeSettingsPane {
 
     private boolean m_useDialog;
 
-    private final SettingsModelImageJDlg m_dummyModel = AbstractIJNodeModel.createImageJDlgModel();
+    private final SettingsModelImageJDlg m_dummyModel;
 
     private final DialogComponentImageJDlg m_imageJDialog;
 
     /**
      * Creates a new empty node dialog.
-     * 
-     * @param moduleInfo
+     *
+     * @param info
      */
-    protected AbstractIJNodeDialog(final ModuleInfo moduleInfo) {
+    protected AbstractIJNodeDialog(final ModuleInfo info) {
+        m_dummyModel = AbstractIJNodeModel.createImageJDlgModel();
         m_dummyModel.setEnabled(false);
 
-        HarvesterModuleWrapper harvesterModule = null;
-        try {
-            harvesterModule = new HarvesterModuleWrapper(moduleInfo.createModule());
-        } catch (final ModuleException e) {
-            e.printStackTrace();
-        }
+        HarvesterModuleWrapper harvesterModule =
+                new HarvesterModuleWrapper(IJGateway.getInstance().getModuleService().createModule(info));
 
         m_imageJDialog = new DialogComponentImageJDlg(AbstractIJNodeModel.createImageJDlgModel(), harvesterModule);
         m_useDialog = false;
@@ -148,9 +144,10 @@ public abstract class AbstractIJNodeDialog extends DefaultNodeSettingsPane {
      * <br>
      * This method should be used in combination with the
      * {@link AbstractIJNodeModel#addColumnSelectionSettingsModel(ModuleItemDataValueConfig)} method of the node model.
-     * 
+     *
      * @param config will be configured using column boxes for all required DataValues
-     * @return
+     *
+     * @return the resulting {@link DialogComponentGroup}
      */
     @SuppressWarnings("unchecked")
     protected DialogComponentGroup createColumnSelectionDCG(final ModuleItemDataValueConfig config) {
@@ -169,7 +166,7 @@ public abstract class AbstractIJNodeDialog extends DefaultNodeSettingsPane {
     /**
      * Creates the column binding tab for IJ dialog input parameters and adds it to the configure dialog. If the module
      * does not have IJ dialog parameters no column binding tab is created.
-     * 
+     *
      * @param moduleInfo
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -191,9 +188,6 @@ public abstract class AbstractIJNodeDialog extends DefaultNodeSettingsPane {
         if (basicInputColumnBindingDCGs.size() > 0) {
             createNewTab("Advanced Settings");
 
-            createNewGroup("bind columns to ImageJ parameters");
-            closeCurrentGroup();
-
             for (final DialogComponentGroup dcg : basicInputColumnBindingDCGs) {
                 addComponents(dcg);
             }
@@ -203,7 +197,7 @@ public abstract class AbstractIJNodeDialog extends DefaultNodeSettingsPane {
     /**
      * helper method that adds the DialogComponents of the group to the dialog and follows the placement hints of the
      * group.
-     * 
+     *
      * @param group
      */
     protected void addComponents(final DialogComponentGroup group) {

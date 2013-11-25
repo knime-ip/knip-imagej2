@@ -52,8 +52,8 @@ package org.knime.knip.imagej2.base.preferences;
  * helper class that stores meta information about a plugin during installation and removal. Consider e.g. that a plugin
  * is installed the copy operations... are executed and the plugin is installed however a restart is still necessary.
  * PluginState can be used to store such informations.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -62,13 +62,13 @@ public class PluginState {
 
     /**
      * supported plugin states Note that a plugin state contains only meta information and is not persistent.
-     * 
+     *
      * @author zinsmaie
-     * 
+     *
      */
     enum STATE {
         ACTIVE, ADDING, REMOVING, UNKNOWN
-    };
+    }
 
     PluginState(final String pluginName, final STATE state) {
         m_name = pluginName;

@@ -49,26 +49,40 @@
 package org.knime.knip.imagej2.core.adapter;
 
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 
 /**
  * a module item config that can be saved and loaded by the node model.
- * 
- * 
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
 public interface PersistentModuleItemConfig extends ModuleItemConfig {
 
-    // most basic functionality to allow persistence of user settings e.g.
-    // column selections
-
+    /**
+     * see {@link NodeModel}{@link #validateSettings(NodeSettingsRO)}
+     *
+     * @param settings
+     * @throws InvalidSettingsException
+     */
     public void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException;
 
+    /**
+     * see {@link NodeModel}{@link #loadSettingsFrom(NodeSettingsRO)}
+     *
+     * @param settings
+     * @throws InvalidSettingsException
+     */
     public void loadSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException;
 
+    /**
+     * see {@link NodeModel}{@link #saveSettingsTo(NodeSettingsWO)}
+     *
+     * @param settings
+     */
     public void saveSettingsTo(final NodeSettingsWO settings);
 
 }

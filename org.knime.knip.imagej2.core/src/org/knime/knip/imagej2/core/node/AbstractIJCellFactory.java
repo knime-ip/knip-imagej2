@@ -48,7 +48,6 @@
  */
 package org.knime.knip.imagej2.core.node;
 
-import imagej.command.CommandModule;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
 import imagej.module.ModulePreprocessor;
@@ -80,8 +79,8 @@ import org.knime.knip.imagej2.core.adapter.ModuleItemRowConfig;
  * Provides a basic set of methods that are common to all IJCellFactories like support for missing cell count and the
  * {@link #executeRowModule(Module)} method. Additionally provides helper methods for the configuration
  * {@link ModuleItemRowConfig} and {@link ModuleItemDataValueConfig}.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -93,6 +92,10 @@ public abstract class AbstractIJCellFactory implements CellFactory {
 
     private final ExecutionContext m_exec;
 
+    /**
+     * Create a new {@link AbstractIJCellFactory} which uses the given {@link ExecutionContext}
+     * @param exec
+     */
     public AbstractIJCellFactory(final ExecutionContext exec) {
         m_missingCellCount = 0;
         m_exec = exec;
@@ -110,7 +113,7 @@ public abstract class AbstractIJCellFactory implements CellFactory {
      * <br>
      * Only module configs that are in the list and that are of type {@link ModuleItemRowConfig} get resolved and
      * configured.
-     * 
+     *
      * @param row the currently processed DataRow that contains the values that should be bound to the module items
      * @param module contains the module items (parameters) that should be configured
      * @param moduleItemConfigs contains the guiding configuration objects (only RowConfigs are processed in this
@@ -137,7 +140,7 @@ public abstract class AbstractIJCellFactory implements CellFactory {
      * <br>
      * Only module configs that are in the list, that are of type {@link ModuleItemDataValueConfig} and that can be
      * fully configured using the identifier2CellID mapping get resolved and configured.
-     * 
+     *
      * @param row the currently processed DataRow that contains the values that should be bound to the module items
      * @param module contains the module items (parameters) that should be configured
      * @param identifier2CellID maps unique parameter identifiers (see {@link DataValueConfigGuiInfos}) to cell ids
@@ -180,7 +183,7 @@ public abstract class AbstractIJCellFactory implements CellFactory {
 
     /**
      * executes a preconfigured row module and collects the results. Also updates the missing cell counter if necessary.
-     * 
+     *
      * @param rowModule a fully configured module ready for execution
      * @return list of DataCells that contains the module results
      */
@@ -196,21 +199,20 @@ public abstract class AbstractIJCellFactory implements CellFactory {
         }
 
         // execute the module
-        ((CommandModule)rowModule).setContext(IJGateway.getImageJContext());
+        IJGateway.getImageJContext().inject(rowModule);
         final List<ModulePreprocessor> pre = new ArrayList<ModulePreprocessor>();
         final InitPreprocessor ip = new InitPreprocessor();
+        // TODO        final ValidityPreprocessor
         ip.setContext(IJGateway.getImageJContext());
 
-        //        final ServicePreprocessor sp = new ServicePreprocessor();
-        //        sp.setContext(IJGateway.getImageJContext());
-
         pre.add(ip);
-        //        pre.add(sp);
 
+        // TODO potentially: ModuleService.run(...) for ...
         final ModuleRunner runner = new ModuleRunner(IJGateway.getImageJContext(), rowModule, pre, null);
 
         runner.run();
 
+        // TODO: potentially just make use of a postprocessor. but for now its fine!!
         // collect the outputs
         final List<DataCell> resCells = new ArrayList<DataCell>(rowModule.getOutputs().size());
         for (final ModuleItem<?> outItem : rowModule.getInfo().outputs()) {

@@ -54,8 +54,8 @@ import org.knime.core.data.DataValue;
  * Container class for the automatic/user defined gui building for adapters that are based on
  * {@link ModuleItemDataValueConfig}. Provides meta information for a configuration DataValues (
  * {@link ModuleItemDataValueConfig#setConfigurationData(DataValue[])})
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -76,11 +76,12 @@ public class DataValueConfigGuiInfos {
 
     /**
      * convenience constructor
-     * 
+     *
      * @param label {@link #label}
      * @param identifier {@link #identifier}
      * @param inValue {@link #inValue}
      */
+    @SuppressWarnings("hiding")
     public DataValueConfigGuiInfos(final String label, final String identifier, final Class<? extends DataValue> inValue) {
         this.label = label;
         this.identifier = identifier;
