@@ -93,6 +93,8 @@ public class SettingsModelImageJDlg extends SettingsModel {
 
     private static final String ITEM_KEYS_KEY = "SMIJD_ItemKey";
 
+    private static final String ITEM_TYPES_KEY = "SMIJD_ItemType";
+
     private final String m_configName;
 
     /**
@@ -193,17 +195,41 @@ public class SettingsModelImageJDlg extends SettingsModel {
     @Override
     protected void loadSettingsForModel(final NodeSettingsRO settings) throws InvalidSettingsException {
 
-        final String[] keyValues = settings.getStringArray(ITEM_KEYS_KEY);
+        final String[] keys = settings.getStringArray(ITEM_KEYS_KEY);
+        final String[] types = settings.getStringArray(ITEM_TYPES_KEY);
 
-        for (final String key : keyValues) {
-
-            final String itemString = settings.getString(key);
-            final Object item = fromBase64String(itemString);
+        for (int i = 0; i < keys.length; i++) {
+            final Object item;
+            if (types.equals("null")) {
+                item = null;
+            } else if (types[i].equals(Byte.class.getSimpleName())) {
+                item = settings.getByte(keys[i]);
+            } else if (types[i].equals(Character.class.getSimpleName())) {
+                item = settings.getChar(keys[i]);
+            } else if (types[i].equals(Short.class.getSimpleName())) {
+                item = settings.getShort(keys[i]);
+            } else if (types[i].equals(Integer.class.getSimpleName())) {
+                item = settings.getInt(keys[i]);
+            } else if (types[i].equals(Long.class.getSimpleName())) {
+                item = settings.getLong(keys[i]);
+            } else if (types[i].equals(Float.class.getSimpleName())) {
+                item = settings.getFloat(keys[i]);
+            } else if (types[i].equals(Double.class.getSimpleName())) {
+                item = settings.getDouble(keys[i]);
+            } else if (types[i].equals(String.class.getSimpleName())) {
+                item = settings.getString(keys[i]);
+            } else if (types[i].equals(Boolean.class.getSimpleName())) {
+                item = settings.getBoolean(keys[i]);
+            } else {
+                final String itemString = settings.getString(keys[i]);
+                item = stringToObject(itemString);
+            }
 
             if (item != null) {
-                m_itemName2Value.put(key, item);
+                m_itemName2Value.put(keys[i], item);
             } else {
-                throw new InvalidSettingsException("The item with the identifier " + key + " could not be restored.");
+                throw new InvalidSettingsException("The item with the identifier " + keys[i]
+                        + " could not be restored.");
             }
 
         }
@@ -215,19 +241,50 @@ public class SettingsModelImageJDlg extends SettingsModel {
     @Override
     protected void saveSettingsForModel(final NodeSettingsWO settings) {
 
-        final String[] keyValues = m_itemName2Value.keySet().toArray(new String[]{});
-        settings.addStringArray(ITEM_KEYS_KEY, keyValues);
+        final String[] keys = m_itemName2Value.keySet().toArray(new String[]{});
+        final String[] types = new String[keys.length];
+        settings.addStringArray(ITEM_KEYS_KEY, keys);
 
-        for (final String key : m_itemName2Value.keySet()) {
-
-            final Object item = m_itemName2Value.get(key);
-            final String itemString = toBase64String(item);
-
-            if (!itemString.isEmpty()) {
-                settings.addString(key, itemString);
+        for (int i = 0; i < keys.length; i++) {
+            final Object item = m_itemName2Value.get(keys[i]);
+            if (item == null) {
+                types[i] = "null";
+            } else if (item instanceof Byte) {
+                settings.addByte(keys[i], (Byte)item);
+                types[i] = Byte.class.getSimpleName();
+            } else if (item instanceof Character) {
+                settings.addChar(keys[i], (Character)item);
+                types[i] = Character.class.getSimpleName();
+            } else if (item instanceof Short) {
+                settings.addShort(keys[i], (Short)item);
+                types[i] = Short.class.getSimpleName();
+            } else if (item instanceof Integer) {
+                settings.addInt(keys[i], (Integer)item);
+                types[i] = Integer.class.getSimpleName();
+            } else if (item instanceof Long) {
+                settings.addLong(keys[i], (Long)item);
+                types[i] = Long.class.getSimpleName();
+            } else if (item instanceof Float) {
+                settings.addFloat(keys[i], (Float)item);
+                types[i] = Float.class.getSimpleName();
+            } else if (item instanceof Double) {
+                settings.addDouble(keys[i], (Double)item);
+                types[i] = Double.class.getSimpleName();
+            } else if (item instanceof String) {
+                settings.addString(keys[i], (String)item);
+                types[i] = String.class.getSimpleName();
+            } else if (item instanceof Boolean) {
+                settings.addBoolean(keys[i], (Boolean)item);
+                types[i] = Boolean.class.getSimpleName();
+            } else {
+                final String itemString = objectToString(item);
+                types[i] = "OTHER";
+                if (!itemString.isEmpty()) {
+                    settings.addString(keys[i], itemString);
+                }
             }
-
         }
+        settings.addStringArray(ITEM_TYPES_KEY, types);
     }
 
     /**
@@ -236,7 +293,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
      * @param object
      * @return a string representation of an object in base 64 encoding
      */
-    private String toBase64String(final Object object) {
+    private String objectToString(final Object object) {
         try {
             //use java serialization, if object is serializable
             if (object instanceof Serializable) {
@@ -279,7 +336,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
      * @param stringRepresentation base64 encoded string representation of the bytecode of an object
      * @return the decoded object
      */
-    private Object fromBase64String(final String stringRepresentation) {
+    private Object stringToObject(final String stringRepresentation) {
 
         if (stringRepresentation.startsWith(CLASS_PREFIX)) {
             //if only the class name has been serialized re-instantiate from the class name
