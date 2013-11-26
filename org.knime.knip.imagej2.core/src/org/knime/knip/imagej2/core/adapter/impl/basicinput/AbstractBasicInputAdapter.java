@@ -64,7 +64,7 @@ import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelectio
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
-import org.knime.knip.base.node.NodeTools;
+import org.knime.knip.base.node.NodeUtils;
 import org.knime.knip.imagej2.core.adapter.DialogComponentGroup;
 import org.knime.knip.imagej2.core.adapter.DialogComponentGroup.PLACEMENT_HINT;
 import org.knime.knip.imagej2.core.adapter.IJAdvancedInputAdapter;
@@ -150,7 +150,7 @@ public abstract class AbstractBasicInputAdapter<IJ_OBJ> implements IJAdvancedInp
             public boolean setDataTableSpec(final DataTableSpec inSpecs, final Module module)
                     throws InvalidSettingsException {
                 m_colIndex =
-                        NodeTools.silentOptionalAutoColumnSelection(inSpecs, settingsModelColumn, getDataValueClass());
+                        NodeUtils.silentOptionalAutoColumnSelection(inSpecs, settingsModelColumn, getDataValueClass());
 
                 return (m_colIndex != -1);
             }
