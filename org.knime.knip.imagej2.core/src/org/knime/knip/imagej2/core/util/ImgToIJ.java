@@ -248,7 +248,8 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
      * (index 0), Z (index 1), Time (index 2). Use setMapping if you want to change this.
      *
      * @param img
-     * @return
+     *
+     * @return true if mapping is valid
      */
     public <T> boolean validateMapping(final ImgPlus<T> img) {
         for (int d = 0; d < img.numDimensions(); d++) {
