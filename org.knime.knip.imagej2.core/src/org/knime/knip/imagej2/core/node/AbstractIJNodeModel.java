@@ -73,7 +73,7 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
-import org.knime.knip.base.node.NodeTools;
+import org.knime.knip.base.node.NodeUtils;
 import org.knime.knip.imagej2.core.adapter.DataValueConfigGuiInfos;
 import org.knime.knip.imagej2.core.adapter.ModuleItemConfig;
 import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
@@ -207,7 +207,7 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
                             + " is invalid (incompatible type)");
                 }
             } else {
-                NodeTools.autoColumnSelection(inSpec, sms, m_columnSelectionDataValues.get(identifier),
+                NodeUtils.autoColumnSelection(inSpec, sms, m_columnSelectionDataValues.get(identifier),
                                               AbstractIJNodeModel.class);
             }
         }
