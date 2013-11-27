@@ -77,6 +77,7 @@ import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DialogComponent;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
@@ -98,6 +99,7 @@ import org.knime.knip.base.nodes.io.kernel.DialogComponentSerializableConfigurat
 import org.knime.knip.base.nodes.io.kernel.SerializableSetting;
 import org.knime.knip.core.data.img.DefaultImgMetadata;
 import org.knime.knip.imagej1.macro.AnalyzeParticlesIJMacro;
+import org.knime.knip.imagej1.macro.CLAHEIJMacro;
 import org.knime.knip.imagej1.macro.FindEdgesIJMacro;
 import org.knime.knip.imagej1.macro.FindMaximaIJMacro;
 import org.knime.knip.imagej1.macro.GaussianBlurIJMacro;
@@ -105,14 +107,19 @@ import org.knime.knip.imagej1.macro.PureCodeIJMacro;
 import org.knime.knip.imagej1.macro.SharpenIJMacro;
 import org.knime.knip.imagej1.macro.SubstractBackgroundIJMacro;
 import org.knime.knip.imagej1.macro.WatershedIJMacro;
+import org.knime.knip.imagej2.core.IJGateway;
 
 /**
- * TODO Auto-generated
+ * {@link NodeFactory} to run {@link IJMacro}s
  *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
+ *
+ * @param <T>
+ *
  */
+@SuppressWarnings("rawtypes")
 public class IJMacroNodeFactory<T extends RealType<T>> extends
         GenericValueToCellNodeFactory<ImgPlusValue, ValueToCellNodeModel<ImgPlusValue, ImgPlusCell>> {
 
@@ -159,27 +166,6 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
             @Override
             protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
                 final PortObjectSpec firstSpec = super.configure(inSpecs)[0];
-                // PortObjectSpec secondSpec = null;
-
-                final List<SerializableSetting<String>> conf = m_macroSelection.getObjects();
-                String code = "";
-                for (final SerializableSetting<String> fc : conf) {
-                    code += fc.get();
-                }
-                // IJMacro macro = new IJMacro(true, code);
-                // // pre-run macro to determine the format of the result table
-                // if
-                // // existent
-                // Img<UnsignedByteType> testImg = new
-                // ArrayImgFactory<UnsignedByteType>()
-                // .create(new int[] { 10, 10 }, new UnsignedByteType());
-                // macro.runOn(testImg, new UnsignedByteType());
-                // if (macro.resTable() != null) {
-                // secondSpec = createResultTableSpec(macro.resTable());
-                // }
-                // if (secondSpec == null) {
-                // secondSpec = new DataTableSpec();
-                // }
                 return new PortObjectSpec[]{firstSpec, null};
             }
 
@@ -219,24 +205,7 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                 m_exec = exec;
                 m_resTableContainer = null;
 
-                // pre-run macro to determine the format of the result table if
-                // existent
-                // Img<UnsignedByteType> testImg = new
-                // ArrayImgFactory<UnsignedByteType>()
-                // .create(new int[] { 10, 10 }, new UnsignedByteType());
-                // m_macro.runOn(testImg, new UnsignedByteType());
-                // if (m_macro.resTable() != null) {
-                // DataTableSpec spec = createResultTableSpec(m_macro
-                // .resTable());
-                // if (spec != null) {
-                // m_resTableContainer = exec.createDataContainer(spec);
-                // } else {
-                // m_resTableContainer = null;
-                // }
-                // } else {
-                // m_resTableContainer = null;
-                // }
-
+                IJGateway.initIJPluginsDirectory();
             }
 
             private DataTableSpec createResultTableSpec(final ResultsTable table) {
@@ -253,6 +222,7 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
 
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             protected ImgPlusCell compute(final ImgPlusValue cellValue) throws Exception {
 
@@ -281,8 +251,9 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
 
                     matchingType =
                             m_macro.runOn(new ImgPlus<T>(new ImgView<T>(subsetview, img.factory()), meta), matchingType);
-                    if (m_macro.resImgPlus() == null) {
-                        throw new IllegalArgumentException("The specified macro didn't return an image.");
+                    if (matchingType == null || m_macro.resImgPlus() == null) {
+                        throw new KNIPException(
+                                "The specified macro has thrown an error while execution. Make sure that the used plugins are available in the selected IJ1 plugin folder!");
                     }
                     interval.min(min);
                     if (res == null) {
@@ -362,14 +333,13 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
     protected ValueToCellNodeDialog<ImgPlusValue> createNodeDialog() {
         return new ValueToCellNodeDialog<ImgPlusValue>() {
 
+            @SuppressWarnings("unchecked")
             @Override
             public void addDialogComponents() {
-                // coll.addDialogComponent("ImageJ", new
-                // DialogComponentFileChooser(
-                // DialogComponentCollection.cloneSettingsModel(m_ijPath),
-                // "ij-path-history", JFileChooser.OPEN_DIALOG,
-                // true));
+
+                //TODO make macros a extension point
                 final Map<String, Class<?>> pool = new LinkedHashMap<String, Class<?>>();
+                pool.put("Enhance Local Constract (CLAHE)", CLAHEIJMacro.class);
                 pool.put("Pure Code", PureCodeIJMacro.class);
                 pool.put("Gaussian Blur", GaussianBlurIJMacro.class);
                 pool.put("Find Edges", FindEdgesIJMacro.class);
@@ -408,7 +378,6 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
 
                     }
                 });
-
             }
         };
     }

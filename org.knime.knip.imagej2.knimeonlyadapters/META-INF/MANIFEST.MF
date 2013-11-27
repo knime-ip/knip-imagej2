@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: KnimeOnlyAdapters
 Bundle-SymbolicName: org.knime.knip.imagej2.knimeonlyadapters;singleton:=true
-Bundle-Version: 1.0.0.qualifier
-Fragment-Host: org.knime.knip.imagej2.core;bundle-version="0.1.0"
+Bundle-Version: 1.1.0.qualifier
+Fragment-Host: org.knime.knip.imagej2.core;bundle-version="0.7.4"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .

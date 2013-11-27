@@ -68,11 +68,14 @@ import io.scif.img.ImgUtilityService;
 import io.scif.services.JAIIIOService;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.knime.core.node.NodeLogger;
 import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
 import org.scijava.Context;
@@ -162,6 +165,31 @@ public final class IJGateway {
     public static synchronized void createHeadlessInstance() {
         if (instance == null) {
             instance = new IJGateway(true);
+        }
+    }
+
+    /**
+     * Set the plugins directory of ImageJ1.
+     */
+    public static void initIJPluginsDirectory() {
+        System.setProperty("plugins.dir", defaultIJ1PluginsDirectory());
+    }
+
+    /**
+     * @return the default plugin directory which is located in
+     *         $knime_path$/plugin/org.knime.knip.core.imagej2.core/lib/Plugins
+     */
+    public static String defaultIJ1PluginsDirectory() {
+        return IJGateway.getEclipsePath("platform:/plugin/org.knime.knip.imagej2.core/lib/Plugins");
+    }
+
+    private static String getEclipsePath(final String platformurl) {
+        try {
+            URL url = new URL(platformurl);
+            File dir = new File(FileLocator.resolve(url).getFile());
+            return dir.getAbsolutePath();
+        } catch (IOException e) {
+            return null;
         }
     }
 
