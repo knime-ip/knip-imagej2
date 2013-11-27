@@ -173,8 +173,10 @@ public class IJNodeFactory extends DynamicNodeFactory<AbstractIJNodeModel> {
      * - a menu category from the plugin menu path - a description of the plugin - a basic static port description
      *
      * {@inheritDoc}
+     * @deprecated
      *
      */
+    @Deprecated
     @Override
     protected void addNodeDescription(final KnimeNodeDocument doc) {
         final KnimeNode node = doc.addNewKnimeNode();

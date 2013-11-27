@@ -106,6 +106,7 @@ import org.knime.knip.imagej1.macro.PureCodeIJMacro;
 import org.knime.knip.imagej1.macro.SharpenIJMacro;
 import org.knime.knip.imagej1.macro.SubstractBackgroundIJMacro;
 import org.knime.knip.imagej1.macro.WatershedIJMacro;
+import org.knime.knip.imagej2.core.IJGateway;
 
 /**
  * TODO Auto-generated
@@ -219,6 +220,8 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
 
                 m_exec = exec;
                 m_resTableContainer = null;
+
+                IJGateway.initIJPluginsDirectory();
 
                 // pre-run macro to determine the format of the result table if
                 // existent

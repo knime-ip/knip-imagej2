@@ -104,13 +104,6 @@ public final class IJGateway {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(IJGateway.class);
 
-    /**
-     * Init IJ1
-     */
-    {
-        initIJ();
-    }
-
     // CONSTANTS
 
     /**
@@ -176,21 +169,30 @@ public final class IJGateway {
     }
 
     /**
-     * @return
+     * Set the plugins directory of ImageJ1.
+     *
+     * @param path to IJ Plugins directory
      */
-    private static void initIJ() {
-        System.setProperty("plugins.dir", getEclipsePath("platform:/plugin/org.knime.knip.imagej2.core/lib/plugins"));
+    public static void initIJPluginsDirectory(final String path) {
+        System.setProperty("plugins.dir", path);
+    }
+
+    /**
+     * Set the plugins directory of ImageJ1.
+     */
+    public static void initIJPluginsDirectory() {
+        initIJPluginsDirectory(getEclipsePath("platform:/plugin/org.knime.knip.imagej2.core/lib/Plugins"));
     }
 
     private static String getEclipsePath(final String platformurl) {
         try {
-                URL url = new URL(platformurl);
-                File dir = new File(FileLocator.resolve(url).getFile());
-                return dir.getAbsolutePath();
+            URL url = new URL(platformurl);
+            File dir = new File(FileLocator.resolve(url).getFile());
+            return dir.getAbsolutePath();
         } catch (IOException e) {
-                return null;
+            return null;
         }
-}
+    }
 
     /**
      * @return the singelton instance of IJGateway
