@@ -68,11 +68,14 @@ import io.scif.img.ImgUtilityService;
 import io.scif.services.JAIIIOService;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.knime.core.node.NodeLogger;
 import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
 import org.scijava.Context;
@@ -100,6 +103,13 @@ import org.scijava.util.ClassUtils;
 public final class IJGateway {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(IJGateway.class);
+
+    /**
+     * Init IJ1
+     */
+    {
+        initIJ();
+    }
 
     // CONSTANTS
 
@@ -164,6 +174,23 @@ public final class IJGateway {
             instance = new IJGateway(true);
         }
     }
+
+    /**
+     * @return
+     */
+    private static void initIJ() {
+        System.setProperty("plugins.dir", getEclipsePath("platform:/plugin/org.knime.knip.imagej2.core/lib/plugins"));
+    }
+
+    private static String getEclipsePath(final String platformurl) {
+        try {
+                URL url = new URL(platformurl);
+                File dir = new File(FileLocator.resolve(url).getFile());
+                return dir.getAbsolutePath();
+        } catch (IOException e) {
+                return null;
+        }
+}
 
     /**
      * @return the singelton instance of IJGateway
