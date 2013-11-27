@@ -170,18 +170,17 @@ public final class IJGateway {
 
     /**
      * Set the plugins directory of ImageJ1.
-     *
-     * @param path to IJ Plugins directory
      */
-    public static void initIJPluginsDirectory(final String path) {
-        System.setProperty("plugins.dir", path);
+    public static void initIJPluginsDirectory() {
+        System.setProperty("plugins.dir", defaultIJ1PluginsDirectory());
     }
 
     /**
-     * Set the plugins directory of ImageJ1.
+     * @return the default plugin directory which is located in
+     *         $knime_path$/plugin/org.knime.knip.core.imagej2.core/lib/Plugins
      */
-    public static void initIJPluginsDirectory() {
-        initIJPluginsDirectory(getEclipsePath("platform:/plugin/org.knime.knip.imagej2.core/lib/Plugins"));
+    public static String defaultIJ1PluginsDirectory() {
+        return IJGateway.getEclipsePath("platform:/plugin/org.knime.knip.imagej2.core/lib/Plugins");
     }
 
     private static String getEclipsePath(final String platformurl) {
