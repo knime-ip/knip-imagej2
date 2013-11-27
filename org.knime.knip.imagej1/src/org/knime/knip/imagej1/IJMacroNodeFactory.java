@@ -98,6 +98,7 @@ import org.knime.knip.base.nodes.io.kernel.DialogComponentSerializableConfigurat
 import org.knime.knip.base.nodes.io.kernel.SerializableSetting;
 import org.knime.knip.core.data.img.DefaultImgMetadata;
 import org.knime.knip.imagej1.macro.AnalyzeParticlesIJMacro;
+import org.knime.knip.imagej1.macro.CLAHEIJMacro;
 import org.knime.knip.imagej1.macro.FindEdgesIJMacro;
 import org.knime.knip.imagej1.macro.FindMaximaIJMacro;
 import org.knime.knip.imagej1.macro.GaussianBlurIJMacro;
@@ -370,6 +371,7 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                 // "ij-path-history", JFileChooser.OPEN_DIALOG,
                 // true));
                 final Map<String, Class<?>> pool = new LinkedHashMap<String, Class<?>>();
+                pool.put("Enhance Local Constract (CLAHE)", CLAHEIJMacro.class);
                 pool.put("Pure Code", PureCodeIJMacro.class);
                 pool.put("Gaussian Blur", GaussianBlurIJMacro.class);
                 pool.put("Find Edges", FindEdgesIJMacro.class);
