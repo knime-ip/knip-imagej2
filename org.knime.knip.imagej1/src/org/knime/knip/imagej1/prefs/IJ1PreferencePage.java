@@ -78,7 +78,7 @@ public class IJ1PreferencePage extends FieldEditorPreferencePage implements IWor
         Composite parent = getFieldEditorParent();
         addField(new LabelField(
                 parent,
-                "ImageJ1 plugins will be loaded from the specified directory.\nNOTE: If changed, some default macros (e.g. CLAHE) in the ImageJ Macro node will not work anymore."));
+                "ImageJ1 plugins will be loaded from the specified directory.\nNOTE: If changed, some default macros (e.g. CLAHE) in the ImageJ Macro node may not work anymore, if the required plugins cannot be found in the specified plugin directory."));
         addField(new DirectoryFieldEditor(IJ1Preferences.P_PLUGIN_DIR_PATH, "ImageJ1 plugin directory", new Composite(
                 parent, SWT.None)));
     }
