@@ -46,50 +46,57 @@
  * --------------------------------------------------------------------- *
  *
  */
-package org.knime.knip.imagej2.base.preferences;
+package org.knime.knip.imagej2.core.preferences;
 
-import java.io.File;
-import java.net.URL;
-
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.knime.knip.imagej2.base.IMAGEJ_BASE_Plugin;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
+import org.knime.knip.imagej2.core.KNIMEIMAGEJPlugin;
 
 /**
- * TODO Auto-generated
+ * contains the logic behind the plugin folder selection.
+ * 
  * 
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
-public class PreferenceInitializer extends AbstractPreferenceInitializer {
+public class PluginFolderSelectionController {
 
     /**
-     * tries to init the 'plugins' folder path with the 'plugins' folder of the running eclipse installation.
+     * opens a directory choose dialog and changes the 'plugins' folder path in the preference properties if the user
+     * selects an appropriate folder. Also updates the pathLabel according to the result.
+     * 
+     * @param pathLabel
+     * @param parentShell the parent needed to display dialogs
+     * 
      */
-    @Override
-    public void initializeDefaultPreferences() {
-        final IPreferenceStore store = IMAGEJ_BASE_Plugin.getDefault().getPreferenceStore();
+    public void selectDirButtonPressed(final Label pathLabel, final Shell parentShell) {
+        final DirectoryDialog dialog = new DirectoryDialog(parentShell, SWT.SHEET);
+        dialog.setText("Choose the knime plugins directory");
 
-        // something like file:/C:/x/y
-        final URL eclipseURL = Platform.getInstallLocation().getURL();
-
-        if (eclipseURL != null) {
-
-            final File t = new File(eclipseURL.getPath()); // returns /C:/x/y...
-            final String eclipsePath = t.getAbsolutePath(); // finally C:/x/y
-
-            if (IMAGEJ_BASE_Plugin.checkFolderPath(eclipsePath + File.separator + "plugins")) {
-                store.setDefault(IMAGEJ_BASE_Plugin.PLUGIN_FOLDER_PATH, eclipsePath + File.separator + "plugins");
+        final String dir = dialog.open();
+        if (dir != null) {
+            if (KNIMEIMAGEJPlugin.checkFolderPath(dir)) {
+                // selected a valid path
+                KNIMEIMAGEJPlugin.getDefault().getPreferenceStore()
+                        .setValue(KNIMEIMAGEJPlugin.PLUGIN_FOLDER_PATH, dir);
+                reload(pathLabel);
             } else {
-                store.setDefault(IMAGEJ_BASE_Plugin.PLUGIN_FOLDER_PATH, "");
+                final MessageBox messageDialog = new MessageBox(parentShell, (SWT.ICON_WARNING | SWT.OK));
+                messageDialog.setMessage("the selected directory is not a knime/plugins directory");
+                messageDialog.open();
             }
-
-        } else {
-            store.setDefault(IMAGEJ_BASE_Plugin.PLUGIN_FOLDER_PATH, "");
         }
+    }
 
+    /**
+     * @param pathLabel sets the label content to the 'plugins' folder path from the preference properties
+     */
+    public void reload(final Label pathLabel) {
+        pathLabel.setText(KNIMEIMAGEJPlugin.getEclipsePluginFolderPath());
     }
 
 }

@@ -43,60 +43,32 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * --------------------------------------------------------------------- *
+ * ---------------------------------------------------------------------
  *
+ * Created on Nov 28, 2013 by hornm
  */
-package org.knime.knip.imagej2.base.preferences;
+package org.knime.knip.imagej1.prefs;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
-import org.knime.knip.imagej2.base.IMAGEJ_BASE_Plugin;
+import org.knime.knip.imagej2.core.KNIMEIMAGEJPlugin;
 
 /**
- * contains the logic behind the plugin folder selection.
- * 
- * 
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
- * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
-public class PluginFolderSelectionController {
+public class IJ1Preferences {
 
-    /**
-     * opens a directory choose dialog and changes the 'plugins' folder path in the preference properties if the user
-     * selects an appropriate folder. Also updates the pathLabel according to the result.
-     * 
-     * @param pathLabel
-     * @param parentShell the parent needed to display dialogs
-     * 
-     */
-    public void selectDirButtonPressed(final Label pathLabel, final Shell parentShell) {
-        final DirectoryDialog dialog = new DirectoryDialog(parentShell, SWT.SHEET);
-        dialog.setText("Choose the knime plugins directory");
+    static final String P_PLUGIN_DIR_PATH = "plugin_directory_path";
 
-        final String dir = dialog.open();
-        if (dir != null) {
-            if (IMAGEJ_BASE_Plugin.checkFolderPath(dir)) {
-                // selected a valid path
-                IMAGEJ_BASE_Plugin.getDefault().getPreferenceStore()
-                        .setValue(IMAGEJ_BASE_Plugin.PLUGIN_FOLDER_PATH, dir);
-                reload(pathLabel);
-            } else {
-                final MessageBox messageDialog = new MessageBox(parentShell, (SWT.ICON_WARNING | SWT.OK));
-                messageDialog.setMessage("the selected directory is not a knime/plugins directory");
-                messageDialog.open();
-            }
-        }
+    private IJ1Preferences() {
+        //utility class
     }
 
     /**
-     * @param pathLabel sets the label content to the 'plugins' folder path from the preference properties
+     * @return plugin path
      */
-    public void reload(final Label pathLabel) {
-        pathLabel.setText(IMAGEJ_BASE_Plugin.getEclipsePluginFolderPath());
+    public static String getIJ1PluginPath() {
+        return KNIMEIMAGEJPlugin.getDefault().getPreferenceStore().getString(P_PLUGIN_DIR_PATH);
     }
 
 }

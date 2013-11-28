@@ -27,12 +27,24 @@ Bundle-ClassPath: ij2-core.jar,
  lib/miglayout-3.7.3.1-swing.jar,
  lib/ij-ui-common-awt-2.0.0-SNAPSHOT.jar,
  lib/jcommon-1.0.17.jar,
- lib/Plugins/Tubeness2Fragment.jar,
  lib/jfreechart-1.0.14.jar,
  lib/ij-1.48d.jar,
- lib/jdatepicker-1.3.2.jar
+ lib/jdatepicker-1.3.2.jar,
+ lib/plugins/Tubeness2Fragment.jar
 Bundle-ActivationPolicy: lazy
-Export-Package: imagej.command,
+Export-Package: ij,
+ ij.gui,
+ ij.io,
+ ij.macro,
+ ij.measure,
+ ij.plugin,
+ ij.plugin.filter,
+ ij.plugin.frame,
+ ij.plugin.tool,
+ ij.process,
+ ij.text,
+ ij.util,
+ imagej.command,
  org.knime.knip.imagej2.core,
  org.knime.knip.imagej2.core.adapter,
  org.knime.knip.imagej2.core.adapter.impl,
@@ -41,4 +53,5 @@ Export-Package: imagej.command,
  org.knime.knip.imagej2.core.imagejdialog,
  org.knime.knip.imagej2.core.node,
  org.knime.knip.imagej2.core.util
+Bundle-Activator: org.knime.knip.imagej2.core.KNIMEIMAGEJPlugin
 

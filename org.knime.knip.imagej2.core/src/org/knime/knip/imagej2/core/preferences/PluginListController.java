@@ -46,7 +46,7 @@
  * --------------------------------------------------------------------- *
  *
  */
-package org.knime.knip.imagej2.base.preferences;
+package org.knime.knip.imagej2.core.preferences;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -58,8 +58,8 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.knime.knip.imagej2.base.FragmentWrapperUtil;
-import org.knime.knip.imagej2.base.IMAGEJ_BASE_Plugin;
+import org.knime.knip.imagej2.core.FragmentWrapperUtil;
+import org.knime.knip.imagej2.core.KNIMEIMAGEJPlugin;
 
 /**
  * contains the logic needed to add and remove ImageJ plugins (uses {@link FragmentWrapperUtil}).
@@ -125,7 +125,7 @@ public class PluginListController {
     public boolean addButtonPressed(final List pluginList, final Shell parentShell) {
         boolean success = false;
 
-        if (IMAGEJ_BASE_Plugin.checkFolderPath(IMAGEJ_BASE_Plugin.getEclipsePluginFolderPath())) {
+        if (KNIMEIMAGEJPlugin.checkFolderPath(KNIMEIMAGEJPlugin.getEclipsePluginFolderPath())) {
 
             final File jarPath = selectImageJPluginJar(parentShell);
             if (jarPath != null) {
@@ -138,7 +138,7 @@ public class PluginListController {
                             + " is already installed. To manually update a plugin remove it first.");
                     messageDialog.open();
                 } else {
-                    final File pluginDir = new File(IMAGEJ_BASE_Plugin.getEclipsePluginFolderPath());
+                    final File pluginDir = new File(KNIMEIMAGEJPlugin.getEclipsePluginFolderPath());
                     success = FragmentWrapperUtil.installImageJPlugin(pluginDir, jarPath);
 
                     if (success) {
@@ -173,8 +173,8 @@ public class PluginListController {
             // in active state
             if (m_pluginManager.containsKey(pluginName)
                     && (m_pluginManager.get(pluginName).m_state == PluginState.STATE.ACTIVE)) {
-                if (IMAGEJ_BASE_Plugin.checkFolderPath(IMAGEJ_BASE_Plugin.getEclipsePluginFolderPath())) {
-                    final File pluginDir = new File(IMAGEJ_BASE_Plugin.getEclipsePluginFolderPath());
+                if (KNIMEIMAGEJPlugin.checkFolderPath(KNIMEIMAGEJPlugin.getEclipsePluginFolderPath())) {
+                    final File pluginDir = new File(KNIMEIMAGEJPlugin.getEclipsePluginFolderPath());
 
                     final boolean success = FragmentWrapperUtil.uninstallImageJPlugin(pluginDir, pluginName);
 
@@ -201,7 +201,7 @@ public class PluginListController {
      * @return path of a user selected ImageJ plugin jar or null
      */
     private File selectImageJPluginJar(final Shell parentShell) {
-        if (!IMAGEJ_BASE_Plugin.checkFolderPath(IMAGEJ_BASE_Plugin.getEclipsePluginFolderPath())) {
+        if (!KNIMEIMAGEJPlugin.checkFolderPath(KNIMEIMAGEJPlugin.getEclipsePluginFolderPath())) {
             // the set folder path is not correct
             final MessageBox messageDialog = new MessageBox(parentShell, (SWT.ICON_WARNING | SWT.OK));
             messageDialog.setMessage("The KNIME plugins directory has to be specified first");
@@ -236,8 +236,8 @@ public class PluginListController {
      * @return the names of the installed plugins or and empty array if the plugin folder specification is not correct.
      */
     private String[] listInstalledPlugins() {
-        final String folderPath = IMAGEJ_BASE_Plugin.getEclipsePluginFolderPath();
-        if (!IMAGEJ_BASE_Plugin.checkFolderPath(folderPath)) { // no correct
+        final String folderPath = KNIMEIMAGEJPlugin.getEclipsePluginFolderPath();
+        if (!KNIMEIMAGEJPlugin.checkFolderPath(folderPath)) { // no correct
             // folder path
             // => no
             // dynamic

@@ -4,13 +4,7 @@ Bundle-Name: ImageJ1
 Bundle-SymbolicName: org.knime.knip.imagej1;singleton:=true
 Bundle-Version: 0.7.6.qualifier
 Bundle-Vendor: University of Konstanz
-Fragment-Host: org.knime.knip.imagej2.core;bundle-version="0.7.1"
+Fragment-Host: org.knime.knip.imagej2.core;bundle-version="0.7.6.qualifier"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .
-Import-Package: org.knime.knip.base.data.img,
- org.knime.knip.base.exceptions,
- org.knime.knip.base.node,
- org.knime.knip.base.node.dialog,
- org.knime.knip.base.node.nodesettings,
- org.knime.knip.base.nodes.io.kernel
 Require-Bundle: org.knime.knip.io;bundle-version="[1.1.0,1.1.1)"

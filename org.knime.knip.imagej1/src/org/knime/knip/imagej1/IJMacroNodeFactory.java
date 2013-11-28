@@ -107,7 +107,7 @@ import org.knime.knip.imagej1.macro.PureCodeIJMacro;
 import org.knime.knip.imagej1.macro.SharpenIJMacro;
 import org.knime.knip.imagej1.macro.SubstractBackgroundIJMacro;
 import org.knime.knip.imagej1.macro.WatershedIJMacro;
-import org.knime.knip.imagej2.core.IJGateway;
+import org.knime.knip.imagej1.prefs.IJ1Preferences;
 
 /**
  * {@link NodeFactory} to run {@link IJMacro}s
@@ -205,7 +205,8 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                 m_exec = exec;
                 m_resTableContainer = null;
 
-                IJGateway.initIJPluginsDirectory();
+                System.setProperty("plugins.dir", IJ1Preferences.getIJ1PluginPath());
+                System.out.println("IJ plugin path: " + IJ1Preferences.getIJ1PluginPath());
             }
 
             private DataTableSpec createResultTableSpec(final ResultsTable table) {

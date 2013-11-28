@@ -46,7 +46,7 @@
  * --------------------------------------------------------------------- *
  *
  */
-package org.knime.knip.imagej2.base.preferences;
+package org.knime.knip.imagej2.core.preferences;
 
 /**
  * helper class that stores meta information about a plugin during installation and removal. Consider e.g. that a plugin

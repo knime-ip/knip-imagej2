@@ -46,11 +46,15 @@
  * --------------------------------------------------------------------- *
  *
  */
-package org.knime.knip.imagej2.base;
+package org.knime.knip.imagej2.core.preferences;
 
 import java.io.File;
+import java.net.URL;
 
-import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.knime.knip.imagej2.core.KNIMEIMAGEJPlugin;
 
 /**
  * TODO Auto-generated
@@ -59,67 +63,33 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
-public class IMAGEJ_BASE_Plugin extends AbstractUIPlugin {
-
-    /** The plugin ID. */
-    public static final String PLUGIN_ID = "org.knime.knip.imagej2";
-
-    /** id of the eclipse folder path property. */
-    public static final String PLUGIN_FOLDER_PATH = "IMAGEJ_BASE_PLUGIN_ECLIPSE_FOLDER_PATH";
-
-    // The shared instance.
-    private static IMAGEJ_BASE_Plugin plugin;
+public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
     /**
-     * The constructor.
+     * tries to init the 'plugins' folder path with the 'plugins' folder of the running eclipse installation.
      */
-    public IMAGEJ_BASE_Plugin() {
-        plugin = this;
-    }
+    @Override
+    public void initializeDefaultPreferences() {
+        final IPreferenceStore store = KNIMEIMAGEJPlugin.getDefault().getPreferenceStore();
 
-    /**
-     * Returns the shared instance.
-     * 
-     * @return Singleton instance of the plugin
-     */
-    public static IMAGEJ_BASE_Plugin getDefault() {
-        return plugin;
-    }
+        // something like file:/C:/x/y
+        final URL eclipseURL = Platform.getInstallLocation().getURL();
 
-    /**
-     * @return the folder path from the properties or an empty string if no correct folder path is specified
-     */
-    public static String getEclipsePluginFolderPath() {
-        if (getDefault().getPreferenceStore().contains(IMAGEJ_BASE_Plugin.PLUGIN_FOLDER_PATH)) {
-            final String path = getDefault().getPreferenceStore().getString(IMAGEJ_BASE_Plugin.PLUGIN_FOLDER_PATH);
-            if (checkFolderPath(path)) {
-                return path;
+        if (eclipseURL != null) {
+
+            final File t = new File(eclipseURL.getPath()); // returns /C:/x/y...
+            final String eclipsePath = t.getAbsolutePath(); // finally C:/x/y
+
+            if (KNIMEIMAGEJPlugin.checkFolderPath(eclipsePath + File.separator + "plugins")) {
+                store.setDefault(KNIMEIMAGEJPlugin.PLUGIN_FOLDER_PATH, eclipsePath + File.separator + "plugins");
+            } else {
+                store.setDefault(KNIMEIMAGEJPlugin.PLUGIN_FOLDER_PATH, "");
             }
-        }
-        return "";
-    }
 
-    /**
-     * @param path string that should be tested
-     * @return true if the path string points to a 'plugins' directory false for all other cases including the empty
-     *         string and null
-     */
-    public static boolean checkFolderPath(String path) {
-        if (path == null) {
-            return false;
-        }
-
-        path = path.trim();
-        if (path.length() == 0) { // no value selected
-            return false;
-        }
-        final File file = new File(path);
-
-        if (file.isDirectory()) {
-            return file.getName().equals("plugins");
         } else {
-            return false;
+            store.setDefault(KNIMEIMAGEJPlugin.PLUGIN_FOLDER_PATH, "");
         }
+
     }
 
 }
