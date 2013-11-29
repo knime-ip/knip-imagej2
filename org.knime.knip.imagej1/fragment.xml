@@ -25,5 +25,20 @@
             path="/community/knip/">
       </category>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.knime.knip.imagej1.prefs.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.knime.knip.base.prefs.MainPreferencePage"
+            class="org.knime.knip.imagej1.prefs.IJ1PreferencePage"
+            id="org.knime.knip.imagej1.prefs.IJ1PreferencePage"
+            name="ImageJ1 Preferences">
+      </page>
+   </extension>
 
 </fragment>

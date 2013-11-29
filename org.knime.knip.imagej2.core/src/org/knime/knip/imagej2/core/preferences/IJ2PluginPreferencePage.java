@@ -46,7 +46,7 @@
  * --------------------------------------------------------------------- *
  *
  */
-package org.knime.knip.imagej2.base.preferences;
+package org.knime.knip.imagej2.core.preferences;
 
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
@@ -75,7 +75,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
-public class ImageJPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
+public class IJ2PluginPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
     private List m_pluginList;
 
@@ -99,7 +99,7 @@ public class ImageJPreferencePage extends PreferencePage implements IWorkbenchPr
     /**
      * Constructor for Preference Page
      */
-    public ImageJPreferencePage() {
+    public IJ2PluginPreferencePage() {
         super();
         noDefaultAndApplyButton();
     }

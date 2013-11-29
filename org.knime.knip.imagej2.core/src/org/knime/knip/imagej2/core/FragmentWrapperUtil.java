@@ -46,7 +46,7 @@
  * --------------------------------------------------------------------- *
  *
  */
-package org.knime.knip.imagej2.base;
+package org.knime.knip.imagej2.core;
 
 import java.io.BufferedWriter;
 import java.io.File;

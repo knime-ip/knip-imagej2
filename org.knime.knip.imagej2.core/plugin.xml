@@ -29,4 +29,19 @@
               path="/community/knip/">
         </category>
      </extension>
+     <extension
+           point="org.eclipse.core.runtime.preferences">
+        <initializer
+              class="org.knime.knip.imagej2.core.preferences.PreferenceInitializer">
+        </initializer>
+     </extension>
+     <extension
+           point="org.eclipse.ui.preferencePages">
+        <page
+              category="org.knime.knip.base.prefs.MainPreferencePage"
+              class="org.knime.knip.imagej2.core.preferences.IJ2PluginPreferencePage"
+              id="org.knime.knip.imagej2.core.preferences.IJ2PluginPreferencePage"
+              name="ImageJ2 Plugin Installation (experimental)">
+        </page>
+     </extension>
 </plugin>
