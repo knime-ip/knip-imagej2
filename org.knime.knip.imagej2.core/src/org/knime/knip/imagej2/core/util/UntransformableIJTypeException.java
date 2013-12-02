@@ -65,7 +65,7 @@ public class UntransformableIJTypeException extends KNIPRuntimeException {
      */
     public UntransformableIJTypeException(final Type<?> type) {
         super("Can't transform ImgLib2 type (" + type.getClass()
-                + ") to ImageJ primitive. Use different type. Missing Cell has been created!");
+                + ") to ImageJ primitive. Convert your image to different type (e.g. using Converter)!");
     }
 
     /**

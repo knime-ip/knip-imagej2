@@ -67,12 +67,10 @@ import net.imglib2.ops.operation.SubsetOperations;
 import net.imglib2.ops.operation.iterableinterval.unary.Inset;
 import net.imglib2.type.numeric.RealType;
 
-import org.apache.log4j.Logger;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataType;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.node.BufferedDataContainer;
@@ -91,6 +89,7 @@ import org.knime.knip.base.data.img.ImgPlusCell;
 import org.knime.knip.base.data.img.ImgPlusCellFactory;
 import org.knime.knip.base.data.img.ImgPlusValue;
 import org.knime.knip.base.exceptions.KNIPException;
+import org.knime.knip.base.exceptions.KNIPRuntimeException;
 import org.knime.knip.base.node.GenericValueToCellNodeFactory;
 import org.knime.knip.base.node.ValueToCellNodeDialog;
 import org.knime.knip.base.node.ValueToCellNodeModel;
@@ -258,13 +257,10 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                                 m_macro.runOn(new ImgPlus<T>(new ImgView<T>(subsetview, img.factory()), meta),
                                               matchingType);
                     } catch (UntransformableIJTypeException e) {
-                        Logger.getLogger(IJMacro.class).warn(e);
-                        return (ImgPlusCell)DataType.getMissingCell();
+                        throw new KNIPRuntimeException(e.getMessage());
                     } catch (Exception e) {
-                        Logger.getLogger(IJMacro.class)
-                                .error("The specified macro has thrown an error while execution. Make sure that the used plugins are available in the selected IJ1 plugin folder!",
-                                       e);
-                        return (ImgPlusCell)DataType.getMissingCell();
+                        throw new KNIPRuntimeException(
+                                "The specified macro has thrown an error while execution. Make sure that the used plugins are available in the selected IJ1 plugin folder!");
                     }
 
                     interval.min(min);
