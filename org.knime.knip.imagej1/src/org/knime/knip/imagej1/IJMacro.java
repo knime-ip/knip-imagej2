@@ -63,7 +63,6 @@ import net.imglib2.meta.ImgPlusMetadata;
 import net.imglib2.ops.operation.Operations;
 import net.imglib2.type.numeric.RealType;
 
-import org.knime.core.node.NodeLogger;
 import org.knime.knip.imagej2.core.util.IJToImg;
 import org.knime.knip.imagej2.core.util.ImgToIJ;
 
@@ -76,25 +75,27 @@ import org.knime.knip.imagej2.core.util.ImgToIJ;
 public class IJMacro {
 
     // private final String m_ijDirectory;
-    private final boolean m_redirectStreams;
-
     private final String m_code;
 
     private ImgPlus<? extends RealType<?>> m_resImg;
 
     private ResultsTable m_resTable;
 
+    /**
+     * @param code
+     */
     public IJMacro(final String code) {
-        this(false, code);
-    }
-
-    public IJMacro(final boolean redirectStreams, final String code) {
-        // m_ijDirectory = ijDirectory;
-        m_redirectStreams = redirectStreams;
         m_code = code;
         Interpreter.batchMode = true;
     }
 
+    /**
+     * Run the specified macro
+     *
+     * @param img {@link ImgPlus} to operate on
+     * @param matchingType matching type
+     * @return the matching type
+     */
     public final RealType<?> runOn(final ImgPlus<? extends RealType<?>> img, final RealType<?> matchingType) {
         final Map<String, ImgPlus<? extends RealType<?>>> map = new HashMap<String, ImgPlus<? extends RealType<?>>>();
         map.put("A", img);
@@ -104,10 +105,6 @@ public class IJMacro {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private final RealType<?> runOn(final Map<String, ImgPlus<? extends RealType<?>>> imgs, RealType<?> matchingType) {
 
-        if (m_redirectStreams) {
-            System.setErr(new NodeLoggerPrintStream(NodeLogger.getLogger(IJMacro.class), NodeLogger.LEVEL.ERROR));
-            System.setOut(new NodeLoggerPrintStream(NodeLogger.getLogger(IJMacro.class), NodeLogger.LEVEL.INFO));
-        }
         m_resTable = ResultsTable.getResultsTable();
         // TODO Run different ImageJ instances?
         synchronized (m_resTable) {
@@ -162,42 +159,16 @@ public class IJMacro {
         return matchingType;
     }
 
-    // private static TableModel parseResultTable(ResultsTable res) {
-    // int rows = res.getCounter();
-    // if (rows == 0)
-    // return new DefaultTableModel(new Object[0][0], new String[0]);
-    // // Ignore null columns
-    // int cols = 1;
-    // for (int i = 0; i < res.getLastColumn(); i++) {
-    // if (res.getColumn(i) != null)
-    // cols++;
-    // }
-    // Object[][] data = new Object[rows][1 + cols];
-    // String[] columns = new String[1 + cols];
-    // columns[0] = "Label";
-    // String label;
-    // for (int i = 0; i < res.getCounter(); i++) {
-    // label = res.getLabel(i);
-    // data[i][0] = label != null ? label : "";
-    // }
-    // int r, ijc = 0;
-    // float[] column;
-    // for (int realc = 1; realc <= cols; realc++) {
-    // while ((column = res.getColumn(ijc)) == null)
-    // ijc++;
-    // columns[realc] = res.getColumnHeading(ijc);
-    // for (r = 0; r < res.getCounter(); r++) {
-    // data[r][realc] = column[r];
-    // }
-    // ijc++;
-    // }
-    // return new DefaultTableModel(data, columns);
-    // }
-
+    /**
+     * @return the result {@link ImgPlus}
+     */
     public final ImgPlus<? extends RealType<?>> resImgPlus() {
         return m_resImg;
     }
 
+    /**
+     * @return {@link ResultsTable} of this macro
+     */
     public final ResultsTable resTable() {
         return m_resTable;
     }

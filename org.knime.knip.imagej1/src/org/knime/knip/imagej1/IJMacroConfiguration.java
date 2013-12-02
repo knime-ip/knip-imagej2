@@ -75,463 +75,504 @@ import org.knime.knip.base.nodes.io.kernel.SerializableConfiguration;
 import org.knime.knip.base.nodes.io.kernel.SerializableSetting;
 
 /**
- * 
+ * Configuration for a default IJMacro
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
- * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael
- *         Zinsmaier</a>
- * @author schoenenf
+ * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
+ * @author Felix Schoenenberger (University of Konstanz)
  */
-public abstract class IJMacroConfiguration extends
-		SerializableConfiguration<String> {
-
-	private final static DecimalFormat FORMAT_INTEGER = new DecimalFormat("#0");
-
-	private final static DecimalFormat FORMAT_DOUBLE = new DecimalFormat("#0.0");
-
-	private final String[] m_cachedSettings;
-
-	private JPanel m_jpCodePanel;
-
-	private JCheckBox m_jcbUseCode;
-
-	private JTextArea m_jtaCodeView;
-
-	private JPanel m_jpContent;
-
-	private GridBagConstraints m_gbc;
-
-	private final ArrayList<Settings> m_settings;
-
-	private final ActionListener m_updateTemplateListener = new ActionListener() {
-
-		@Override
-		public void actionPerformed(final ActionEvent arg0) {
-			updateTemplate();
-		}
-	};
-
-	public IJMacroConfiguration() {
-		initGui();
-		m_settings = new ArrayList<IJMacroConfiguration.Settings>();
-		codeOptions();
-		m_cachedSettings = new String[m_settings.size()];
-	}
-
-	private final void initGui() {
-		m_jtaCodeView = new JTextArea();
-		m_jtaCodeView.setLineWrap(true);
-		m_jtaCodeView.setWrapStyleWord(true);
-		m_jtaCodeView.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(final FocusEvent e) {
-				m_jcbUseCode.setSelected(true);
-			}
-		});
-		m_jcbUseCode = new JCheckBox("Use modified code!");
-		m_jcbUseCode.addChangeListener(new ChangeListener() {
-
-			@Override
-			public void stateChanged(final ChangeEvent e) {
-				updateTemplate();
-				for (final Component c : m_jpContent.getComponents()) {
-					c.setEnabled(!m_jcbUseCode.isSelected());
-				}
-			}
-		});
-		m_jpCodePanel = new JPanel(new BorderLayout());
-		m_jpCodePanel.add(new JScrollPane(m_jtaCodeView), BorderLayout.CENTER);
-		m_jpCodePanel.add(m_jcbUseCode, BorderLayout.SOUTH);
-		m_jpContent = new JPanel(new GridBagLayout());
-		m_gbc = new GridBagConstraints();
-		m_gbc.gridy = 0;
-		m_gbc.ipadx = 5;
-		m_gbc.ipady = 5;
-		m_gbc.fill = GridBagConstraints.BOTH;
-	}
-
-	private void updateTemplate() {
-		if (!m_jcbUseCode.isSelected()) {
-			try {
-				validate();
-			} catch (InvalidSettingsException e) {
-			}
-			m_jtaCodeView.setText(String.format(codeTemplate(),
-					m_cachedSettings));
-		}
-	}
-
-	protected abstract String codeTemplate();
-
-	protected abstract void codeOptions();
-
-	protected abstract Class<? extends IJMacroConfiguration> configrationClass();
-
-	protected final void loadFromSetting(final MacroSetting setting) {
-		System.arraycopy(setting.cachedSettings, 0, m_cachedSettings, 0,
-				m_cachedSettings.length);
-		for (int i = 0; i < m_cachedSettings.length; i++) {
-			m_settings.get(i).setValue(m_cachedSettings[i]);
-		}
-		m_jcbUseCode.setSelected(setting.usedTemplate);
-		m_jtaCodeView.setText(setting.code);
-	}
-
-	/*
-	 * SerializableConfiguration API
-	 */
-
-	@Override
-	public JComponent getPreviewPanel() {
-		m_updateTemplateListener.actionPerformed(null);
-		return m_jpCodePanel;
-	}
-
-	@Override
-	public JComponent getConfigurationPanel() {
-		return m_jpContent;
-	}
-
-	@Override
-	public SerializableSetting<String> getSetting() {
-		try {
-			validate();
-		} catch (InvalidSettingsException e) {
-		}
-		String code;
-		if (m_jcbUseCode.isSelected()) {
-			code = m_jtaCodeView.getText();
-		} else {
-			code = String.format(codeTemplate(), m_cachedSettings);
-		}
-		return new MacroSetting(code, m_cachedSettings,
-				m_jcbUseCode.isSelected(), configrationClass());
-	}
-
-	@Override
-	public void validate() throws InvalidSettingsException {
-		if (m_jtaCodeView != null) {
-			for (int i = 0; i < m_cachedSettings.length; i++) {
-				final String error = m_settings.get(i).validate();
-				if (error != null) {
-					throw new InvalidSettingsException(error);
-				}
-				m_cachedSettings[i] = m_settings.get(i).getValue();
-			}
-		}
-	}
-
-	/*
-	 * ImageJ settings helper
-	 */
-	protected final void addMessage(final String label) {
-		final JLabel jl = new JLabel(label);
-		m_gbc.gridx = 0;
-		m_gbc.weightx = 1;
-		m_jpContent.add(jl, m_gbc);
-		m_gbc.gridy++;
-	}
-
-	protected final void addInteger(final String label, final int def) {
-		final JLabel jl = new JLabel(label + ":");
-		m_gbc.gridx = 0;
-		m_gbc.weightx = 0;
-		m_jpContent.add(jl, m_gbc);
-		final JFormattedTextField jft = new JFormattedTextField(FORMAT_INTEGER);
-		jft.addActionListener(m_updateTemplateListener);
-		jft.setText(String.valueOf(def));
-		m_gbc.gridx = 1;
-		m_gbc.weightx = 1;
-		m_jpContent.add(jft, m_gbc);
-		m_gbc.gridy++;
-		m_settings.add(new SettingsInteger(jft));
-	}
-
-	protected final void addDouble(final String label, final double def) {
-		m_gbc.gridx = 0;
-		m_gbc.weightx = 0;
-		m_gbc.gridwidth = 1;
-		m_jpContent.add(new JLabel(label + ":"), m_gbc);
-		final JFormattedTextField jft = new JFormattedTextField(FORMAT_DOUBLE);
-		jft.addActionListener(m_updateTemplateListener);
-		jft.setText(String.valueOf(def));
-		m_gbc.gridx = 1;
-		m_gbc.weightx = 1;
-		m_gbc.gridwidth = 5;
-		m_jpContent.add(jft, m_gbc);
-		m_gbc.gridy++;
-		m_settings.add(new SettingsDouble(jft));
-	}
-
-	protected final void addRange(final String label, final double min,
-			final double max) {
-		m_gbc.gridx = 0;
-		m_gbc.weightx = 0;
-		m_gbc.gridwidth = 1;
-		m_jpContent.add(new JLabel(label + ":"), m_gbc);
-		m_gbc.gridx = 1;
-		m_jpContent.add(new JLabel("["), m_gbc);
-
-		final JFormattedTextField jftMin = new JFormattedTextField(
-				FORMAT_DOUBLE);
-		jftMin.addActionListener(m_updateTemplateListener);
-		m_gbc.gridx = 2;
-		m_gbc.weightx = 1;
-		m_jpContent.add(jftMin, m_gbc);
-
-		m_gbc.gridx = 3;
-		m_gbc.weightx = 0;
-		m_jpContent.add(new JLabel(".."), m_gbc);
-
-		final JFormattedTextField jftMax = new JFormattedTextField(
-				FORMAT_DOUBLE);
-		jftMax.addActionListener(m_updateTemplateListener);
-		m_gbc.gridx = 4;
-		m_gbc.weightx = 1;
-		m_jpContent.add(jftMax, m_gbc);
-
-		if ((m_cachedSettings != null)
-				&& (m_cachedSettings[m_gbc.gridy] != null)) {
-			final String[] minmax = m_cachedSettings[m_gbc.gridy].split("-");
-			jftMin.setText(minmax[0]);
-			jftMax.setText(minmax[1]);
-		} else {
-			jftMin.setText(String.valueOf(min));
-			jftMax.setText(String.valueOf(max));
-		}
-
-		m_gbc.gridx = 5;
-		m_gbc.weightx = 0;
-		m_jpContent.add(new JLabel("]"), m_gbc);
-		m_gbc.gridy++;
-		m_settings.add(new SettingsRange(jftMin, jftMax));
-	}
-
-	protected final void addCheckbox(final String label, final String name,
-			final boolean def) {
-		m_gbc.gridx = 1;
-		m_gbc.weightx = 1;
-		m_gbc.gridwidth = 5;
-		final JCheckBox jcb = new JCheckBox(label);
-		jcb.addActionListener(m_updateTemplateListener);
-		jcb.setSelected(def);
-		m_jpContent.add(jcb, m_gbc);
-		m_gbc.gridy++;
-		m_settings.add(new SettingsBoolean(name, jcb));
-	}
-
-	protected final void addChoice(final String label, final String[] values,
-			final String def) {
-		m_gbc.gridx = 0;
-		m_gbc.weightx = 0;
-		m_gbc.gridwidth = 1;
-		m_jpContent.add(new JLabel(label + ":"), m_gbc);
-		final JComboBox jcb = new JComboBox(values);
-		jcb.addActionListener(m_updateTemplateListener);
-		m_gbc.gridx = 1;
-		m_gbc.weightx = 1;
-		m_gbc.gridwidth = 5;
-		m_jpContent.add(jcb, m_gbc);
-		m_gbc.gridy++;
-		m_settings.add(new SettingsChoice(jcb));
-	}
-
-	private abstract class Settings {
-		public abstract String validate();
-
-		public abstract void setValue(String value);
-
-		public abstract String getValue();
-
-		@Override
-		public String toString() {
-			return getValue();
-		}
-	}
-
-	private class SettingsInteger extends Settings {
-		private final JFormattedTextField m_jft;
-
-		public SettingsInteger(final JFormattedTextField jft) {
-			m_jft = jft;
-		}
-
-		@Override
-		public String validate() {
-			try {
-				Integer.parseInt(m_jft.getText());
-			} catch (final NumberFormatException e) {
-				return e.getMessage();
-			}
-			return null;
-		}
-
-		@Override
-		public String getValue() {
-			return m_jft.getText();
-		}
-
-		@Override
-		public void setValue(final String value) {
-			m_jft.setText("" + value);
-		}
-	}
-
-	private class SettingsDouble extends Settings {
-		private final JFormattedTextField m_jft;
-
-		public SettingsDouble(final JFormattedTextField jft) {
-			m_jft = jft;
-		}
-
-		@Override
-		public String validate() {
-			try {
-				Double.parseDouble(m_jft.getText());
-			} catch (final NumberFormatException e) {
-				return e.getMessage();
-			}
-			return null;
-		}
-
-		@Override
-		public String getValue() {
-			return m_jft.getText();
-		}
-
-		@Override
-		public void setValue(final String value) {
-			m_jft.setText("" + value);
-		}
-	}
-
-	private class SettingsRange extends Settings {
-		private final JFormattedTextField m_jftMin;
-
-		private final JFormattedTextField m_jftMax;
-
-		public SettingsRange(final JFormattedTextField jftMin,
-				final JFormattedTextField jftMax) {
-			m_jftMin = jftMin;
-			m_jftMax = jftMax;
-		}
-
-		@Override
-		public String validate() {
-			try {
-				Double.parseDouble(m_jftMin.getText());
-				Double.parseDouble(m_jftMax.getText());
-			} catch (final NumberFormatException e) {
-				return e.getMessage();
-			}
-			return null;
-		}
-
-		@Override
-		public String getValue() {
-			return m_jftMin.getText() + "-" + m_jftMax.getText();
-		}
-
-		@Override
-		public void setValue(final String value) {
-			final String[] minmax = value.split("-");
-			m_jftMin.setText(minmax[0]);
-			m_jftMax.setText(minmax[1]);
-		}
-	}
-
-	private class SettingsBoolean extends Settings {
-		private final String m_name;
-
-		private final JCheckBox m_jcb;
-
-		public SettingsBoolean(final String name, final JCheckBox jcb) {
-			m_name = name;
-			m_jcb = jcb;
-		}
-
-		@Override
-		public String validate() {
-			return null;
-		}
-
-		@Override
-		public String getValue() {
-			if (m_jcb.isSelected()) {
-				return m_name;
-			}
-			return "";
-		}
-
-		@Override
-		public void setValue(final String value) {
-			m_jcb.setSelected(!value.isEmpty());
-		}
-	}
-
-	private class SettingsChoice extends Settings {
-		private final JComboBox m_jcb;
-
-		public SettingsChoice(final JComboBox jcb) {
-			m_jcb = jcb;
-		}
-
-		@Override
-		public String validate() {
-			return null;
-		}
-
-		@Override
-		public String getValue() {
-			return (String) m_jcb.getSelectedItem();
-		}
-
-		@Override
-		public void setValue(final String value) {
-			m_jcb.setSelectedItem(value);
-		}
-	}
+public abstract class IJMacroConfiguration extends SerializableConfiguration<String> {
+
+    private final static DecimalFormat FORMAT_INTEGER = new DecimalFormat("#0");
+
+    private final static DecimalFormat FORMAT_DOUBLE = new DecimalFormat("#0.0");
+
+    private final String[] m_cachedSettings;
+
+    private JPanel m_jpCodePanel;
+
+    private JCheckBox m_jcbUseCode;
+
+    private JTextArea m_jtaCodeView;
+
+    private JPanel m_jpContent;
+
+    private GridBagConstraints m_gbc;
+
+    private final ArrayList<Settings> m_settings;
+
+    private final ActionListener m_updateTemplateListener = new ActionListener() {
+
+        @Override
+        public void actionPerformed(final ActionEvent arg0) {
+            updateTemplate();
+        }
+    };
+
+    /**
+     * Default constructor
+     */
+    public IJMacroConfiguration() {
+        initGui();
+        m_settings = new ArrayList<IJMacroConfiguration.Settings>();
+        codeOptions();
+        m_cachedSettings = new String[m_settings.size()];
+    }
+
+    private final void initGui() {
+        m_jtaCodeView = new JTextArea();
+        m_jtaCodeView.setLineWrap(true);
+        m_jtaCodeView.setWrapStyleWord(true);
+        m_jtaCodeView.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(final FocusEvent e) {
+                m_jcbUseCode.setSelected(true);
+            }
+        });
+        m_jcbUseCode = new JCheckBox("Use modified code!");
+        m_jcbUseCode.addChangeListener(new ChangeListener() {
+
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                updateTemplate();
+                for (final Component c : m_jpContent.getComponents()) {
+                    c.setEnabled(!m_jcbUseCode.isSelected());
+                }
+            }
+        });
+        m_jpCodePanel = new JPanel(new BorderLayout());
+        m_jpCodePanel.add(new JScrollPane(m_jtaCodeView), BorderLayout.CENTER);
+        m_jpCodePanel.add(m_jcbUseCode, BorderLayout.SOUTH);
+        m_jpContent = new JPanel(new GridBagLayout());
+        m_gbc = new GridBagConstraints();
+        m_gbc.gridy = 0;
+        m_gbc.ipadx = 5;
+        m_gbc.ipady = 5;
+        m_gbc.fill = GridBagConstraints.BOTH;
+    }
+
+    private void updateTemplate() {
+        if (!m_jcbUseCode.isSelected()) {
+            try {
+                validate();
+            } catch (InvalidSettingsException e) {
+            }
+            m_jtaCodeView.setText(String.format(codeTemplate(), m_cachedSettings));
+        }
+    }
+
+    /**
+     * @return the macro template
+     */
+    protected abstract String codeTemplate();
+
+    /**
+     * code options
+     */
+    protected abstract void codeOptions();
+
+    /**
+     * @return configuration class of this {@link IJMacroConfiguration}
+     */
+    protected abstract Class<? extends IJMacroConfiguration> configrationClass();
+
+    /**
+     * @param setting load the settings of the macro from MacroSetting
+     */
+    protected final void loadFromSetting(final MacroSetting setting) {
+        System.arraycopy(setting.cachedSettings, 0, m_cachedSettings, 0, m_cachedSettings.length);
+        for (int i = 0; i < m_cachedSettings.length; i++) {
+            m_settings.get(i).setValue(m_cachedSettings[i]);
+        }
+        m_jcbUseCode.setSelected(setting.usedTemplate);
+        m_jtaCodeView.setText(setting.code);
+    }
+
+    /*
+     * SerializableConfiguration API
+     */
+
+    @Override
+    public JComponent getPreviewPanel() {
+        m_updateTemplateListener.actionPerformed(null);
+        return m_jpCodePanel;
+    }
+
+    @Override
+    public JComponent getConfigurationPanel() {
+        return m_jpContent;
+    }
+
+    @Override
+    public SerializableSetting<String> getSetting() {
+        try {
+            validate();
+        } catch (InvalidSettingsException e) {
+        }
+        String code;
+        if (m_jcbUseCode.isSelected()) {
+            code = m_jtaCodeView.getText();
+        } else {
+            code = String.format(codeTemplate(), m_cachedSettings);
+        }
+        return new MacroSetting(code, m_cachedSettings, m_jcbUseCode.isSelected(), configrationClass());
+    }
+
+    @Override
+    public void validate() throws InvalidSettingsException {
+        if (m_jtaCodeView != null) {
+            for (int i = 0; i < m_cachedSettings.length; i++) {
+                final String error = m_settings.get(i).validate();
+                if (error != null) {
+                    throw new InvalidSettingsException(error);
+                }
+                m_cachedSettings[i] = m_settings.get(i).getValue();
+            }
+        }
+    }
+
+    /**
+     * ImageJ settings helper: Add message
+     *
+     * @param label of the message
+     */
+    protected final void addMessage(final String label) {
+        final JLabel jl = new JLabel(label);
+        m_gbc.gridx = 0;
+        m_gbc.weightx = 1;
+        m_jpContent.add(jl, m_gbc);
+        m_gbc.gridy++;
+    }
+
+    /**
+     * @param label
+     * @param def
+     */
+    protected final void addInteger(final String label, final int def) {
+        final JLabel jl = new JLabel(label + ":");
+        m_gbc.gridx = 0;
+        m_gbc.weightx = 0;
+        m_jpContent.add(jl, m_gbc);
+        final JFormattedTextField jft = new JFormattedTextField(FORMAT_INTEGER);
+        jft.addActionListener(m_updateTemplateListener);
+        jft.setText(String.valueOf(def));
+        m_gbc.gridx = 1;
+        m_gbc.weightx = 1;
+        m_jpContent.add(jft, m_gbc);
+        m_gbc.gridy++;
+        m_settings.add(new SettingsInteger(jft));
+    }
+
+    /**
+     * ImageJ settings helper: add double
+     *
+     * @param label of the parameter
+     * @param def default
+     */
+    protected final void addDouble(final String label, final double def) {
+        m_gbc.gridx = 0;
+        m_gbc.weightx = 0;
+        m_gbc.gridwidth = 1;
+        m_jpContent.add(new JLabel(label + ":"), m_gbc);
+        final JFormattedTextField jft = new JFormattedTextField(FORMAT_DOUBLE);
+        jft.addActionListener(m_updateTemplateListener);
+        jft.setText(String.valueOf(def));
+        m_gbc.gridx = 1;
+        m_gbc.weightx = 1;
+        m_gbc.gridwidth = 5;
+        m_jpContent.add(jft, m_gbc);
+        m_gbc.gridy++;
+        m_settings.add(new SettingsDouble(jft));
+    }
+
+    /**
+     * ImageJ settings helper: Add range double field
+     *
+     * @param label of the parameter
+     * @param min lower bound
+     * @param max upper bound
+     */
+    protected final void addRange(final String label, final double min, final double max) {
+        m_gbc.gridx = 0;
+        m_gbc.weightx = 0;
+        m_gbc.gridwidth = 1;
+        m_jpContent.add(new JLabel(label + ":"), m_gbc);
+        m_gbc.gridx = 1;
+        m_jpContent.add(new JLabel("["), m_gbc);
+
+        final JFormattedTextField jftMin = new JFormattedTextField(FORMAT_DOUBLE);
+        jftMin.addActionListener(m_updateTemplateListener);
+        m_gbc.gridx = 2;
+        m_gbc.weightx = 1;
+        m_jpContent.add(jftMin, m_gbc);
+
+        m_gbc.gridx = 3;
+        m_gbc.weightx = 0;
+        m_jpContent.add(new JLabel(".."), m_gbc);
+
+        final JFormattedTextField jftMax = new JFormattedTextField(FORMAT_DOUBLE);
+        jftMax.addActionListener(m_updateTemplateListener);
+        m_gbc.gridx = 4;
+        m_gbc.weightx = 1;
+        m_jpContent.add(jftMax, m_gbc);
+
+        if ((m_cachedSettings != null) && (m_cachedSettings[m_gbc.gridy] != null)) {
+            final String[] minmax = m_cachedSettings[m_gbc.gridy].split("-");
+            jftMin.setText(minmax[0]);
+            jftMax.setText(minmax[1]);
+        } else {
+            jftMin.setText(String.valueOf(min));
+            jftMax.setText(String.valueOf(max));
+        }
+
+        m_gbc.gridx = 5;
+        m_gbc.weightx = 0;
+        m_jpContent.add(new JLabel("]"), m_gbc);
+        m_gbc.gridy++;
+        m_settings.add(new SettingsRange(jftMin, jftMax));
+    }
+
+    /**
+     * ImageJ settings helper: add {@link JCheckBox}
+     *
+     * @param label of the checkbox
+     * @param name of the checkbox
+     * @param def default selectio
+     */
+    protected final void addCheckbox(final String label, final String name, final boolean def) {
+        m_gbc.gridx = 1;
+        m_gbc.weightx = 1;
+        m_gbc.gridwidth = 5;
+        final JCheckBox jcb = new JCheckBox(label);
+        jcb.addActionListener(m_updateTemplateListener);
+        jcb.setSelected(def);
+        m_jpContent.add(jcb, m_gbc);
+        m_gbc.gridy++;
+        m_settings.add(new SettingsBoolean(name, jcb));
+    }
+
+    /**
+     * Add {@link JComboBox}
+     *
+     * @param label of the {@link JComboBox}
+     * @param values of the combobox
+     * @param def default selection of the combobox
+     */
+    protected final void addChoice(final String label, final String[] values, final String def) {
+        m_gbc.gridx = 0;
+        m_gbc.weightx = 0;
+        m_gbc.gridwidth = 1;
+        m_jpContent.add(new JLabel(label + ":"), m_gbc);
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        final JComboBox jcb = new JComboBox(values);
+        jcb.addActionListener(m_updateTemplateListener);
+        m_gbc.gridx = 1;
+        m_gbc.weightx = 1;
+        m_gbc.gridwidth = 5;
+        m_jpContent.add(jcb, m_gbc);
+        m_gbc.gridy++;
+        m_settings.add(new SettingsChoice(jcb));
+    }
+
+    private abstract class Settings {
+        public abstract String validate();
+
+        public abstract void setValue(String value);
+
+        public abstract String getValue();
+
+        @Override
+        public String toString() {
+            return getValue();
+        }
+    }
+
+    private class SettingsInteger extends Settings {
+        private final JFormattedTextField m_jft;
+
+        public SettingsInteger(final JFormattedTextField jft) {
+            m_jft = jft;
+        }
+
+        @Override
+        public String validate() {
+            try {
+                Integer.parseInt(m_jft.getText());
+            } catch (final NumberFormatException e) {
+                return e.getMessage();
+            }
+            return null;
+        }
+
+        @Override
+        public String getValue() {
+            return m_jft.getText();
+        }
+
+        @Override
+        public void setValue(final String value) {
+            m_jft.setText("" + value);
+        }
+    }
+
+    private class SettingsDouble extends Settings {
+        private final JFormattedTextField m_jft;
+
+        public SettingsDouble(final JFormattedTextField jft) {
+            m_jft = jft;
+        }
+
+        @Override
+        public String validate() {
+            try {
+                Double.parseDouble(m_jft.getText());
+            } catch (final NumberFormatException e) {
+                return e.getMessage();
+            }
+            return null;
+        }
+
+        @Override
+        public String getValue() {
+            return m_jft.getText();
+        }
+
+        @Override
+        public void setValue(final String value) {
+            m_jft.setText("" + value);
+        }
+    }
+
+    private class SettingsRange extends Settings {
+        private final JFormattedTextField m_jftMin;
+
+        private final JFormattedTextField m_jftMax;
+
+        public SettingsRange(final JFormattedTextField jftMin, final JFormattedTextField jftMax) {
+            m_jftMin = jftMin;
+            m_jftMax = jftMax;
+        }
+
+        @Override
+        public String validate() {
+            try {
+                Double.parseDouble(m_jftMin.getText());
+                Double.parseDouble(m_jftMax.getText());
+            } catch (final NumberFormatException e) {
+                return e.getMessage();
+            }
+            return null;
+        }
+
+        @Override
+        public String getValue() {
+            return m_jftMin.getText() + "-" + m_jftMax.getText();
+        }
+
+        @Override
+        public void setValue(final String value) {
+            final String[] minmax = value.split("-");
+            m_jftMin.setText(minmax[0]);
+            m_jftMax.setText(minmax[1]);
+        }
+    }
+
+    private class SettingsBoolean extends Settings {
+        private final String m_name;
+
+        private final JCheckBox m_jcb;
+
+        public SettingsBoolean(final String name, final JCheckBox jcb) {
+            m_name = name;
+            m_jcb = jcb;
+        }
+
+        @Override
+        public String validate() {
+            return null;
+        }
+
+        @Override
+        public String getValue() {
+            if (m_jcb.isSelected()) {
+                return m_name;
+            }
+            return "";
+        }
+
+        @Override
+        public void setValue(final String value) {
+            m_jcb.setSelected(!value.isEmpty());
+        }
+    }
+
+    private class SettingsChoice extends Settings {
+
+        @SuppressWarnings("rawtypes")
+        private final JComboBox m_jcb;
+
+        public SettingsChoice(@SuppressWarnings("rawtypes") final JComboBox jcb) {
+            m_jcb = jcb;
+        }
+
+        @Override
+        public String validate() {
+            return null;
+        }
+
+        @Override
+        public String getValue() {
+            return (String)m_jcb.getSelectedItem();
+        }
+
+        @Override
+        public void setValue(final String value) {
+            m_jcb.setSelectedItem(value);
+        }
+    }
 }
 
 class MacroSetting extends SerializableSetting<String> {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	final String code;
+    final String code;
 
-	final String[] cachedSettings;
+    final String[] cachedSettings;
 
-	final boolean usedTemplate;
+    final boolean usedTemplate;
 
-	final Class<? extends IJMacroConfiguration> config;
+    final Class<? extends IJMacroConfiguration> config;
 
-	public MacroSetting(final String code, final String[] cachedSettings,
-			final boolean usedTemplate,
-			final Class<? extends IJMacroConfiguration> config) {
-		super();
-		this.code = code;
-		this.cachedSettings = cachedSettings;
-		this.usedTemplate = usedTemplate;
-		this.config = config;
-	}
+    @SuppressWarnings("hiding")
+    public MacroSetting(final String code, final String[] cachedSettings, final boolean usedTemplate,
+                        final Class<? extends IJMacroConfiguration> config) {
+        super();
+        this.code = code;
+        this.cachedSettings = cachedSettings;
+        this.usedTemplate = usedTemplate;
+        this.config = config;
+    }
 
-	@Override
-	public String get() {
-		return code;
-	}
+    @Override
+    public String get() {
+        return code;
+    }
 
-	@Override
-	protected SerializableConfiguration<String> createConfiguration() {
-		try {
+    @Override
+    protected SerializableConfiguration<String> createConfiguration() {
+        try {
 
-			final IJMacroConfiguration conf = config.newInstance();
-			conf.loadFromSetting(this);
-			return conf;
-		} catch (final InstantiationException e) {
-			e.printStackTrace();
-		} catch (final IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+            final IJMacroConfiguration conf = config.newInstance();
+            conf.loadFromSetting(this);
+            return conf;
+        } catch (final InstantiationException e) {
+            e.printStackTrace();
+        } catch (final IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

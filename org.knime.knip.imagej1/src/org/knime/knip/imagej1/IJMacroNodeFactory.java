@@ -202,7 +202,7 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                     m_flowVarCode.setStringValue("");
                 }
 
-                m_macro = new IJMacro(true, code);
+                m_macro = new IJMacro(code);
                 m_imgCellFactory = new ImgPlusCellFactory(exec);
 
                 m_exec = exec;
