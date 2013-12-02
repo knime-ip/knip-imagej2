@@ -53,7 +53,6 @@ import ij.WindowManager;
 import ij.macro.Interpreter;
 import ij.measure.ResultsTable;
 
-import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -64,7 +63,6 @@ import net.imglib2.meta.ImgPlusMetadata;
 import net.imglib2.ops.operation.Operations;
 import net.imglib2.type.numeric.RealType;
 
-import org.apache.log4j.Logger;
 import org.knime.core.node.NodeLogger;
 import org.knime.knip.imagej2.core.util.IJToImg;
 import org.knime.knip.imagej2.core.util.ImgToIJ;
@@ -104,84 +102,61 @@ public class IJMacro {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public final RealType<?> runOn(final Map<String, ImgPlus<? extends RealType<?>>> imgs, RealType<?> matchingType) {
-        // final String oldUserDir = System.getProperty("user.dir");
-        final PrintStream out = System.out;
-        final PrintStream err = System.err;
-        try {
-            // if (m_ijDirectory != null) {
-            // NodeLogger
-            // .getLogger(IJMacro.class)
-            // .info("System property \"user.dir\" temporary redirected to provide ImageJ plugins path.");
-            // System.setProperty("user.dir", m_ijDirectory);
-            // }
-            // Redirect System.out and System.err WARN: this
-            // workaround may
-            // affect the system.out of parallel running nodes -> is
-            // there a
-            // better way? but anyway, system.out is a bad habit
-            if (m_redirectStreams) {
-                System.setErr(new NodeLoggerPrintStream(NodeLogger.getLogger(IJMacro.class), NodeLogger.LEVEL.ERROR));
-                System.setOut(new NodeLoggerPrintStream(NodeLogger.getLogger(IJMacro.class), NodeLogger.LEVEL.INFO));
+    private final RealType<?> runOn(final Map<String, ImgPlus<? extends RealType<?>>> imgs, RealType<?> matchingType) {
+
+        if (m_redirectStreams) {
+            System.setErr(new NodeLoggerPrintStream(NodeLogger.getLogger(IJMacro.class), NodeLogger.LEVEL.ERROR));
+            System.setOut(new NodeLoggerPrintStream(NodeLogger.getLogger(IJMacro.class), NodeLogger.LEVEL.INFO));
+        }
+        m_resTable = ResultsTable.getResultsTable();
+        // TODO Run different ImageJ instances?
+        synchronized (m_resTable) {
+            final Interpreter inter = new Interpreter();
+            // Prepare images
+            for (final Entry<String, ImgPlus<? extends RealType<?>>> pair : imgs.entrySet()) {
+                final ImagePlus plus = Operations.compute(new ImgToIJ(), pair.getValue());
+                plus.setTitle(pair.getKey());
+                Interpreter.addBatchModeImage(plus);
+                WindowManager.setTempCurrentImage(plus);
             }
-            m_resTable = ResultsTable.getResultsTable();
-            // TODO Run different ImageJ instances?
-            synchronized (m_resTable) {
-                final Interpreter inter = new Interpreter();
-                // Prepare images
-                for (final Entry<String, ImgPlus<? extends RealType<?>>> pair : imgs.entrySet()) {
-                    final ImagePlus plus = Operations.compute(new ImgToIJ(), pair.getValue());
-                    plus.setTitle(pair.getKey());
-                    Interpreter.addBatchModeImage(plus);
-                    WindowManager.setTempCurrentImage(plus);
-                }
-                m_resTable.reset();
+            m_resTable.reset();
 
-                // This must be the run method with two string
-                // arguments
-                inter.run(m_code, "");
-                final ImagePlus resPlus = Interpreter.getLastBatchModeImage();
-                if (resPlus != null) {
-                    final Img<?> org = imgs.get(resPlus.getTitle());
-                    // If the image was only modified,
-                    // truncate to the same
-                    // dimensionality
-                    final int ndim = org != null ? org.numDimensions() : -1;
+            // This must be the run method with two string
+            // arguments
+            inter.run(m_code, "");
+            final ImagePlus resPlus = Interpreter.getLastBatchModeImage();
+            if (resPlus != null) {
+                final Img<?> org = imgs.get(resPlus.getTitle());
+                // If the image was only modified,
+                // truncate to the same
+                // dimensionality
+                final int ndim = org != null ? org.numDimensions() : -1;
 
-                    if (matchingType == null) {
-                        matchingType = IJToImg.createMatchingType(resPlus);
-                    }
-
-                    final Img<? extends RealType<?>> res =
-                            Operations.compute(new IJToImg(matchingType, false, ndim), resPlus);
-
-                    if ((org != null) && (org instanceof ImgPlusMetadata)) {
-                        // If the image was only
-                        // modified and it holds meta
-                        // data, drag them along
-                        m_resImg = new ImgPlus(res, (ImgPlusMetadata)org);
-                    } else {
-                        m_resImg = new ImgPlus(res);
-                    }
+                if (matchingType == null) {
+                    matchingType = IJToImg.createMatchingType(resPlus);
                 }
 
-                // m_resTable = parseResultTable(rt);
-                // Clean up
-                while (WindowManager.getImageCount() > 0) {
-                    final ImagePlus current = WindowManager.getCurrentImage();
-                    Interpreter.removeBatchModeImage(current);
-                    current.close();
+                final Img<? extends RealType<?>> res =
+                        Operations.compute(new IJToImg(matchingType, false, ndim), resPlus);
+
+                if ((org != null) && (org instanceof ImgPlusMetadata)) {
+                    // If the image was only
+                    // modified and it holds meta
+                    // data, drag them along
+                    m_resImg = new ImgPlus(res, (ImgPlusMetadata)org);
+                } else {
+                    m_resImg = new ImgPlus(res);
                 }
-                WindowManager.closeAllWindows();
             }
-        } catch (Exception e) {
-            Logger.getLogger(IJMacro.class)
-                    .error("Exception occured in IJMacro. Make sure that all plugins which are used in the macro are available in the selected plugins folder.");
-            return null;
-        } finally {
-            // System.setProperty("user.dir", oldUserDir);
-            System.setErr(out);
-            System.setOut(err);
+
+            // m_resTable = parseResultTable(rt);
+            // Clean up
+            while (WindowManager.getImageCount() > 0) {
+                final ImagePlus current = WindowManager.getCurrentImage();
+                Interpreter.removeBatchModeImage(current);
+                current.close();
+            }
+            WindowManager.closeAllWindows();
         }
 
         return matchingType;

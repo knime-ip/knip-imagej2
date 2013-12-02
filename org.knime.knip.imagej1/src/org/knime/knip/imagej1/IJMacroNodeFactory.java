@@ -67,10 +67,12 @@ import net.imglib2.ops.operation.SubsetOperations;
 import net.imglib2.ops.operation.iterableinterval.unary.Inset;
 import net.imglib2.type.numeric.RealType;
 
+import org.apache.log4j.Logger;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.node.BufferedDataContainer;
@@ -108,6 +110,7 @@ import org.knime.knip.imagej1.macro.SharpenIJMacro;
 import org.knime.knip.imagej1.macro.SubstractBackgroundIJMacro;
 import org.knime.knip.imagej1.macro.WatershedIJMacro;
 import org.knime.knip.imagej1.prefs.IJ1Preferences;
+import org.knime.knip.imagej2.core.util.UntransformableIJTypeException;
 
 /**
  * {@link NodeFactory} to run {@link IJMacro}s
@@ -250,12 +253,20 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                                     .copyAndCleanImgPlusMetadata(interval, img,
                                                                  new DefaultImgMetadata(subsetview.numDimensions()));
 
-                    matchingType =
-                            m_macro.runOn(new ImgPlus<T>(new ImgView<T>(subsetview, img.factory()), meta), matchingType);
-                    if (matchingType == null || m_macro.resImgPlus() == null) {
-                        throw new KNIPException(
-                                "The specified macro has thrown an error while execution. Make sure that the used plugins are available in the selected IJ1 plugin folder!");
+                    try {
+                        matchingType =
+                                m_macro.runOn(new ImgPlus<T>(new ImgView<T>(subsetview, img.factory()), meta),
+                                              matchingType);
+                    } catch (UntransformableIJTypeException e) {
+                        Logger.getLogger(IJMacro.class).warn(e);
+                        return (ImgPlusCell)DataType.getMissingCell();
+                    } catch (Exception e) {
+                        Logger.getLogger(IJMacro.class)
+                                .error("The specified macro has thrown an error while execution. Make sure that the used plugins are available in the selected IJ1 plugin folder!",
+                                       e);
+                        return (ImgPlusCell)DataType.getMissingCell();
                     }
+
                     interval.min(min);
                     if (res == null) {
                         final long[] dims = new long[img.numDimensions()];

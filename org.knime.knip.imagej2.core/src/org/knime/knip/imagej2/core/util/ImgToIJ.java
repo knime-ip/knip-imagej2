@@ -273,7 +273,9 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
     /**
      * Infers a mapping for the argument picture
      *
-     * @param <T> ImgPlus the mapping shall be based on
+     * @param <T> {@link ImgPlus} the mapping shall be based on
+     * @param img the {@link ImgPlus} to infer the mapping from
+     *
      * @return True when successful, equal to {@link #ImgToIJ.validateMapping}
      */
     public <T> boolean inferMapping(final ImgPlus<T> img) {
@@ -305,7 +307,8 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         if (op.firstElement() instanceof FloatType) {
             return new FloatProcessor((int)op.dimension(0), (int)op.dimension(1));
         }
-        throw new RuntimeException("Can't transform type to ImageJ primitives");
+
+        throw new UntransformableIJTypeException(op.firstElement());
     }
 
     @Override
