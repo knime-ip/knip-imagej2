@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="lib/mpicbg-20111128.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/imglib.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
