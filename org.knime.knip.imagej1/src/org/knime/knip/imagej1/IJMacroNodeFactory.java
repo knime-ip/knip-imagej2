@@ -258,6 +258,8 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                                               matchingType);
                     } catch (UntransformableIJTypeException e) {
                         throw new KNIPRuntimeException(e.getMessage());
+                    } catch (KNIPRuntimeException e) {
+                        throw e;
                     } catch (Exception e) {
                         throw new KNIPRuntimeException(
                                 "The specified macro has thrown an error while execution. Make sure that the used plugins are available in the selected IJ1 plugin folder!");

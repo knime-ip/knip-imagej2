@@ -121,6 +121,7 @@ public class IJMacro {
             // This must be the run method with two string
             // arguments
             inter.run(m_code, "");
+
             final ImagePlus resPlus = Interpreter.getLastBatchModeImage();
             if (resPlus != null) {
                 final Img<?> org = imgs.get(resPlus.getTitle());
