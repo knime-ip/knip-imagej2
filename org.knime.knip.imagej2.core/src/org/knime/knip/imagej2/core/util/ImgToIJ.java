@@ -50,6 +50,7 @@ package org.knime.knip.imagej2.core.util;
 
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.process.BinaryProcessor;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
@@ -291,8 +292,11 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         if ((op.dimension(0) > Integer.MAX_VALUE) || (op.dimension(1) > Integer.MAX_VALUE)) {
             throw new RuntimeException("Dimension exceeds ImageJ capabilities");
         }
-        if ((op.firstElement() instanceof ByteType) || (op.firstElement() instanceof UnsignedByteType)
-                || (op.firstElement() instanceof BitType)) {
+
+        if ((op.firstElement() instanceof BitType)) {
+            return new BinaryProcessor(new ByteProcessor((int)op.dimension(0), (int)op.dimension(1)));
+        }
+        if ((op.firstElement() instanceof ByteType) || (op.firstElement() instanceof UnsignedByteType)) {
             return new ByteProcessor((int)op.dimension(0), (int)op.dimension(1));
         }
         if ((op.firstElement() instanceof ShortType) || (op.firstElement() instanceof UnsignedShortType)) {
