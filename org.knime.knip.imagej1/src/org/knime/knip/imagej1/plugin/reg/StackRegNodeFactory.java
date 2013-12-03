@@ -124,8 +124,6 @@ public class StackRegNodeFactory<T extends RealType<T>> extends
             @Override
             protected ImgPlusCell<T> compute(final ImgPlusValue<T> cellValue) throws IOException {
 
-                // TODO: Logger
-
                 final StackRegOp<T> op =
                         new StackRegOp<T>(TransformationType.valueOf(m_transformationType.getStringValue()));
 
@@ -165,7 +163,7 @@ public class StackRegNodeFactory<T extends RealType<T>> extends
 
             @Override
             public void addDialogComponents() {
-                //
+
             }
         };
     }

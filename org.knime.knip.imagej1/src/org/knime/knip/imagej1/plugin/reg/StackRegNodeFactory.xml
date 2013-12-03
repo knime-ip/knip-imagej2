@@ -5,7 +5,7 @@
 	IBM Corporation - initial API and implementation -->
 <!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
 <knimeNode icon="registration.png" type="Manipulator">
-	<name>StackReg (EPFL Lausanne))</name>
+	<name>StackReg (EPFL Lausanne) (under construction)</name>
 	<shortDescription>
 		Introduction from
 		(http://bigwww.epfl.ch/thevenaz/stackreg/):

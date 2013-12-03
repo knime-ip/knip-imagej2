@@ -57,71 +57,66 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSetFactory;
 import org.knime.core.node.config.ConfigRO;
 import org.knime.knip.imagej1.io.IJImageReaderNodeFactory;
-import org.knime.knip.imagej1.plugin.reg.StackRegNodeFactory;
 
 /**
  *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
- * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael
- *         Zinsmaier</a>
+ * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
 public class ImageJ1NodeSetFactory implements NodeSetFactory {
 
-	private final Map<String, String> m_nodeFactories = new HashMap<String, String>();
+    private final Map<String, String> m_nodeFactories = new HashMap<String, String>();
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Collection<String> getNodeFactoryIds() {
-		m_nodeFactories.put(StackRegNodeFactory.class.getCanonicalName(),
-				"/community/knip/image/process");
-		m_nodeFactories.put(IJMacroNodeFactory.class.getCanonicalName(),
-				"/community/knip/imagej1");
-		m_nodeFactories.put(IJImageReaderNodeFactory.class.getCanonicalName(),
-				"/community/knip/io");
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection<String> getNodeFactoryIds() {
+        //		m_nodeFactories.put(StackRegNodeFactory.class.getCanonicalName(),
+        //				"/community/knip/image/process");
 
-		return m_nodeFactories.keySet();
-	}
+        m_nodeFactories.put(IJMacroNodeFactory.class.getCanonicalName(), "/community/knip/imagej1");
+        m_nodeFactories.put(IJImageReaderNodeFactory.class.getCanonicalName(), "/community/knip/io");
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public Class<? extends NodeFactory<? extends NodeModel>> getNodeFactory(
-			final String id) {
-		try {
-			return (Class<? extends NodeFactory<? extends NodeModel>>) Class
-					.forName(id);
-		} catch (final ClassNotFoundException e) {
-		}
-		return null;
-	}
+        return m_nodeFactories.keySet();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getCategoryPath(final String id) {
-		return m_nodeFactories.get(id);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public Class<? extends NodeFactory<? extends NodeModel>> getNodeFactory(final String id) {
+        try {
+            return (Class<? extends NodeFactory<? extends NodeModel>>)Class.forName(id);
+        } catch (final ClassNotFoundException e) {
+        }
+        return null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getAfterID(final String id) {
-		return "";
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCategoryPath(final String id) {
+        return m_nodeFactories.get(id);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ConfigRO getAdditionalSettings(final String id) {
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getAfterID(final String id) {
+        return "";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ConfigRO getAdditionalSettings(final String id) {
+        return null;
+    }
 
 }
