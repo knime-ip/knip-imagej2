@@ -208,7 +208,6 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                 m_resTableContainer = null;
 
                 System.setProperty("plugins.dir", IJ1Preferences.getIJ1PluginPath());
-                System.out.println("IJ plugin path: " + IJ1Preferences.getIJ1PluginPath());
             }
 
             private DataTableSpec createResultTableSpec(final ResultsTable table) {
