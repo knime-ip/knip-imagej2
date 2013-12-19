@@ -56,10 +56,10 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.imglib2.Axis;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
@@ -79,6 +79,7 @@ import net.imglib2.type.numeric.integer.ShortType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.Views;
 
 import org.knime.knip.core.ops.metadata.DimSwapper;
 
@@ -161,30 +162,24 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         // Create Mapping [at position one -> new index, at position 2 -> new index etc.] given: ImgPlus and m_mapping
         int[] mapping = getNewMapping(img);
 
-        RandomAccessibleInterval permuted = DimSwapper.swap(img, mapping);
-
-        //saving axis to be able to restore them and their calibration
-        final Axis[] axes = new Axis[img.numDimensions()];
-        for (int i = 0; i < axes.length; i++) {
-            axes[i] = img.axis(mapping[i]).copy();
+        // we always want to have 5 dimensions
+        RandomAccessibleInterval extended = img;
+        for (int d = img.numDimensions(); d < 5; d++) {
+            extended = Views.addDimension(extended, 0, 0);
         }
 
-        // Img with correct dimension order
-        final ImgPlus correctedImg = new ImgPlus(new ImgView(permuted, img.factory()));
-        for (int i = 0; i < axes.length; i++) {
-            correctedImg.setAxis(axes[i], i);
-        }
+        RandomAccessibleInterval permuted = DimSwapper.swap(extended, mapping);
 
         //Building the IJ ImagePlus
-        final long[] dim = new long[correctedImg.numDimensions()];
-        correctedImg.dimensions(dim);
+        final long[] dim = new long[permuted.numDimensions()];
+        permuted.dimensions(dim);
         final long width = dim[0];
         final long height = dim[1];
         int x, y;
         dim[0] = 1;
         dim[1] = 1;
         final IntervalIterator ii = new IntervalIterator(dim);
-        final RandomAccess<? extends RealType> ra = correctedImg.randomAccess();
+        final RandomAccess<? extends RealType> ra = permuted.randomAccess();
         final ImageStack is = new ImageStack((int)permuted.dimension(0), (int)permuted.dimension(1));
 
         while (ii.hasNext()) {
@@ -192,7 +187,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
             //TODO: Use cursor. can be made faster with subset interval
             ra.setPosition(ii);
 
-            final ImageProcessor ip = createImageProcessor(correctedImg);
+            final ImageProcessor ip = createImageProcessor(new ImgView(permuted, null));
             for (y = 0; y < height; y++) {
                 ra.setPosition(y, 1);
                 for (x = 0; x < width; x++) {
@@ -208,20 +203,20 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         int slices = 1;
         int frames = 1;
 
-        switch (correctedImg.numDimensions()) {
+        switch (permuted.numDimensions()) {
             case 2:
                 break;
             case 3:
-                slices = (int)correctedImg.dimension(2);
+                slices = (int)permuted.dimension(2);
                 break;
             case 4:
-                slices = (int)correctedImg.dimension(2);
-                frames = (int)correctedImg.dimension(3);
+                slices = (int)permuted.dimension(2);
+                frames = (int)permuted.dimension(3);
                 break;
             case 5:
-                channels = (int)correctedImg.dimension(2);
-                slices = (int)correctedImg.dimension(3);
-                frames = (int)correctedImg.dimension(4);
+                channels = (int)permuted.dimension(2);
+                slices = (int)permuted.dimension(3);
+                frames = (int)permuted.dimension(4);
                 break;
             default:
                 break;
@@ -236,9 +231,29 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
      * @return
      */
     private int[] getNewMapping(final ImgPlus<? extends RealType<?>> img) {
-        int[] mapping = new int[img.numDimensions()];
-        for (int i = 0; i < img.numDimensions(); i++) {
-            mapping[i] = m_mapping.get(img.axis(i).type());
+
+        int[] mapping = new int[m_mapping.size()];
+        Arrays.fill(mapping, -1);
+
+        for (int d = 0; d < img.numDimensions(); d++) {
+            mapping[d] = m_mapping.get(img.axis(d).type());
+        }
+
+        int offset = 0;
+        for (AxisType type : m_mapping.keySet()) {
+            boolean contains = false;
+            for (int d = 0; d < img.numDimensions(); d++) {
+                if (img.axis(d).type().equals(type)) {
+                    contains = true;
+                    break;
+                }
+            }
+
+            if (!contains) {
+                mapping[img.numDimensions() + offset] = m_mapping.get(type);
+                offset++;
+            }
+
         }
 
         return mapping;
