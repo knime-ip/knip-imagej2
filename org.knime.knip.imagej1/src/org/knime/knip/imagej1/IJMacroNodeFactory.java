@@ -256,12 +256,13 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                                 m_macro.runOn(new ImgPlus<T>(new ImgView<T>(subsetview, img.factory()), meta),
                                               matchingType);
                     } catch (UntransformableIJTypeException e) {
-                        throw new KNIPRuntimeException(e.getMessage());
+                        throw new KNIPRuntimeException(e.getMessage(), e);
                     } catch (KNIPRuntimeException e) {
                         throw e;
                     } catch (Exception e) {
                         throw new KNIPRuntimeException(
-                                "The specified macro has thrown an error while execution. Make sure that the used plugins are available in the selected IJ1 plugin folder!");
+                                "The specified macro has thrown an error while execution. Make sure that the used plugins are available in the selected IJ1 plugin folder! See KNIME Log for details!",
+                                e);
                     }
 
                     interval.min(min);
