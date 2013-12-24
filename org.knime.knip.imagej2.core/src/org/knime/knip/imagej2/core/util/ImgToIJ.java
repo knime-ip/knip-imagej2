@@ -109,40 +109,6 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         m_mapping.put(Axes.TIME, 4);
     }
 
-    /**
-     * Creates a new converter instance with standard dimension mapping, depending on the number of dimensions. Assumes
-     * 2 dimensions = X,Y; 3 dimensions = X,Y,Z; 4 dimensions = X,Y,Z, Time; 5 dimensions = (X,Y,Channel,Z,Time) To
-     * convert an image with different dimensions use {@link #setMapping(Map)} to provide your own mapping.
-     *
-     * @param numDimensions
-     */
-    public ImgToIJ(final int numDimensions) {
-        m_mapping = new HashMap<AxisType, Integer>();
-
-        // standard mapping from ImgPlus to ImagePlus
-        m_mapping.put(Axes.X, 0);
-        m_mapping.put(Axes.Y, 1);
-
-        switch (numDimensions) {
-            case 2:
-                break;
-            case 3:
-                m_mapping.put(Axes.Z, 2);
-                break;
-            case 4:
-                m_mapping.put(Axes.Z, 2);
-                m_mapping.put(Axes.TIME, 3);
-                break;
-            case 5:
-                m_mapping.put(Axes.CHANNEL, 2);
-                m_mapping.put(Axes.Z, 3);
-                m_mapping.put(Axes.TIME, 4);
-                break;
-            default:
-                throw new IllegalArgumentException(
-                        "input image has more than 5 dimensions, this is not supported by ImageJ ImagePlus");
-        }
-    }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
