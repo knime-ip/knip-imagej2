@@ -51,7 +51,6 @@ package org.knime.knip.imagej2.core;
 import imagej.app.ImageJApp;
 import imagej.command.CommandInfo;
 import imagej.command.DynamicCommand;
-import imagej.data.DatasetService;
 import imagej.data.autoscale.AutoscaleService;
 import imagej.data.types.DataTypeService;
 import imagej.menu.MenuService;
@@ -64,8 +63,6 @@ import imagej.tool.ToolService;
 import imagej.ui.UIService;
 import imagej.util.ColorRGB;
 import imagej.widget.WidgetService;
-import io.scif.img.ImgUtilityService;
-import io.scif.services.JAIIIOService;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -116,8 +113,7 @@ public final class IJGateway {
      */
     @SuppressWarnings("unchecked")
     public static final Class<? extends Service>[] HEADLESS_IJ_SERVICES = new Class[]{ModuleService.class,
-            PluginService.class, WidgetService.class, AutoscaleService.class, AppService.class, DataTypeService.class,
-            UIService.class};
+            PluginService.class, WidgetService.class, AutoscaleService.class, AppService.class, DataTypeService.class};
 
     /**
      * all services that are supported out of the box. Mainly services that are actually not supported but will do no
@@ -125,8 +121,7 @@ public final class IJGateway {
      */
     @SuppressWarnings("unchecked")
     private static final Class<? extends Service>[] GUI_IJ_SERVICES = new Class[]{UIService.class, MenuService.class,
-            ToolService.class, EventService.class, ObjectService.class, SingletonService.class, DatasetService.class,
-            ImgUtilityService.class, ImgUtilityService.class, JAIIIOService.class};
+            ToolService.class, EventService.class, ObjectService.class, SingletonService.class};
 
     // MEMBERS
 
@@ -165,7 +160,6 @@ public final class IJGateway {
         }
     }
 
-
     /**
      * @return the singelton instance of IJGateway
      */
@@ -193,19 +187,6 @@ public final class IJGateway {
         // control of loaded services atm.
         m_imageJContext = new Context(getImageJContextServices(isHeadless));
 
-        // TODO:
-        // CTR HACK: force lazy initialization of all SingletonServices.
-        // This is temporary, until ImageJ fixes the ObjectService registration to work as expected.
-        if (!isHeadless) {
-            for (Service s : m_imageJContext.getServiceIndex()) {
-                if (!(s instanceof SingletonService)) {
-                    continue;
-                }
-
-                ((SingletonService<?>)s).getInstances();
-            }
-        }
-
         //get version info
         final AppService appService = m_imageJContext.getService(AppService.class);
         App app = appService.getApp(ImageJApp.NAME);
@@ -219,6 +200,7 @@ public final class IJGateway {
         for (final ModuleInfo info : m_supportedModulesInfos) {
             m_delegateClassName2ModuleInfo.put(info.getDelegateClassName(), info);
         }
+
     }
 
     /**
