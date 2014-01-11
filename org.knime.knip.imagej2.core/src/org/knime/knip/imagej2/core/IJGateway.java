@@ -52,6 +52,8 @@ import imagej.app.ImageJApp;
 import imagej.command.CommandInfo;
 import imagej.command.DynamicCommand;
 import imagej.data.autoscale.AutoscaleService;
+import imagej.data.operator.CalculatorService;
+import imagej.data.threshold.ThresholdService;
 import imagej.data.types.DataTypeService;
 import imagej.menu.MenuService;
 import imagej.module.MethodCallException;
@@ -59,6 +61,8 @@ import imagej.module.ModuleException;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 import imagej.module.ModuleService;
+import imagej.options.OptionsService;
+import imagej.platform.PlatformService;
 import imagej.tool.ToolService;
 import imagej.ui.UIService;
 import imagej.util.ColorRGB;
@@ -80,7 +84,6 @@ import org.scijava.event.EventService;
 import org.scijava.log.LogService;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.PluginService;
-import org.scijava.plugin.SingletonService;
 import org.scijava.service.Service;
 import org.scijava.util.ClassUtils;
 
@@ -113,7 +116,8 @@ public final class IJGateway {
      */
     @SuppressWarnings("unchecked")
     public static final Class<? extends Service>[] HEADLESS_IJ_SERVICES = new Class[]{ModuleService.class,
-            PluginService.class, WidgetService.class, AutoscaleService.class, AppService.class, DataTypeService.class};
+            PlatformService.class, PluginService.class, WidgetService.class, AutoscaleService.class, AppService.class,
+            DataTypeService.class};
 
     /**
      * all services that are supported out of the box. Mainly services that are actually not supported but will do no
@@ -121,7 +125,8 @@ public final class IJGateway {
      */
     @SuppressWarnings("unchecked")
     private static final Class<? extends Service>[] GUI_IJ_SERVICES = new Class[]{UIService.class, MenuService.class,
-            ToolService.class, EventService.class, ObjectService.class, SingletonService.class};
+            ToolService.class, EventService.class, ObjectService.class, CalculatorService.class,
+            AutoscaleService.class, ThresholdService.class, OptionsService.class};
 
     // MEMBERS
 
