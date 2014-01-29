@@ -189,6 +189,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         }
 
         r.setStack(is, channels, slices, frames);
+        r.setTitle(img.getName());
         return r;
     }
 
