@@ -12,21 +12,33 @@
 
 	<fullDescription>
 		<intro>Applies ImageJ (http://rsbweb.nih.gov/ij/) macros to images.
-			There some predefined macros
-			which can be selected by dragging and
-			dropping them to the list of
-			selected filters. The configuration of
-			the macros can either be done
-			'user-friendly' through an interface or
-			by typing the code directly.
-			To use/write a custom macro just use the
-			'Pure Code'-filter.
-			Note that
-			not every macro-code is compatible
-			with
-			KNIME which can lead in some
-			cases to an unexpected results.
+
 		</intro>
+		<tab name="Options">
+			<option name="Snippets">There some predefined macros that can be selected
+				and added to list of macros. The macros are applied in the order
+				they have been added.
+				The
+				configuration of
+				the macros can either be done
+				'user-friendly' through
+				an interface or
+				by typing the code directly.
+				To use/write a custom
+				macro just use the
+				'Pure Code'-filter.
+				Note that
+				not every macro-code
+				is compatible
+				with
+				KNIME which can lead in some
+				cases to an unexpected
+				results.</option>
+		</tab>
+		<tab name="Additional Options">
+			<option name="Return result table entries as strings">If checked, the entries of ImageJ-Result table
+				will be returned as String, else as Doubles.</option>
+		</tab>
 
 	</fullDescription>
 	<ports>

@@ -67,12 +67,14 @@ import net.imglib2.ops.operation.SubsetOperations;
 import net.imglib2.ops.operation.iterableinterval.unary.Inset;
 import net.imglib2.type.numeric.RealType;
 
+import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
@@ -80,7 +82,9 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DialogComponent;
+import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
@@ -110,6 +114,7 @@ import org.knime.knip.imagej1.macro.SubstractBackgroundIJMacro;
 import org.knime.knip.imagej1.macro.WatershedIJMacro;
 import org.knime.knip.imagej1.prefs.IJ1Preferences;
 import org.knime.knip.imagej2.core.util.UntransformableIJTypeException;
+import org.knime.node2012.KnimeNodeDocument.KnimeNode;
 
 /**
  * {@link NodeFactory} to run {@link IJMacro}s
@@ -137,6 +142,10 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
         return new SettingsModelString("flow_variable_controlable_code", "");
     }
 
+    private static SettingsModelBoolean createResultTableEntriesAsStringModel() {
+        return new SettingsModelBoolean("resulttable_entries_as_string", false);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -151,6 +160,8 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
             private final SettingsModelDimSelection m_dimSelection = createDimSelectionModel();
 
             private final SettingsModelString m_flowVarCode = createFlowVariableControllableCode();
+
+            private final SettingsModelBoolean m_resultTableEntriesAsString = createResultTableEntriesAsStringModel();
 
             private IJMacro m_macro;
 
@@ -217,7 +228,11 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                 while (tk.hasMoreTokens()) {
                     final String token = tk.nextToken().trim();
                     if (token.length() > 0) {
-                        colSpecs.add(new DataColumnSpecCreator(token, DoubleCell.TYPE).createSpec());
+                        if (!m_resultTableEntriesAsString.getBooleanValue()) {
+                            colSpecs.add(new DataColumnSpecCreator(token, DoubleCell.TYPE).createSpec());
+                        } else {
+                            colSpecs.add(new DataColumnSpecCreator(token, StringCell.TYPE).createSpec());
+                        }
                     }
                 }
                 return new DataTableSpec(colSpecs.toArray(new DataColumnSpec[colSpecs.size()]));
@@ -299,10 +314,20 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                                                                                   .getColumnSpec(i).getName());
                             }
                             for (int r = 0; r < m_macro.resTable().getCounter(); r++) {
-                                final DoubleCell[] cells = new DoubleCell[numCols];
-                                for (int c = 0; c < cells.length; c++) {
-                                    cells[c] = new DoubleCell(m_macro.resTable().getValueAsDouble(colIndices[c], r));
+                                final DataCell[] cells;
+                                if (!m_resultTableEntriesAsString.getBooleanValue()) {
+                                    cells = new DoubleCell[numCols];
+                                    for (int c = 0; c < cells.length; c++) {
+                                        cells[c] =
+                                                new DoubleCell(m_macro.resTable().getValueAsDouble(colIndices[c], r));
+                                    }
+                                } else {
+                                    cells = new StringCell[numCols];
+                                    for (int c = 0; c < cells.length; c++) {
+                                        cells[c] = new StringCell(m_macro.resTable().getStringValue(colIndices[c], r));
+                                    }
                                 }
+
                                 String rowKey;
                                 if (intervals.length > 1) {
                                     rowKey = m_currentRowKey + "#" + Arrays.toString(min) + "#" + r;
@@ -332,6 +357,7 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                 settingsModels.add(m_macroSelection);
                 settingsModels.add(m_dimSelection);
                 settingsModels.add(m_flowVarCode);
+                settingsModels.add(m_resultTableEntriesAsString);
             }
         };
     }
@@ -360,8 +386,8 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                 pool.put("Substract Background", SubstractBackgroundIJMacro.class);
                 addDialogComponent("Options", "Snippets", new DialogComponentSerializableConfiguration(
                         createMacroSelectionModel(), pool));
-                addDialogComponent("Options", "", new DialogComponentDimSelection(createDimSelectionModel(),
-                        "Dimension Selection", 2, 3));
+                addDialogComponent("Options", "Dimension Selection", new DialogComponentDimSelection(
+                        createDimSelectionModel(), "", 2, 3));
                 // hidden dialog component to be able to controll the imagej
                 // macro node by flow variables
                 addDialogComponent("Options", "Snippets", new DialogComponent(createFlowVariableControllableCode()) {
@@ -388,8 +414,19 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
 
                     }
                 });
+
+                addDialogComponent("Additional Options", "Result Table", new DialogComponentBoolean(
+                        createResultTableEntriesAsStringModel(), "Return result table entries as strings"));
             }
         };
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addNodeDescriptionContent(final KnimeNode node) {
+        DialogComponentDimSelection.createNodeDescription(node.getFullDescription().getTabList().get(0).addNewOption());
     }
 
 }
