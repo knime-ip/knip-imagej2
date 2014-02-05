@@ -54,7 +54,6 @@ import imagej.command.DynamicCommand;
 import imagej.data.autoscale.AutoscaleService;
 import imagej.data.operator.CalculatorService;
 import imagej.data.threshold.ThresholdService;
-import imagej.data.types.DataTypeService;
 import imagej.menu.MenuService;
 import imagej.module.MethodCallException;
 import imagej.module.ModuleException;
@@ -62,11 +61,9 @@ import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 import imagej.module.ModuleService;
 import imagej.options.OptionsService;
-import imagej.platform.PlatformService;
 import imagej.tool.ToolService;
 import imagej.ui.UIService;
 import imagej.util.ColorRGB;
-import imagej.widget.WidgetService;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -74,16 +71,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bushe.swing.event.EventService;
 import org.knime.core.node.NodeLogger;
 import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.app.App;
 import org.scijava.app.AppService;
-import org.scijava.event.EventService;
 import org.scijava.log.LogService;
 import org.scijava.object.ObjectService;
-import org.scijava.plugin.PluginService;
 import org.scijava.service.Service;
 import org.scijava.util.ClassUtils;
 
@@ -112,20 +108,12 @@ public final class IJGateway {
             boolean.class, File.class, ColorRGB.class};
 
     /**
-     * Core services which are need to run the plugin headless
+     * all services that are supported out of the box by the IJ Adapters. Mainly services that are actually not
+     * supported but will do no harm like the MenuService
      */
     @SuppressWarnings("unchecked")
-    public static final Class<? extends Service>[] HEADLESS_IJ_SERVICES = new Class[]{ModuleService.class,
-            PlatformService.class, PluginService.class, WidgetService.class, AutoscaleService.class, AppService.class,
-            DataTypeService.class};
-
-    /**
-     * all services that are supported out of the box. Mainly services that are actually not supported but will do no
-     * harm like the MenuService
-     */
-    @SuppressWarnings("unchecked")
-    private static final Class<? extends Service>[] GUI_IJ_SERVICES = new Class[]{UIService.class, MenuService.class,
-            ToolService.class, EventService.class, ObjectService.class, CalculatorService.class,
+    private static final Class<? extends Service>[] SUPPORTED_SERVICES = new Class[]{UIService.class,
+            MenuService.class, ToolService.class, EventService.class, ObjectService.class, CalculatorService.class,
             AutoscaleService.class, ThresholdService.class, OptionsService.class};
 
     // MEMBERS
@@ -157,21 +145,12 @@ public final class IJGateway {
     private ObjectService m_objectService;
 
     /**
-     * Create a headless instance of the {@link IJGateway}. This instance will be kept as a singleton
-     */
-    public static synchronized void createHeadlessInstance() {
-        if (instance == null) {
-            instance = new IJGateway(true);
-        }
-    }
-
-    /**
      * @return the singelton instance of IJGateway
      */
     public static synchronized IJGateway getInstance() {
 
         if (instance == null) {
-            instance = new IJGateway(false);
+            instance = new IJGateway();
         }
 
         return instance;
@@ -180,17 +159,15 @@ public final class IJGateway {
     /**
      * creates the ImageJ context and initializes the list of supported modules.
      */
-    private IJGateway(final boolean isHeadless) {
+    private IJGateway() {
 
         // set log level
         if (System.getProperty(LogService.LOG_LEVEL_PROPERTY) == null) {
             System.setProperty(LogService.LOG_LEVEL_PROPERTY, "error");
         }
 
-        // create ImageJ context with services
-        // could also use the more specific new ImageJ here but Context gives as more
-        // control of loaded services atm.
-        m_imageJContext = new Context(getImageJContextServices(isHeadless));
+        // create ImageJ context with all available services
+        m_imageJContext = new Context();
 
         //get version info
         final AppService appService = m_imageJContext.getService(AppService.class);
@@ -356,8 +333,8 @@ public final class IJGateway {
             }
         }
 
-        // test for supported services
-        for (final Class<?> candidate : GUI_IJ_SERVICES) {
+        //         test for supported services
+        for (final Class<?> candidate : SUPPORTED_SERVICES) {
             if (candidate.isAssignableFrom(type)) {
                 return true;
             }
@@ -402,33 +379,6 @@ public final class IJGateway {
         }
 
         return false;
-    }
-
-    /**
-     * @return all services that the created ImageJ context should support
-     */
-    private List<Class<? extends Service>> getImageJContextServices(final boolean isHeadless) {
-
-        final List<Class<? extends Service>> services = new ArrayList<Class<? extends Service>>();
-
-        // add service types supported by adapters
-        for (Class<? extends Service> service : IJAdapterProvider.getKnownServiceTypes()) {
-            services.add(service);
-        }
-
-        // add the core services needed for plugin discovery or core functionalities of the plugin
-        for (int i = 0; i < HEADLESS_IJ_SERVICES.length; i++) {
-            services.add(HEADLESS_IJ_SERVICES[i]);
-        }
-
-        if (!isHeadless) {
-            // add general supported service types
-            for (int i = 0; i < GUI_IJ_SERVICES.length; i++) {
-                services.add(GUI_IJ_SERVICES[i]);
-            }
-        }
-
-        return services;
     }
 
     /**

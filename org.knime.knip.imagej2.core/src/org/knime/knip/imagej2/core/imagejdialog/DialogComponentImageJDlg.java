@@ -49,7 +49,7 @@
 package org.knime.knip.imagej2.core.imagejdialog;
 
 import imagej.module.ModuleException;
-import imagej.ui.swing.widget.SwingInputHarvester;
+import imagej.plugins.uis.swing.widget.SwingInputHarvester;
 import imagej.widget.WidgetModel;
 
 import java.util.Map;

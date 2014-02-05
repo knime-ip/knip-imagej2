@@ -50,9 +50,9 @@ package org.knime.knip.imagej2.core.node;
 
 import imagej.module.Module;
 import imagej.module.ModuleItem;
-import imagej.module.ModulePreprocessor;
 import imagej.module.ModuleRunner;
-import imagej.plugin.InitPreprocessor;
+import imagej.module.process.InitPreprocessor;
+import imagej.module.process.ModulePreprocessor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,6 +94,7 @@ public abstract class AbstractIJCellFactory implements CellFactory {
 
     /**
      * Create a new {@link AbstractIJCellFactory} which uses the given {@link ExecutionContext}
+     *
      * @param exec
      */
     public AbstractIJCellFactory(final ExecutionContext exec) {

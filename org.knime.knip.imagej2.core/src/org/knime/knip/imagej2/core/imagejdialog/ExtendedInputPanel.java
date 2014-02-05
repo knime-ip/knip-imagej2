@@ -48,8 +48,8 @@
  */
 package org.knime.knip.imagej2.core.imagejdialog;
 
-import imagej.ui.swing.widget.SwingInputPanel;
-import imagej.ui.swing.widget.SwingInputWidget;
+import imagej.plugins.uis.swing.widget.SwingInputPanel;
+import imagej.plugins.uis.swing.widget.SwingInputWidget;
 import imagej.widget.InputHarvester;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
