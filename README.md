@@ -32,7 +32,6 @@ Development
 
 * checkout the knip-imagej2 and knip repositories
 * import the projects into an eclipse workspace
-* adjust the sezpoz path
 * look at fragmentdemo or buddydemo as examples how to build eclipse plugins with your own ImageJ2 algorithms (we recommend the fragmentdemo way)
 
 
