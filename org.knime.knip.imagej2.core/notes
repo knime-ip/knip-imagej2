@@ -2,3 +2,7 @@ ideas for the imagej2 plugin:
 
 - imagej2 imagedisplay node for imagedisplay plugins (possibly as extension point for the table cell viewer)
 - exposing our viewers as display pluign
+
+
+todos:
+- missing value handling in the IJStandardNodeModel
