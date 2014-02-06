@@ -35,8 +35,4 @@ Development
 * adjust the sezpoz path
 * look at fragmentdemo or buddydemo as examples how to build eclipse plugins with your own ImageJ2 algorithms (we recommend the fragmentdemo way)
 
-#### sezpoz
 
-In order to build ImageJ2 plugins with the required annotations you need to use the [sezpoz](https://github.com/jglick/sezpoz) library as annotation processor. The library is included in org.knime.knip.scijava but you have to adjust your eclipse settings to the correct path. 
-
-Go to [sezpoz](https://github.com/jglick/sezpoz) and follow the instructions under "Eclipse-specific notes"
