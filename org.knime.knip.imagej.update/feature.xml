@@ -2,7 +2,7 @@
 <feature
       id="org.knime.knip.imagej.update"
       label="KNIP Update Site"
-      version="0.8.0.qualifier">
+      version="0.8.2.qualifier">
 
    <includes
          id="org.knime.knip.imagej.feature"
