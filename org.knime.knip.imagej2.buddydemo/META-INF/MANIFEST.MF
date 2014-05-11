@@ -12,8 +12,8 @@ Require-Bundle: org.knime.base,
  org.eclipse.ui,
  org.knime.knip.imagej2.core;bundle-version="0.1.0",
  org.knime.knip.core;bundle-version="1.0.0",
- org.knime.knip.scijava;bundle-version="2.1.0"
+ org.knime.knip.scijava;bundle-version="2.18.2"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-ClassPath: knipimagejbase.jar
+Bundle-ClassPath: knipimagejbuddy.jar
 Bundle-ActivationPolicy: lazy
 
