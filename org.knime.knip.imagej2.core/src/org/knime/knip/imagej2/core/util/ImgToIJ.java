@@ -50,6 +50,7 @@ package org.knime.knip.imagej2.core.util;
 
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.measure.Calibration;
 import ij.process.BinaryProcessor;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
@@ -134,6 +135,12 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
             extended = Views.addDimension(extended, 0, 0);
         }
 
+        // also map/swap calibration
+        double[] newCalib = new double[mapping.length];
+        for(int i = 0; i < img.numDimensions(); i++){
+            newCalib[mapping[i]] = img.averageScale(i);
+        }
+
         RandomAccessibleInterval permuted = DimSwapper.swap(extended, mapping);
 
         //Building the IJ ImagePlus
@@ -187,6 +194,13 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
             default:
                 break;
         }
+
+//        set spatial calibration
+        Calibration cal = new Calibration();
+        cal.pixelWidth = newCalib[0];
+        cal.pixelHeight = newCalib[1];
+        cal.pixelDepth = newCalib[3];
+        r.setCalibration(cal );
 
         r.setStack(is, channels, slices, frames);
         r.setTitle(img.getName());
