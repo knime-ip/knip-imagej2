@@ -1,7 +1,7 @@
-import imagej.command.Command;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
