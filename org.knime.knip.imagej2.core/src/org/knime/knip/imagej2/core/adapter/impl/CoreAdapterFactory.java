@@ -48,8 +48,8 @@
  */
 package org.knime.knip.imagej2.core.adapter.impl;
 
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayService;
 
 import org.knime.knip.imagej2.core.adapter.IJAdapterFactory;
 import org.knime.knip.imagej2.core.adapter.IJInputAdapter;

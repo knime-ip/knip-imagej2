@@ -48,11 +48,6 @@
  */
 package org.knime.knip.imagej2.core.node;
 
-import imagej.module.Module;
-import imagej.module.ModuleException;
-import imagej.module.ModuleInfo;
-import imagej.module.ModuleItem;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -82,6 +77,10 @@ import org.knime.knip.imagej2.core.adapter.PersistentModuleItemConfig;
 import org.knime.knip.imagej2.core.adapter.impl.basicinput.AbstractModuleItemBasicInputConfig;
 import org.knime.knip.imagej2.core.imagejdialog.DialogComponentImageJDlg;
 import org.knime.knip.imagej2.core.imagejdialog.SettingsModelImageJDlg;
+import org.scijava.module.Module;
+import org.scijava.module.ModuleException;
+import org.scijava.module.ModuleInfo;
+import org.scijava.module.ModuleItem;
 import org.scijava.service.Service;
 
 /**

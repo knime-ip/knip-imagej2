@@ -48,16 +48,16 @@
  */
 package org.knime.knip.imagej2.core.imagejdialog;
 
-import imagej.plugins.uis.swing.widget.SwingInputPanel;
-import imagej.plugins.uis.swing.widget.SwingInputWidget;
-import imagej.widget.InputHarvester;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JPanel;
+
+import org.scijava.ui.swing.widget.SwingInputPanel;
+import org.scijava.ui.swing.widget.SwingInputWidget;
+import org.scijava.widget.InputHarvester;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
  * Can be used with an ImageJ {@link InputHarvester} to create widgets for a parameter dialog. Only standard widgets

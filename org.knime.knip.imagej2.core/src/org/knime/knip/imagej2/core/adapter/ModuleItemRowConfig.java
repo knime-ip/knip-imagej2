@@ -48,15 +48,14 @@
  */
 package org.knime.knip.imagej2.core.adapter;
 
-import imagej.module.Module;
-import imagej.module.ModuleItem;
-
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.knip.imagej2.core.imagejdialog.DialogComponentImageJDlg;
 import org.knime.knip.imagej2.core.node.AbstractIJNodeModel;
+import org.scijava.module.Module;
+import org.scijava.module.ModuleItem;
 
 /**
  *

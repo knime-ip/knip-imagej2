@@ -49,8 +49,6 @@
 package org.knime.knip.imagej2.core.adapter.impl;
 
 import ij.ImagePlus;
-import imagej.module.Module;
-import imagej.module.ModuleItem;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.ops.operation.Operations;
 
@@ -62,6 +60,8 @@ import org.knime.knip.imagej2.core.adapter.IJStandardInputAdapter;
 import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
 import org.knime.knip.imagej2.core.util.ImgToIJ;
 import org.scijava.ItemIO;
+import org.scijava.module.Module;
+import org.scijava.module.ModuleItem;
 
 /**
  * {@link IJInputAdapter} for {@link ImagePlus}

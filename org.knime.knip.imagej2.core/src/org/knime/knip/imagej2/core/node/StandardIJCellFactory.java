@@ -48,10 +48,6 @@
  */
 package org.knime.knip.imagej2.core.node;
 
-import imagej.module.Module;
-import imagej.module.ModuleInfo;
-import imagej.module.ModuleItem;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +64,9 @@ import org.knime.knip.imagej2.core.adapter.ModuleItemConfig;
 import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
 import org.knime.knip.imagej2.core.adapter.ModuleItemRowConfig;
 import org.knime.knip.imagej2.core.imagejdialog.SettingsModelImageJDlg;
+import org.scijava.module.Module;
+import org.scijava.module.ModuleInfo;
+import org.scijava.module.ModuleItem;
 
 /**
  * Standard implementation that can be used for all modules (in contrast to the ValueToCell implementation)

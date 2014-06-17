@@ -48,13 +48,13 @@
  */
 package org.knime.knip.imagej2.core.adapter;
 
-import imagej.module.Module;
-import imagej.module.ModuleItem;
+import org.scijava.module.Module;
+import org.scijava.module.ModuleItem;
 
 /**
  * Configures parts of a module (typically one {@link ModuleItem}) with values before the module gets executed with
  * {@link Module#run()}.
- * 
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -63,7 +63,7 @@ public interface ModuleItemConfig {
 
     /**
      * configures parts of a module (typically one ModuleItem) with values.
-     * 
+     *
      * @param module
      */
     public void configureModuleItem(Module module);
@@ -72,7 +72,7 @@ public interface ModuleItemConfig {
      * Sets handled parts of a module to resolved. In preTest mode items are set to resolved if the ModuleItemConfig CAN
      * be prepared to configure them. In contrast preTest=false requires that the ModuleItemConfig IS ready to configure
      * an item. E.g. column of a certain type exists vs. data has been loaded from the column
-     * 
+     *
      * @param module
      * @param preTest true => data is not yet available (e.g. NodeModel configure) test for preconditions like table
      *            specs before resolving an item.<br>

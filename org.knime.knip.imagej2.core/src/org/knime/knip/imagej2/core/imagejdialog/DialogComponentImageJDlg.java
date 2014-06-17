@@ -48,10 +48,6 @@
  */
 package org.knime.knip.imagej2.core.imagejdialog;
 
-import imagej.module.ModuleException;
-import imagej.plugins.uis.swing.widget.SwingInputHarvester;
-import imagej.widget.WidgetModel;
-
 import java.util.Map;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -60,6 +56,9 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DialogComponent;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.knip.imagej2.core.IJGateway;
+import org.scijava.module.ModuleException;
+import org.scijava.ui.swing.widget.SwingInputHarvester;
+import org.scijava.widget.WidgetModel;
 
 /**
  * {@link DialogComponent} that contains the components of an ImageJ parameter dialog. The components are automatically

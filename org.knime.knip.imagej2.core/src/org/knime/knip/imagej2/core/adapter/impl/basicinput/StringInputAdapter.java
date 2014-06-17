@@ -48,12 +48,11 @@
  */
 package org.knime.knip.imagej2.core.adapter.impl.basicinput;
 
-import imagej.module.Module;
-import imagej.module.ModuleItem;
-
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataValue;
 import org.knime.core.data.StringValue;
+import org.scijava.module.Module;
+import org.scijava.module.ModuleItem;
 
 /**
  * Configures a ModuleItem of ImageJ type {@link java.lang.String String} with values from a user selected

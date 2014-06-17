@@ -48,14 +48,13 @@
  */
 package org.knime.knip.imagej2.core.adapter.impl;
 
-import imagej.module.Module;
-
 import org.knime.core.data.DataRow;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.knip.imagej2.core.adapter.ModuleItemRowConfig;
+import org.scijava.module.Module;
 
 /**
  * provides a basic implementation of a column based ModuleItemConfig.<br>
@@ -63,8 +62,8 @@ import org.knime.knip.imagej2.core.adapter.ModuleItemRowConfig;
  * Includes a {@link SettingsModel} based default implementation of the persistence methods such that
  * {@link org.knime.core.node.defaultnodesettings.DialogComponent DialogComponents} can be used to add settings to the
  * node configuration dialog.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
@@ -80,7 +79,7 @@ public abstract class AbstractModuleItemColumnConfig implements ModuleItemRowCon
      * Therefore standard {@link org.knime.core.node.defaultnodesettings#DialogComponent DialogComponents} can be used
      * to implement the dialogs (e.g. select columns etc.) and their settings models will be used to achieve
      * persistence.
-     * 
+     *
      * @param settingsModels
      */
     public AbstractModuleItemColumnConfig(final SettingsModel[] settingsModels) {
@@ -111,7 +110,7 @@ public abstract class AbstractModuleItemColumnConfig implements ModuleItemRowCon
      * convenient method that unifies the calls to {@link AbstractModuleItemColumnConfig#setConfigurationData(DataRow)
      * setConfigurationData} and {@link AbstractModuleItemColumnConfig#configureModuleItem(Module) configureModule} in
      * one method.
-     * 
+     *
      * @param module
      * @param row the actual data row that is used for configuration
      */

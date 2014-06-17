@@ -48,9 +48,6 @@
  */
 package org.knime.knip.imagej2.core.adapter.impl.basicinput;
 
-import imagej.module.Module;
-import imagej.module.ModuleItem;
-
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -69,6 +66,8 @@ import org.knime.knip.imagej2.core.adapter.DialogComponentGroup;
 import org.knime.knip.imagej2.core.adapter.DialogComponentGroup.PLACEMENT_HINT;
 import org.knime.knip.imagej2.core.adapter.IJAdvancedInputAdapter;
 import org.knime.knip.imagej2.core.adapter.ModuleItemRowConfig;
+import org.scijava.module.Module;
+import org.scijava.module.ModuleItem;
 
 /**
  * Encapsulates the main functionality of basic input adapters. Provides two DialogComponents, a checkbox that activates

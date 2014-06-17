@@ -48,10 +48,9 @@
  */
 package org.knime.knip.imagej2.core.adapter.impl;
 
-import imagej.data.Dataset;
-
 import java.io.IOException;
 
+import net.imagej.Dataset;
 import net.imglib2.meta.ImgPlus;
 
 import org.knime.core.data.DataCell;

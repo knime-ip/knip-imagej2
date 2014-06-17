@@ -48,11 +48,10 @@
  */
 package org.knime.knip.imagej2.core.adapter.impl;
 
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-
 import java.io.IOException;
 
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
 import net.imglib2.meta.ImgPlus;
 
 import org.knime.core.data.DataCell;

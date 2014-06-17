@@ -48,7 +48,7 @@
  */
 package org.knime.knip.imagej2.core.adapter;
 
-import imagej.module.ModuleItem;
+import org.scijava.module.ModuleItem;
 
 /**
  * Lifetime: input adapters are assumed to be singleton objects and will be created only once. <br>

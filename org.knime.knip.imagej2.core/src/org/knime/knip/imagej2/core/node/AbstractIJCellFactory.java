@@ -48,12 +48,6 @@
  */
 package org.knime.knip.imagej2.core.node;
 
-import imagej.module.Module;
-import imagej.module.ModuleItem;
-import imagej.module.ModuleRunner;
-import imagej.module.process.InitPreprocessor;
-import imagej.module.process.ModulePreprocessor;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +68,11 @@ import org.knime.knip.imagej2.core.adapter.IJOutputAdapterInstance;
 import org.knime.knip.imagej2.core.adapter.ModuleItemConfig;
 import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
 import org.knime.knip.imagej2.core.adapter.ModuleItemRowConfig;
+import org.scijava.module.Module;
+import org.scijava.module.ModuleItem;
+import org.scijava.module.ModuleRunner;
+import org.scijava.module.process.InitPreprocessor;
+import org.scijava.module.process.ModulePreprocessor;
 
 /**
  * Provides a basic set of methods that are common to all IJCellFactories like support for missing cell count and the

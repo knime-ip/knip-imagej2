@@ -49,14 +49,12 @@
 package org.knime.knip.imagej2.core.node;
 
 import ij.ImagePlus;
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.module.ModuleInfo;
-import imagej.module.ModuleItem;
 
 import java.net.URL;
 import java.util.Iterator;
 
+import net.imagej.Dataset;
+import net.imagej.display.ImageDisplay;
 import net.imglib2.img.Img;
 import net.imglib2.labeling.Labeling;
 
@@ -81,6 +79,8 @@ import org.knime.node2012.OptionDocument.Option;
 import org.knime.node2012.OutPortDocument.OutPort;
 import org.knime.node2012.PortsDocument.Ports;
 import org.knime.node2012.TabDocument.Tab;
+import org.scijava.module.ModuleInfo;
+import org.scijava.module.ModuleItem;
 import org.scijava.service.Service;
 
 /**

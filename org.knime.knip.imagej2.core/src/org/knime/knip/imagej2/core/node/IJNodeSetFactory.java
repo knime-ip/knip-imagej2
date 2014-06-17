@@ -48,8 +48,6 @@
  */
 package org.knime.knip.imagej2.core.node;
 
-import imagej.module.ModuleInfo;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -62,6 +60,7 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.ConfigRO;
 import org.knime.knip.imagej2.core.IJGateway;
 import org.scijava.MenuEntry;
+import org.scijava.module.ModuleInfo;
 
 /**
  * Creates a set of ImageJ2 nodes based on the set of supported modules provided by {@link IJGateway}. The nodes are

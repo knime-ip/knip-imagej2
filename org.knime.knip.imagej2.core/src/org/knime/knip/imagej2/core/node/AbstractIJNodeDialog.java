@@ -48,9 +48,6 @@
  */
 package org.knime.knip.imagej2.core.node;
 
-import imagej.module.ModuleInfo;
-import imagej.module.ModuleItem;
-
 import java.util.LinkedList;
 
 import org.knime.core.data.DataTableSpec;
@@ -73,6 +70,8 @@ import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
 import org.knime.knip.imagej2.core.imagejdialog.DialogComponentImageJDlg;
 import org.knime.knip.imagej2.core.imagejdialog.HarvesterModuleWrapper;
 import org.knime.knip.imagej2.core.imagejdialog.SettingsModelImageJDlg;
+import org.scijava.module.ModuleInfo;
+import org.scijava.module.ModuleItem;
 
 /**
  * Provides a basic set of methods that are common to all IJNodeDialogs: Handling of the ImageJ dialog for basic

@@ -48,8 +48,6 @@
  */
 package org.knime.knip.imagej2.core.adapter.impl;
 
-import imagej.module.Module;
-import imagej.module.ModuleItem;
 import net.imglib2.labeling.Labeling;
 
 import org.knime.core.data.DataValue;
@@ -59,6 +57,8 @@ import org.knime.knip.imagej2.core.adapter.IJInputAdapter;
 import org.knime.knip.imagej2.core.adapter.IJStandardInputAdapter;
 import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
 import org.scijava.ItemIO;
+import org.scijava.module.Module;
+import org.scijava.module.ModuleItem;
 
 /**
  * {@link IJInputAdapter} for {@link Labeling}

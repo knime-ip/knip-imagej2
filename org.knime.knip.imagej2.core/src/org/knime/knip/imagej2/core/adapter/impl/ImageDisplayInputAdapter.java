@@ -48,15 +48,12 @@
  */
 package org.knime.knip.imagej2.core.adapter.impl;
 
-import imagej.data.Dataset;
-import imagej.data.DefaultDataset;
-import imagej.data.display.DatasetView;
-import imagej.data.display.DefaultDatasetView;
-import imagej.data.display.DefaultImageDisplay;
-import imagej.data.display.ImageDisplay;
-import imagej.display.Display;
-import imagej.module.Module;
-import imagej.module.ModuleItem;
+import net.imagej.Dataset;
+import net.imagej.DefaultDataset;
+import net.imagej.display.DatasetView;
+import net.imagej.display.DefaultDatasetView;
+import net.imagej.display.DefaultImageDisplay;
+import net.imagej.display.ImageDisplay;
 import net.imglib2.meta.ImgPlus;
 
 import org.knime.core.data.DataValue;
@@ -67,6 +64,9 @@ import org.knime.knip.imagej2.core.adapter.IJInputAdapter;
 import org.knime.knip.imagej2.core.adapter.IJStandardInputAdapter;
 import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
 import org.scijava.ItemIO;
+import org.scijava.display.Display;
+import org.scijava.module.Module;
+import org.scijava.module.ModuleItem;
 
 /**
  * {@link IJInputAdapter} for {@link Display}s

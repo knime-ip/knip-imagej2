@@ -48,8 +48,6 @@
  */
 package org.knime.knip.imagej2.core.imagejdialog;
 
-import imagej.module.Module;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -69,6 +67,7 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.config.Config;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.port.PortObjectSpec;
+import org.scijava.module.Module;
 
 /**
  * Partial configuration of a {@link Module} by the basic input parameters of an ImageJ parameter dialog. The parameters

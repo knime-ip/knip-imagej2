@@ -48,9 +48,6 @@
  */
 package org.knime.knip.imagej2.core.node;
 
-import imagej.module.ModuleInfo;
-import imagej.module.ModuleItem;
-
 import org.knime.core.node.defaultnodesettings.DialogComponentColumnFilter;
 import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
@@ -58,6 +55,8 @@ import org.knime.knip.imagej2.core.adapter.DataValueConfigGuiInfos;
 import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
 import org.knime.knip.imagej2.core.adapter.IJInputAdapter;
 import org.knime.knip.imagej2.core.adapter.IJStandardInputAdapter;
+import org.scijava.module.ModuleInfo;
+import org.scijava.module.ModuleItem;
 
 /**
  * Special implementation that uses ValueToCell GUI components in the dialog and allows to process multiple input

@@ -48,16 +48,15 @@
  */
 package org.knime.knip.imagej2.core.imagejdialog;
 
-import imagej.module.Module;
-import imagej.module.ModuleInfo;
-import imagej.module.ModuleItem;
-
 import java.util.HashSet;
 import java.util.Map;
 
 import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
 import org.knime.knip.imagej2.core.adapter.IJInputAdapter;
 import org.knime.knip.imagej2.core.adapter.IJStandardInputAdapter;
+import org.scijava.module.Module;
+import org.scijava.module.ModuleInfo;
+import org.scijava.module.ModuleItem;
 
 /**
  * encapsulates a module and blocks the calls to most setters and executing methods like run and preview.. .Therefore it

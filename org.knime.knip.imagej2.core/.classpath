@@ -1,59 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-commands-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-options-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-core-2.0.0-SNAPSHOT.jar" sourcepath="lib/sources/ij-core-2.0.0-SNAPSHOT-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-data-2.0.0-SNAPSHOT.jar" sourcepath="lib/sources/ij-data-2.0.0-SNAPSHOT-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-ui-2.0.0-SNAPSHOT.jar" sourcepath="lib/sources/ij-ui-2.0.0-SNAPSHOT-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-ui-swing-2.0.0-SNAPSHOT.jar" sourcepath="lib/sources/ij-ui-swing-2.0.0-SNAPSHOT-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-util-awt-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/miglayout-3.7.3.1-swing.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-ui-common-awt-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jcommon-1.0.17.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jfreechart-1.0.14.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jdatepicker-1.3.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/plugins/Tubeness2Fragment.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/base64-2.3.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bcmail-jdk14-138.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk14-138.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/bsh-2.0b4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/clojure-1.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang3-3.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-1.48p.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-app-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-launcher-2.0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-minimaven-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-platforms-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-scripting-beanshell-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-scripting-clojure-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-scripting-java-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-scripting-javascript-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-scripting-jruby-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-scripting-jython-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-text-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-tools-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-ui-swing-commands-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-ui-swing-script-editor-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-ui-swing-tools-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-ui-swing-updater-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-updater-core-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-updater-ssh-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-updater-webdav-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-util-swing-2.0.0-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gentyref-1.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ij-1.49b.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ij1-patcher-0.9.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/imagej-common-0.7.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/imagej-ops-0.4.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/imagej-plugins-commands-0.2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/imagej-plugins-tools-0.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/imagej-plugins-uploader-ssh-0.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/imagej-plugins-uploader-webdav-0.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/imagej-ui-awt-0.1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/imagej-ui-swing-0.4.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/imagej-updater-0.3.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/itext-2.1.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jama-1.0.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javassist-3.16.1-GA.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jcommon-1.0.17.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jdatepicker-1.3.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jfreechart-1.0.14.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jhotdraw-7.6.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jruby-1.6.7.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jsch-0.1.49.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jython-2.5.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/markdownj-0.3.0-1.0.2b4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/mines-jtk-20100113.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/minimaven-2.1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/object-inspector-0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/rsyntaxtextarea-2.0.4.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/udunits-4.3.18.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

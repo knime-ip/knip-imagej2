@@ -48,28 +48,16 @@
  */
 package org.knime.knip.imagej2.core;
 
-import imagej.app.ImageJApp;
-import imagej.command.CommandInfo;
-import imagej.command.DynamicCommand;
-import imagej.data.autoscale.AutoscaleService;
-import imagej.data.operator.CalculatorService;
-import imagej.data.threshold.ThresholdService;
-import imagej.menu.MenuService;
-import imagej.module.MethodCallException;
-import imagej.module.ModuleException;
-import imagej.module.ModuleInfo;
-import imagej.module.ModuleItem;
-import imagej.module.ModuleService;
-import imagej.options.OptionsService;
-import imagej.tool.ToolService;
-import imagej.ui.UIService;
-import imagej.util.ColorRGB;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import net.imagej.app.ImageJApp;
+import net.imagej.autoscale.AutoscaleService;
+import net.imagej.operator.CalculatorService;
+import net.imagej.threshold.ThresholdService;
 
 import org.bushe.swing.event.EventService;
 import org.knime.core.node.NodeLogger;
@@ -78,10 +66,22 @@ import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.app.App;
 import org.scijava.app.AppService;
+import org.scijava.command.CommandInfo;
+import org.scijava.command.DynamicCommand;
 import org.scijava.log.LogService;
+import org.scijava.menu.MenuService;
+import org.scijava.module.MethodCallException;
+import org.scijava.module.ModuleException;
+import org.scijava.module.ModuleInfo;
+import org.scijava.module.ModuleItem;
+import org.scijava.module.ModuleService;
 import org.scijava.object.ObjectService;
+import org.scijava.options.OptionsService;
 import org.scijava.service.Service;
+import org.scijava.tool.ToolService;
+import org.scijava.ui.UIService;
 import org.scijava.util.ClassUtils;
+import org.scijava.util.ColorRGB;
 
 /**
  * provides access to the ImageJ context and loads supported ImageJ Plugins. The class implements the singleton pattern
