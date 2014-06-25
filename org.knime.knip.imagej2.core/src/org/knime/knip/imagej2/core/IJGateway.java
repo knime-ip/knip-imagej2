@@ -72,6 +72,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bushe.swing.event.EventService;
+import org.eclipse.core.runtime.internal.adaptor.ContextFinder;
 import org.knime.core.node.NodeLogger;
 import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
 import org.scijava.Context;
@@ -80,6 +81,8 @@ import org.scijava.app.App;
 import org.scijava.app.AppService;
 import org.scijava.log.LogService;
 import org.scijava.object.ObjectService;
+import org.scijava.plugin.DefaultPluginFinder;
+import org.scijava.plugin.PluginIndex;
 import org.scijava.service.Service;
 import org.scijava.util.ClassUtils;
 
@@ -167,7 +170,7 @@ public final class IJGateway {
         }
 
         // create ImageJ context with all available services
-        m_imageJContext = new Context();
+        m_imageJContext = new Context(new PluginIndex(new DefaultPluginFinder(new ContextFinder(getClass().getClassLoader()))));
 
         //get version info
         final AppService appService = m_imageJContext.getService(AppService.class);
