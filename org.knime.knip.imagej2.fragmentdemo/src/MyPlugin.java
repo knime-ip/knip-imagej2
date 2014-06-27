@@ -64,6 +64,7 @@ public class MyPlugin<T extends RealType<T>> implements Command {
         @Parameter(type = ItemIO.OUTPUT)
         private String output;
 
+        @Override
         public void run() {
                 final StringBuilder sb = new StringBuilder();
 
