@@ -56,29 +56,32 @@ import org.knime.knip.imagej1.IJMacroConfiguration;
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael
  *         Zinsmaier</a>
- * @author schoenen
  */
-public class WatershedIJMacro extends IJMacroConfiguration {
+public class EDT3DIJMacro extends IJMacroConfiguration {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getName() {
-		return "Watershed";
+		return "Exact Euclidean Distance Transform (3D)";
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void codeOptions() {
-		addCheckbox("Black background", "black", true);
+		addMessage("No Options");
 	}
 
 	@Override
 	protected String codeTemplate() {
-		return "run(\"Options...\", \"iterations=1 count=1 %s edm=Overwrite do=Nothing\");\n"
-				+ "run(\"Make Binary\", \"stack\");\n"
-				+ "run(\"Watershed\", \"stack\");";
+		return "run(\"Exact Euclidean Distance Transform (3D)\");";
 	}
 
 	@Override
 	protected Class<? extends IJMacroConfiguration> configrationClass() {
-		return WatershedIJMacro.class;
+		return EDT3DIJMacro.class;
 	}
 }

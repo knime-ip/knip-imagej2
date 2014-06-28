@@ -53,38 +53,37 @@ import net.imglib2.type.numeric.RealType;
 import org.knime.knip.imagej1.IJMacroConfiguration;
 
 /**
- * 
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
- * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael
- *         Zinsmaier</a>
+ * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
+ * @param <I>
  */
-public class SubstractBackgroundIJMacro<I extends RealType<I>> extends
-		IJMacroConfiguration {
+public class SubstractBackgroundIJMacro<I extends RealType<I>> extends IJMacroConfiguration {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getName() {
-		return "Substract Background";
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getName() {
+        return "Substract Background";
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void codeOptions() {
-		addInteger("Radius", 50);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void codeOptions() {
+        addInteger("Radius", 50);
+    }
 
-	@Override
-	protected String codeTemplate() {
-		return "run(\"Subtract Background...\", \"rolling=%s\");";
-	}
+    @Override
+    protected String codeTemplate() {
+        return "run(\"Subtract Background...\", \"rolling=%s\");";
+    }
 
-	@Override
-	protected Class<? extends IJMacroConfiguration> configrationClass() {
-		return SubstractBackgroundIJMacro.class;
-	}
+    @Override
+    protected Class<? extends IJMacroConfiguration> configrationClass() {
+        return SubstractBackgroundIJMacro.class;
+    }
 }

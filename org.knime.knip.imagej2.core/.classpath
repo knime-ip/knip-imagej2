@@ -8,7 +8,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk14-138.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang3-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gentyref-1.1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-1.49b.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ij-1.49b.jar" sourcepath="C:/Users/Christian Dietz/.m2/repository/net/imagej/ij/1.49b/ij-1.49b-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ij1-patcher-0.9.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/imagej-common-0.7.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/imagej-ops-0.4.0.jar"/>

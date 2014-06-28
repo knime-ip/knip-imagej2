@@ -48,37 +48,42 @@
  */
 package org.knime.knip.imagej1.macro;
 
+import net.imglib2.type.numeric.RealType;
+
 import org.knime.knip.imagej1.IJMacroConfiguration;
 
 /**
  *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
- * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael
- *         Zinsmaier</a>
- * @author schoenen
+ * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
+ * @param <I>
  */
-public class WatershedIJMacro extends IJMacroConfiguration {
+public class SkeletonizeIJMacro<I extends RealType<I>> extends IJMacroConfiguration {
 
-	@Override
-	public String getName() {
-		return "Watershed";
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getName() {
+        return "Skeletonize (2D/3D)";
+    }
 
-	@Override
-	protected void codeOptions() {
-		addCheckbox("Black background", "black", true);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void codeOptions() {
+        addMessage("No Options");
+    }
 
-	@Override
-	protected String codeTemplate() {
-		return "run(\"Options...\", \"iterations=1 count=1 %s edm=Overwrite do=Nothing\");\n"
-				+ "run(\"Make Binary\", \"stack\");\n"
-				+ "run(\"Watershed\", \"stack\");";
-	}
+    @Override
+    protected String codeTemplate() {
+        return "run(\"Skeletonize (2D/3D)\");";
+    }
 
-	@Override
-	protected Class<? extends IJMacroConfiguration> configrationClass() {
-		return WatershedIJMacro.class;
-	}
+    @Override
+    protected Class<? extends IJMacroConfiguration> configrationClass() {
+        return SkeletonizeIJMacro.class;
+    }
 }

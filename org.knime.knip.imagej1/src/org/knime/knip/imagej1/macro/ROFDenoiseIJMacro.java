@@ -54,31 +54,28 @@ import org.knime.knip.imagej1.IJMacroConfiguration;
  *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
- * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael
- *         Zinsmaier</a>
+ * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  * @author schoenen
  */
-public class WatershedIJMacro extends IJMacroConfiguration {
+public class ROFDenoiseIJMacro extends IJMacroConfiguration {
 
-	@Override
-	public String getName() {
-		return "Watershed";
-	}
+    @Override
+    public String getName() {
+        return "ROF Denoise (Requires Float)";
+    }
 
-	@Override
-	protected void codeOptions() {
-		addCheckbox("Black background", "black", true);
-	}
+    @Override
+    protected void codeOptions() {
+        addInteger("Theta", 25);
+    }
 
-	@Override
-	protected String codeTemplate() {
-		return "run(\"Options...\", \"iterations=1 count=1 %s edm=Overwrite do=Nothing\");\n"
-				+ "run(\"Make Binary\", \"stack\");\n"
-				+ "run(\"Watershed\", \"stack\");";
-	}
+    @Override
+    protected String codeTemplate() {
+        return "run(\"ROF Denoise\", \"theta=%s\");";
+    }
 
-	@Override
-	protected Class<? extends IJMacroConfiguration> configrationClass() {
-		return WatershedIJMacro.class;
-	}
+    @Override
+    protected Class<? extends IJMacroConfiguration> configrationClass() {
+        return ROFDenoiseIJMacro.class;
+    }
 }

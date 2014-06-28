@@ -105,11 +105,14 @@ import org.knime.knip.base.nodes.io.kernel.SerializableSetting;
 import org.knime.knip.core.data.img.DefaultImgMetadata;
 import org.knime.knip.imagej1.macro.AnalyzeParticlesIJMacro;
 import org.knime.knip.imagej1.macro.CLAHEIJMacro;
+import org.knime.knip.imagej1.macro.DespeckleIJMacro;
+import org.knime.knip.imagej1.macro.EDT3DIJMacro;
 import org.knime.knip.imagej1.macro.FindEdgesIJMacro;
 import org.knime.knip.imagej1.macro.FindMaximaIJMacro;
 import org.knime.knip.imagej1.macro.GaussianBlurIJMacro;
 import org.knime.knip.imagej1.macro.PureCodeIJMacro;
-import org.knime.knip.imagej1.macro.SharpenIJMacro;
+import org.knime.knip.imagej1.macro.ROFDenoiseIJMacro;
+import org.knime.knip.imagej1.macro.SkeletonizeIJMacro;
 import org.knime.knip.imagej1.macro.SubstractBackgroundIJMacro;
 import org.knime.knip.imagej1.macro.WatershedIJMacro;
 import org.knime.knip.imagej1.prefs.IJ1Preferences;
@@ -373,17 +376,22 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
             @Override
             public void addDialogComponents() {
 
-                //TODO make macros a extension point
+                //TODO make macros a extension point / Image2 Service
                 final Map<String, Class<?>> pool = new LinkedHashMap<String, Class<?>>();
-                pool.put("Enhance Local Constract (CLAHE)", CLAHEIJMacro.class);
                 pool.put("Pure Code", PureCodeIJMacro.class);
                 pool.put("Gaussian Blur", GaussianBlurIJMacro.class);
                 pool.put("Find Edges", FindEdgesIJMacro.class);
                 pool.put("Find Maxima", FindMaximaIJMacro.class);
                 pool.put("Analyze Particles", AnalyzeParticlesIJMacro.class);
-                pool.put("Sharpen", SharpenIJMacro.class);
+                pool.put("Sharpen", SkeletonizeIJMacro.class);
                 pool.put("Watersched", WatershedIJMacro.class);
                 pool.put("Substract Background", SubstractBackgroundIJMacro.class);
+                pool.put("Enhance Local Constract (CLAHE)", CLAHEIJMacro.class);
+                pool.put("Distance Transform 2D", EDT3DIJMacro.class);
+                pool.put("Skeletonize", SkeletonizeIJMacro.class);
+                pool.put("ROF Denoise", ROFDenoiseIJMacro.class);
+                pool.put("Despeckle", DespeckleIJMacro.class);
+
                 addDialogComponent("Options", "Snippets", new DialogComponentSerializableConfiguration(
                         createMacroSelectionModel(), pool));
                 addDialogComponent("Options", "Dimension Selection", new DialogComponentDimSelection(
