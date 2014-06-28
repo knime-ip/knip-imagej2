@@ -60,6 +60,7 @@ import net.imagej.operator.CalculatorService;
 import net.imagej.threshold.ThresholdService;
 
 import org.bushe.swing.event.EventService;
+import org.eclipse.core.runtime.internal.adaptor.ContextFinder;
 import org.knime.core.node.NodeLogger;
 import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
 import org.scijava.Context;
@@ -77,6 +78,8 @@ import org.scijava.module.ModuleItem;
 import org.scijava.module.ModuleService;
 import org.scijava.object.ObjectService;
 import org.scijava.options.OptionsService;
+import org.scijava.plugin.DefaultPluginFinder;
+import org.scijava.plugin.PluginIndex;
 import org.scijava.service.Service;
 import org.scijava.tool.ToolService;
 import org.scijava.ui.UIService;
@@ -167,7 +170,7 @@ public final class IJGateway {
         }
 
         // create ImageJ context with all available services
-        m_imageJContext = new Context();
+        m_imageJContext = new Context(new PluginIndex(new DefaultPluginFinder(new ContextFinder(getClass().getClassLoader()))));
 
         //get version info
         final AppService appService = m_imageJContext.getService(AppService.class);

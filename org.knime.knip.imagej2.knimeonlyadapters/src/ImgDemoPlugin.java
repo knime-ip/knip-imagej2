@@ -1,10 +1,10 @@
-import imagej.command.Command;
 import net.imglib2.img.Img;
 import net.imglib2.ops.img.UnaryOperationAssignment;
 import net.imglib2.ops.operation.real.unary.RealAddConstant;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -47,6 +47,7 @@ public class ImgDemoPlugin<T extends RealType<T>> implements Command {
 	@Parameter(type = ItemIO.OUTPUT)
 	private String metaDescription;
 
+	@Override
 	public void run() {
 		new UnaryOperationAssignment<T, T>(new RealAddConstant<T, T>(50))
 				.compute(picture, picture);

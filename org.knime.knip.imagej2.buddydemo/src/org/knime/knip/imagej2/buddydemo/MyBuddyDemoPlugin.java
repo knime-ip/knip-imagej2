@@ -27,6 +27,7 @@ public class MyBuddyDemoPlugin<T extends RealType<T>> implements Command {
         @Parameter(type = ItemIO.OUTPUT)
         private String output;
 
+        @Override
         public void run() {
                 output = "plugins can be defined in registerd buddies of imagej.core";
         }
