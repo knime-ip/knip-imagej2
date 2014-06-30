@@ -64,7 +64,6 @@ import java.util.Map;
 import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.converter.Converter;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.iterator.IntervalIterator;
@@ -106,9 +105,6 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
      */
     public static final Map<AxisType, Integer> DEFAULT_IJ1_MAPPING = createDefaultMapping();
 
-
-    private Converter<? extends RealType<?>, ? extends RealType<?>> converter = null;
-
     /**
      * Creates a mapping based on the DEFAULT_ORDER
      *
@@ -148,51 +144,59 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         // get the resulting calibration
         final double[] newCalibration = getNewCalibration(img);
 
-        //Building the IJ ImagePlus
-        final long[] dims = new long[optimizedIteration ? img.numDimensions() : permuted.numDimensions()];
-
-        if (optimizedIteration) {
-            img.dimensions(dims);
-        } else {
-            permuted.dimensions(dims);
-        }
-
-        final long width = dims[0];
-        final long height = dims[1];
-
-        dims[0] = 1;
-        dims[1] = 1;
-
-        final IntervalIterator ii = new IntervalIterator(dims);
+        final long width = permuted.dimension(0);
+        final long height = permuted.dimension(1);
         final ImageStack is = new ImageStack((int)permuted.dimension(0), (int)permuted.dimension(1));
 
-        long[] min = new long[ii.numDimensions()];
-        long[] max = new long[ii.numDimensions()];
-
-        max[0] = permuted.max(0);
-        max[1] = permuted.max(1);
-
-        while (ii.hasNext()) {
-            ii.fwd();
-
-            for (int d = 2; d < ii.numDimensions(); d++) {
-                min[d] = ii.getIntPosition(d);
-                max[d] = min[d];
-            }
-
-            final Cursor<? extends RealType<?>> cursor =
-                    Views.iterable(Views.interval(optimizedIteration ? img : permuted, new FinalInterval(min, max)))
-                            .cursor();
-
-            final ImageProcessor ip = createImageProcessor(new ImgView(permuted, null));
-
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    ip.setf(x, y, (cursor.next().getRealFloat() + offset) * scale);
+        if (optimizedIteration) {
+            final Cursor<? extends RealType<?>> cursor = img.cursor();
+            while (cursor.hasNext()) {
+                final ImageProcessor ip = createImageProcessor(img);
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++) {
+                        ip.setf(x, y, (cursor.next().getRealFloat() + offset) * scale);
+                    }
                 }
-            }
 
-            is.addSlice("", ip);
+                is.addSlice("", ip);
+            }
+        } else {
+            //Building the IJ ImagePlus
+            final long[] dims = new long[permuted.numDimensions()];
+            permuted.dimensions(dims);
+
+            dims[0] = 1;
+            dims[1] = 1;
+            final IntervalIterator ii = new IntervalIterator(dims);
+
+            long[] min = new long[ii.numDimensions()];
+            long[] max = new long[ii.numDimensions()];
+
+            max[0] = permuted.max(0);
+            max[1] = permuted.max(1);
+
+            while (ii.hasNext()) {
+                ii.fwd();
+
+                for (int d = 2; d < ii.numDimensions(); d++) {
+                    min[d] = ii.getIntPosition(d);
+                    max[d] = min[d];
+                }
+
+                final Cursor<? extends RealType<?>> cursor =
+                        Views.iterable(Views.interval(optimizedIteration ? img : permuted, new FinalInterval(min, max)))
+                                .cursor();
+
+                final ImageProcessor ip = createImageProcessor(new ImgView(permuted, null));
+
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++) {
+                        ip.setf(x, y, (cursor.next().getRealFloat() + offset) * scale);
+                    }
+                }
+
+                is.addSlice("", ip);
+            }
         }
 
         //calculates the missing arguments for the image stack constructor
@@ -233,7 +237,6 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
     }
 
     /**
-     * @param mapping
      * @param img
      * @return calibration
      */
@@ -252,9 +255,9 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
 
     /**
      * @param img
-     * @return
+     * @return the inferred mapping
      */
-    public static int[] getInferredMapping(final ImgPlus<?> img) {
+    private static int[] getInferredMapping(final ImgPlus<?> img) {
 
         int[] inferredMapping = new int[DEFAULT_IJ1_MAPPING.size()];
         Arrays.fill(inferredMapping, -1);
@@ -299,6 +302,12 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         return true;
     }
 
+    /**
+     * Extends the given {@link ImgPlus} to 5-dimensions and makes sure, that the dimension order suits IJ.
+     *
+     * @param img to be extended and permuted
+     * @return extended and permuted {@link Img}
+     */
     public static <T> RandomAccessibleInterval<T> extendAndPermute(final ImgPlus<T> img) {
 
         // Create Mapping [at position one -> new index, at position 2 -> new index etc.] given: ImgPlus and m_mapping
