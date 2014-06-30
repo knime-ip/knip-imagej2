@@ -112,6 +112,7 @@ import org.knime.knip.imagej1.macro.FindMaximaIJMacro;
 import org.knime.knip.imagej1.macro.GaussianBlurIJMacro;
 import org.knime.knip.imagej1.macro.PureCodeIJMacro;
 import org.knime.knip.imagej1.macro.ROFDenoiseIJMacro;
+import org.knime.knip.imagej1.macro.SharpenIJMacro;
 import org.knime.knip.imagej1.macro.SkeletonizeIJMacro;
 import org.knime.knip.imagej1.macro.SubstractBackgroundIJMacro;
 import org.knime.knip.imagej1.macro.WatershedIJMacro;
@@ -383,7 +384,7 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                 pool.put("Find Edges", FindEdgesIJMacro.class);
                 pool.put("Find Maxima", FindMaximaIJMacro.class);
                 pool.put("Analyze Particles", AnalyzeParticlesIJMacro.class);
-                pool.put("Sharpen", SkeletonizeIJMacro.class);
+                pool.put("Sharpen", SharpenIJMacro.class);
                 pool.put("Watersched", WatershedIJMacro.class);
                 pool.put("Substract Background", SubstractBackgroundIJMacro.class);
                 pool.put("Enhance Local Constract (CLAHE)", CLAHEIJMacro.class);
