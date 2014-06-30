@@ -61,8 +61,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.imglib2.RandomAccess;
+import net.imglib2.Cursor;
+import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.converter.Converter;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.iterator.IntervalIterator;
@@ -104,6 +106,9 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
      */
     public static final Map<AxisType, Integer> DEFAULT_IJ1_MAPPING = createDefaultMapping();
 
+
+    private Converter<? extends RealType<?>, ? extends RealType<?>> converter = null;
+
     /**
      * Creates a mapping based on the DEFAULT_ORDER
      *
@@ -124,6 +129,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
     public final ImagePlus compute(final ImgPlus<? extends RealType<?>> img, final ImagePlus r) {
         float offset = 0;
         float scale = 1;
+
         if (img.firstElement() instanceof BitType) {
             scale = 255;
         }
@@ -133,37 +139,59 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         if (img.firstElement() instanceof ShortType) {
             offset = -Short.MIN_VALUE;
         }
+
         // we always want to have 5 dimensions
         final RandomAccessibleInterval permuted = extendAndPermute(img);
+
+        final boolean optimizedIteration = img.equalIterationOrder(Views.iterable(permuted));
 
         // get the resulting calibration
         final double[] newCalibration = getNewCalibration(img);
 
         //Building the IJ ImagePlus
-        final long[] dim = new long[permuted.numDimensions()];
-        permuted.dimensions(dim);
-        final long width = dim[0];
-        final long height = dim[1];
-        int x, y;
-        dim[0] = 1;
-        dim[1] = 1;
-        final IntervalIterator ii = new IntervalIterator(dim);
-        final RandomAccess<? extends RealType> ra = permuted.randomAccess();
+        final long[] dims = new long[optimizedIteration ? img.numDimensions() : permuted.numDimensions()];
+
+        if (optimizedIteration) {
+            img.dimensions(dims);
+        } else {
+            permuted.dimensions(dims);
+        }
+
+        final long width = dims[0];
+        final long height = dims[1];
+
+        dims[0] = 1;
+        dims[1] = 1;
+
+        final IntervalIterator ii = new IntervalIterator(dims);
         final ImageStack is = new ImageStack((int)permuted.dimension(0), (int)permuted.dimension(1));
+
+        long[] min = new long[ii.numDimensions()];
+        long[] max = new long[ii.numDimensions()];
+
+        max[0] = permuted.max(0);
+        max[1] = permuted.max(1);
 
         while (ii.hasNext()) {
             ii.fwd();
-            //TODO: Use cursor. can be made faster with subset interval
-            ra.setPosition(ii);
+
+            for (int d = 2; d < ii.numDimensions(); d++) {
+                min[d] = ii.getIntPosition(d);
+                max[d] = min[d];
+            }
+
+            final Cursor<? extends RealType<?>> cursor =
+                    Views.iterable(Views.interval(optimizedIteration ? img : permuted, new FinalInterval(min, max)))
+                            .cursor();
 
             final ImageProcessor ip = createImageProcessor(new ImgView(permuted, null));
-            for (y = 0; y < height; y++) {
-                ra.setPosition(y, 1);
-                for (x = 0; x < width; x++) {
-                    ra.setPosition(x, 0);
-                    ip.setf(x, y, (ra.get().getRealFloat() + offset) * scale);
+
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    ip.setf(x, y, (cursor.next().getRealFloat() + offset) * scale);
                 }
             }
+
             is.addSlice("", ip);
         }
 
@@ -200,6 +228,7 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
 
         r.setStack(is, channels, slices, frames);
         r.setTitle(img.getName());
+
         return r;
     }
 
