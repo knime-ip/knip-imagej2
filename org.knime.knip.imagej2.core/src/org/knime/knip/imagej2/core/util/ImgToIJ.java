@@ -94,22 +94,30 @@ import org.knime.knip.core.ops.metadata.DimSwapper;
  */
 public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends RealType<?>>, ImagePlus> {
 
-    private Map<AxisType, Integer> m_mapping;
+    /**
+     * Default ImageJ1 Axis Order
+     */
+    public static final AxisType[] DEFAULT_ORDER = new AxisType[]{Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME};
 
     /**
-     * Standard constructor, assumes input image has 5 dimensions (X, Y, Channel, Z, Time)
+     * Default IJ1 Mapping
      */
-    public ImgToIJ() {
-        m_mapping = new HashMap<AxisType, Integer>();
+    public static final Map<AxisType, Integer> DEFAULT_IJ1_MAPPING = createDefaultMapping();
 
-        // standard mapping from ImgPlus to ImagePlus
-        m_mapping.put(Axes.X, 0);
-        m_mapping.put(Axes.Y, 1);
-        m_mapping.put(Axes.CHANNEL, 2);
-        m_mapping.put(Axes.Z, 3);
-        m_mapping.put(Axes.TIME, 4);
+    /**
+     * Creates a mapping based on the DEFAULT_ORDER
+     *
+     * @return mapping based on the default axis order
+     */
+    public static final Map<AxisType, Integer> createDefaultMapping() {
+        Map<AxisType, Integer> mapping = new HashMap<>();
+
+        for (int i = 0; i < DEFAULT_ORDER.length; i++) {
+            mapping.put(DEFAULT_ORDER[i], i);
+        }
+
+        return mapping;
     }
-
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
@@ -125,23 +133,11 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         if (img.firstElement() instanceof ShortType) {
             offset = -Short.MIN_VALUE;
         }
-
-        // Create Mapping [at position one -> new index, at position 2 -> new index etc.] given: ImgPlus and m_mapping
-        int[] mapping = getNewMapping(img);
-
         // we always want to have 5 dimensions
-        RandomAccessibleInterval extended = img;
-        for (int d = img.numDimensions(); d < 5; d++) {
-            extended = Views.addDimension(extended, 0, 0);
-        }
+        final RandomAccessibleInterval permuted = extendAndPermute(img);
 
-        // also map/swap calibration
-        double[] newCalib = new double[mapping.length];
-        for(int i = 0; i < img.numDimensions(); i++){
-            newCalib[mapping[i]] = img.averageScale(i);
-        }
-
-        RandomAccessibleInterval permuted = DimSwapper.swap(extended, mapping);
+        // get the resulting calibration
+        final double[] newCalibration = getNewCalibration(img);
 
         //Building the IJ ImagePlus
         final long[] dim = new long[permuted.numDimensions()];
@@ -195,12 +191,12 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
                 break;
         }
 
-//        set spatial calibration
+        //        set spatial calibration
         Calibration cal = new Calibration();
-        cal.pixelWidth = newCalib[0];
-        cal.pixelHeight = newCalib[1];
-        cal.pixelDepth = newCalib[3];
-        r.setCalibration(cal );
+        cal.pixelWidth = newCalibration[0];
+        cal.pixelHeight = newCalibration[1];
+        cal.pixelDepth = newCalibration[3];
+        r.setCalibration(cal);
 
         r.setStack(is, channels, slices, frames);
         r.setTitle(img.getName());
@@ -208,20 +204,38 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
     }
 
     /**
+     * @param mapping
+     * @param img
+     * @return calibration
+     */
+    public static double[] getNewCalibration(final ImgPlus<?> img) {
+
+        int[] mapping = getInferredMapping(img);
+
+        // also map/swap calibration
+        double[] newCalib = new double[mapping.length];
+        for (int i = 0; i < img.numDimensions(); i++) {
+            newCalib[mapping[i]] = img.averageScale(i);
+        }
+
+        return newCalib;
+    }
+
+    /**
      * @param img
      * @return
      */
-    private int[] getNewMapping(final ImgPlus<? extends RealType<?>> img) {
+    public static int[] getInferredMapping(final ImgPlus<?> img) {
 
-        int[] mapping = new int[m_mapping.size()];
-        Arrays.fill(mapping, -1);
+        int[] inferredMapping = new int[DEFAULT_IJ1_MAPPING.size()];
+        Arrays.fill(inferredMapping, -1);
 
         for (int d = 0; d < img.numDimensions(); d++) {
-            mapping[d] = m_mapping.get(img.axis(d).type());
+            inferredMapping[d] = DEFAULT_IJ1_MAPPING.get(img.axis(d).type());
         }
 
         int offset = 0;
-        for (AxisType type : m_mapping.keySet()) {
+        for (AxisType type : DEFAULT_IJ1_MAPPING.keySet()) {
             boolean contains = false;
             for (int d = 0; d < img.numDimensions(); d++) {
                 if (img.axis(d).type().equals(type)) {
@@ -231,59 +245,41 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
             }
 
             if (!contains) {
-                mapping[img.numDimensions() + offset] = m_mapping.get(type);
+                inferredMapping[img.numDimensions() + offset] = DEFAULT_IJ1_MAPPING.get(type);
                 offset++;
             }
-
         }
 
-        return mapping;
+        return inferredMapping;
     }
 
     /**
-     * Check if ImgPlus contains axis which can not be mapped to IJ ImagePlus. Valid axes in ImagePlus are Channel
-     * (index 0), Z (index 1), Time (index 2). Use setMapping if you want to change this.
+     * Check if ImgPlus contains axis which can not be mapped to IJ ImagePlus. Valid axes in ImagePlus are X, Y,
+     * Channel, Z, Time.
      *
      * @param img
      *
      * @return true if mapping is valid
      */
-    public <T> boolean validateMapping(final ImgPlus<T> img) {
+    public static boolean validateMapping(final ImgPlus<?> img) {
         for (int d = 0; d < img.numDimensions(); d++) {
-            if (m_mapping.get(((DefaultTypedAxis)img.axis(d)).type()) == null) {
+            if (DEFAULT_IJ1_MAPPING.get(((DefaultTypedAxis)img.axis(d)).type()) == null) {
                 return false;
             }
         }
         return true;
     }
 
-    /**
-     * Set the dimension mapping from ImagePlus Axis to IJ ImagePlus Index
-     *
-     * @param mapping
-     */
-    public void setMapping(final Map<AxisType, Integer> mapping) {
-        m_mapping = mapping;
-    }
+    public static <T> RandomAccessibleInterval<T> extendAndPermute(final ImgPlus<T> img) {
 
-    /**
-     * Infers a mapping for the argument picture
-     *
-     * @param <T> {@link ImgPlus} the mapping shall be based on
-     * @param img the {@link ImgPlus} to infer the mapping from
-     *
-     * @return True when successful, equal to {@link #ImgToIJ.validateMapping}
-     */
-    public <T> boolean inferMapping(final ImgPlus<T> img) {
-        HashMap<AxisType, Integer> newMapping = new HashMap<AxisType, Integer>();
-
-        for (int d = 0; d < img.numDimensions(); d++) {
-            newMapping.put(img.axis(d).type(), d);
+        // Create Mapping [at position one -> new index, at position 2 -> new index etc.] given: ImgPlus and m_mapping
+        // we always want to have 5 dimensions
+        RandomAccessibleInterval<T> extended = img;
+        for (int d = img.numDimensions(); d < 5; d++) {
+            extended = Views.addDimension(extended, 0, 0);
         }
 
-        m_mapping = newMapping;
-        return validateMapping(img);
-
+        return DimSwapper.swap(extended, getInferredMapping(img));
     }
 
     private static ImageProcessor createImageProcessor(final Img<? extends RealType<?>> op) {
@@ -322,4 +318,5 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
             }
         };
     }
+
 }
