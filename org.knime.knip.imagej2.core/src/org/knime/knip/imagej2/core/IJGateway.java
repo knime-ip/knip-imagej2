@@ -96,6 +96,7 @@ import org.scijava.util.ColorRGB;
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
+@SuppressWarnings("restriction")
 public final class IJGateway {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(IJGateway.class);
@@ -170,7 +171,8 @@ public final class IJGateway {
         }
 
         // create ImageJ context with all available services
-        m_imageJContext = new Context(new PluginIndex(new DefaultPluginFinder(new ContextFinder(getClass().getClassLoader()))));
+        m_imageJContext =
+                new Context(new PluginIndex(new DefaultPluginFinder(new ContextFinder(getClass().getClassLoader()))));
 
         //get version info
         final AppService appService = m_imageJContext.getService(AppService.class);
