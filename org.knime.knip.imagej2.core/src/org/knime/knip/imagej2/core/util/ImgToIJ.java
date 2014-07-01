@@ -53,12 +53,18 @@ import ij.ImageStack;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
+import net.imglib2.IterableRealInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.converter.Converter;
 import net.imglib2.img.Img;
@@ -72,6 +78,9 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 
+import org.knime.core.node.KNIMEConstants;
+import org.knime.knip.base.KNIPConstants;
+import org.knime.knip.base.ThreadPoolExecutorService;
 import org.knime.knip.core.ops.metadata.DimSwapper;
 
 /**
@@ -129,7 +138,6 @@ public final class ImgToIJ {
     public static final <T extends RealType<T>> ImagePlus wrap(final ImgPlus<T> img,
                                                                final ImageProcessorFactory processorFactory,
                                                                final Converter<T, FloatType> converter) {
-
         // we always want to have 5 dimensions
         final RandomAccessibleInterval permuted = extendAndPermute(img);
 
@@ -138,17 +146,34 @@ public final class ImgToIJ {
 
         final ImagePlus r = new ImagePlus();
         final ImageStack is = new ImageStack(width, height);
-        final IntervalIterator ii = createIntervalIterator(permuted);
 
-        long[] min = new long[ii.numDimensions()];
-        long[] max = new long[ii.numDimensions()];
+        final RandomAccessibleInterval<T> access =
+                img.equalIterationOrder((IterableRealInterval<?>)permuted) ? img : permuted;
+
+        final IntervalIterator ii = createIntervalIterator(access);
+
+        final long[] min = new long[access.numDimensions()];
+        final long[] max = new long[access.numDimensions()];
 
         max[0] = permuted.max(0);
         max[1] = permuted.max(1);
 
-        //TODO: This can be parallelized
+        // number of planes = num tasks
+        int numSlices = 1;
+        for (int d = 2; d < access.numDimensions(); d++) {
+            numSlices *= access.dimension(d);
+        }
+
+        // parallelization
+        final ImageProcessor[] slices = new ImageProcessor[numSlices];
+        final ExecutorService service =
+                new ThreadPoolExecutorService(
+                        KNIMEConstants.GLOBAL_THREAD_POOL.createSubPool(KNIPConstants.THREADS_PER_NODE));
+
+        final ArrayList<Future<Void>> futures = new ArrayList<Future<Void>>();
         final T inType = img.firstElement();
 
+        int i = 0;
         while (ii.hasNext()) {
             ii.fwd();
 
@@ -157,18 +182,45 @@ public final class ImgToIJ {
                 max[d] = min[d];
             }
 
-            final Cursor<T> cursor = Views.iterable(Views.interval(permuted, new FinalInterval(min, max))).cursor();
-            final ImageProcessor ip = processorFactory.createProcessor(width, height, inType);
+            final int proxy = i++;
 
-            final FloatType outProxy = new FloatType();
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    converter.convert(cursor.next(), outProxy);
-                    ip.setf(x, y, outProxy.get());
+            futures.add(service.submit(new Callable<Void>() {
+
+                @Override
+                public Void call() throws Exception {
+
+                    final Cursor<T> cursor =
+                            Views.iterable(Views.interval(access, new FinalInterval(min, max))).cursor();
+
+                    final ImageProcessor ip = processorFactory.createProcessor(width, height, inType);
+
+                    final FloatType outProxy = new FloatType();
+                    for (int y = 0; y < height; y++) {
+                        for (int x = 0; x < width; x++) {
+                            converter.convert(cursor.next(), outProxy);
+                            ip.setf(x, y, outProxy.get());
+                        }
+                    }
+                    slices[proxy] = ip;
+
+                    return null;
                 }
-            }
+            }));
+        }
 
-            is.addSlice("", ip);
+        for (final Future<Void> f : futures) {
+            try {
+                f.get();
+            } catch (final InterruptedException e) {
+                e.printStackTrace();
+            } catch (final ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // add slices to stack
+        for (ImageProcessor slice : slices) {
+            is.addSlice("", slice);
         }
 
         // set calibration
