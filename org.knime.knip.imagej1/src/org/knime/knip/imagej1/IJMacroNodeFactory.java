@@ -167,7 +167,7 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
 
             private final SettingsModelBoolean m_resultTableEntriesAsString = createResultTableEntriesAsStringModel();
 
-            private IJMacro m_macro;
+            private IJMacro<T> m_macro;
 
             private ImgPlusCellFactory m_imgCellFactory;
 
@@ -247,7 +247,6 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
             @Override
             protected ImgPlusCell compute(final ImgPlusValue cellValue) throws Exception {
 
-                RealType<?> matchingType = null;
                 final ImgPlus img = cellValue.getImgPlus();
                 ImgPlus res = null;
                 final Interval[] intervals = m_dimSelection.getIntervals(img, img);
@@ -271,9 +270,8 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                                                                  new DefaultImgMetadata(subsetview.numDimensions()));
 
                     try {
-                        matchingType =
-                                m_macro.runOn(new ImgPlus<T>(new ImgView<T>(subsetview, img.factory()), meta),
-                                              matchingType);
+                        ImgPlus<T> imgPlus = new ImgPlus<T>(new ImgView<T>(subsetview, img.factory()), meta);
+                        m_macro.runOn(imgPlus, imgPlus.firstElement().createVariable());
                     } catch (UntransformableIJTypeException e) {
                         throw new KNIPRuntimeException(e.getMessage(), e);
                     } catch (KNIPRuntimeException e) {

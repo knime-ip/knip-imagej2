@@ -72,7 +72,7 @@ import org.knime.knip.imagej2.core.util.ImgToIJ;
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
-public class IJMacro {
+public class IJMacro<T extends RealType<T>> {
 
     // private final String m_ijDirectory;
     private final String m_code;
@@ -96,22 +96,22 @@ public class IJMacro {
      * @param matchingType matching type
      * @return the matching type
      */
-    public final RealType<?> runOn(final ImgPlus<? extends RealType<?>> img, final RealType<?> matchingType) {
-        final Map<String, ImgPlus<? extends RealType<?>>> map = new HashMap<String, ImgPlus<? extends RealType<?>>>();
-        map.put("A", img);
-        return runOn(map, matchingType);
+    public final void runOn(final ImgPlus<T> img, final T matchingType) {
+        final Map<String, ImgPlus<T>> map = new HashMap<String, ImgPlus<T>>();
+        map.put(img.getName(), img);
+        runOn(map, matchingType);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private final RealType<?> runOn(final Map<String, ImgPlus<? extends RealType<?>>> imgs, RealType<?> matchingType) {
+    private final void runOn(final Map<String, ImgPlus<T>> imgs, final T matchingType) {
 
         m_resTable = ResultsTable.getResultsTable();
         // TODO Run different ImageJ instances?
         synchronized (m_resTable) {
             final Interpreter inter = new Interpreter();
             // Prepare images
-            for (final Entry<String, ImgPlus<? extends RealType<?>>> pair : imgs.entrySet()) {
-                final ImagePlus plus = Operations.compute(new ImgToIJ(), pair.getValue());
+            for (final Entry<String, ImgPlus<T>> pair : imgs.entrySet()) {
+                final ImagePlus plus = ImgToIJ.wrap(pair.getValue());
                 plus.setTitle(pair.getKey());
                 Interpreter.addBatchModeImage(plus);
                 WindowManager.setTempCurrentImage(plus);
@@ -130,12 +130,14 @@ public class IJMacro {
                 // dimensionality
                 final int ndim = org != null ? org.numDimensions() : -1;
 
+                final RealType<?> resType;
                 if (matchingType == null) {
-                    matchingType = IJToImg.createMatchingType(resPlus);
+                    resType = IJToImg.createMatchingType(resPlus);
+                } else {
+                    resType = matchingType;
                 }
 
-                final Img<? extends RealType<?>> res =
-                        Operations.compute(new IJToImg(matchingType, false, ndim), resPlus);
+                final Img<? extends RealType<?>> res = Operations.compute(new IJToImg(resType, false, ndim), resPlus);
 
                 if ((org != null) && (org instanceof ImgPlusMetadata)) {
                     // If the image was only
@@ -156,8 +158,6 @@ public class IJMacro {
             }
             WindowManager.closeAllWindows();
         }
-
-        return matchingType;
     }
 
     /**
