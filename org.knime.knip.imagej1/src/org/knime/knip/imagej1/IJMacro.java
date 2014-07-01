@@ -52,11 +52,6 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import ij.macro.Interpreter;
 import ij.measure.ResultsTable;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import net.imglib2.img.Img;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.ImgPlusMetadata;
@@ -71,6 +66,7 @@ import org.knime.knip.imagej2.core.util.ImgToIJ;
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
+ * @param <T>
  */
 public class IJMacro<T extends RealType<T>> {
 
@@ -90,32 +86,20 @@ public class IJMacro<T extends RealType<T>> {
     }
 
     /**
-     * Run the specified macro
-     *
-     * @param img {@link ImgPlus} to operate on
-     * @param matchingType matching type
-     * @return the matching type
+     * @param img
      */
-    public final void runOn(final ImgPlus<T> img, final T matchingType) {
-        final Map<String, ImgPlus<T>> map = new HashMap<String, ImgPlus<T>>();
-        map.put(img.getName(), img);
-        runOn(map, matchingType);
-    }
-
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private final void runOn(final Map<String, ImgPlus<T>> imgs, final T matchingType) {
+    public final void run(final ImgPlus<T> img) {
 
         m_resTable = ResultsTable.getResultsTable();
         // TODO Run different ImageJ instances?
         synchronized (m_resTable) {
             final Interpreter inter = new Interpreter();
             // Prepare images
-            for (final Entry<String, ImgPlus<T>> pair : imgs.entrySet()) {
-                final ImagePlus plus = ImgToIJ.wrap(pair.getValue());
-                plus.setTitle(pair.getKey());
-                Interpreter.addBatchModeImage(plus);
-                WindowManager.setTempCurrentImage(plus);
-            }
+            final ImagePlus plus = ImgToIJ.wrap(img);
+            plus.setTitle(img.getName());
+            Interpreter.addBatchModeImage(plus);
+            WindowManager.setTempCurrentImage(plus);
             m_resTable.reset();
 
             // This must be the run method with two string
@@ -124,20 +108,14 @@ public class IJMacro<T extends RealType<T>> {
 
             final ImagePlus resPlus = Interpreter.getLastBatchModeImage();
             if (resPlus != null) {
-                final Img<?> org = imgs.get(resPlus.getTitle());
+                final Img<?> org = resPlus.getTitle().equalsIgnoreCase(img.getName()) ? img : null;
+
                 // If the image was only modified,
                 // truncate to the same
                 // dimensionality
                 final int ndim = org != null ? org.numDimensions() : -1;
-
-                final RealType<?> resType;
-                if (matchingType == null) {
-                    resType = IJToImg.createMatchingType(resPlus);
-                } else {
-                    resType = matchingType;
-                }
-
-                final Img<? extends RealType<?>> res = Operations.compute(new IJToImg(resType, false, ndim), resPlus);
+                final Img<? extends RealType<?>> res =
+                        Operations.compute(new IJToImg(IJToImg.createMatchingType(resPlus), false, ndim), resPlus);
 
                 if ((org != null) && (org instanceof ImgPlusMetadata)) {
                     // If the image was only

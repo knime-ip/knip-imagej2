@@ -74,8 +74,8 @@ class DefaultImgToIJ1Converter<T extends RealType<T>> implements Converter<T, Fl
      */
     public DefaultImgToIJ1Converter(final T type) {
         if (type instanceof BitType) {
-            scale = 255;
             offset = 0;
+            scale = 255;
         } else if (type instanceof ByteType) {
             offset = -Byte.MIN_VALUE;
             scale = 1;

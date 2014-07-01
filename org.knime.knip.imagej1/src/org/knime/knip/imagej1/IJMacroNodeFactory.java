@@ -216,7 +216,7 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                     m_flowVarCode.setStringValue("");
                 }
 
-                m_macro = new IJMacro(code);
+                m_macro = new IJMacro<T>(code);
                 m_imgCellFactory = new ImgPlusCellFactory(exec);
 
                 m_exec = exec;
@@ -271,7 +271,7 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
 
                     try {
                         ImgPlus<T> imgPlus = new ImgPlus<T>(new ImgView<T>(subsetview, img.factory()), meta);
-                        m_macro.runOn(imgPlus, imgPlus.firstElement().createVariable());
+                        m_macro.run(imgPlus);
                     } catch (UntransformableIJTypeException e) {
                         throw new KNIPRuntimeException(e.getMessage(), e);
                     } catch (KNIPRuntimeException e) {
