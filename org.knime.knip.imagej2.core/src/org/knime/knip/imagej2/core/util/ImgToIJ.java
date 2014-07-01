@@ -51,11 +51,7 @@ package org.knime.knip.imagej2.core.util;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.measure.Calibration;
-import ij.process.BinaryProcessor;
-import ij.process.ByteProcessor;
-import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import ij.process.ShortProcessor;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -64,22 +60,15 @@ import java.util.Map;
 import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.converter.Converter;
 import net.imglib2.img.Img;
-import net.imglib2.img.ImgView;
 import net.imglib2.iterator.IntervalIterator;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.DefaultTypedAxis;
 import net.imglib2.meta.ImgPlus;
-import net.imglib2.ops.img.UnaryObjectFactory;
 import net.imglib2.ops.operation.UnaryOperation;
-import net.imglib2.ops.operation.UnaryOutputOperation;
-import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.integer.ByteType;
-import net.imglib2.type.numeric.integer.ShortType;
-import net.imglib2.type.numeric.integer.UnsignedByteType;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 
@@ -90,10 +79,9 @@ import org.knime.knip.core.ops.metadata.DimSwapper;
  *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
- * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  * @author <a href="mailto:gabriel.einsdorf@uni.kn">Gabriel Einsdorf</a>
  */
-public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends RealType<?>>, ImagePlus> {
+public final class ImgToIJ {
 
     /**
      * Default ImageJ1 Axis Order
@@ -120,120 +108,96 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         return mapping;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Override
-    public final ImagePlus compute(final ImgPlus<? extends RealType<?>> img, final ImagePlus r) {
-        float offset = 0;
-        float scale = 1;
+    /**
+     * Wraps an {@link Img} using default IJ1Converter.
+     *
+     * @param img to be wrapped
+     * @return wrapped {@link ImagePlus}
+     */
+    public static final <T extends RealType<T>> ImagePlus wrap(final ImgPlus<T> img) {
+        return wrap(img, new DefaultProcessorFactory(), new DefaultImgToIJ1Converter<T>(img.firstElement()));
+    }
 
-        if (img.firstElement() instanceof BitType) {
-            scale = 255;
-        }
-        if (img.firstElement() instanceof ByteType) {
-            offset = -Byte.MIN_VALUE;
-        }
-        if (img.firstElement() instanceof ShortType) {
-            offset = -Short.MIN_VALUE;
-        }
+    /**
+     * @param img
+     * @param processorFactory
+     * @param converter
+     *
+     * @return wrapped {@link ImagePlus}
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static final <T extends RealType<T>> ImagePlus wrap(final ImgPlus<T> img,
+                                                               final ImageProcessorFactory processorFactory,
+                                                               final Converter<T, FloatType> converter) {
 
         // we always want to have 5 dimensions
         final RandomAccessibleInterval permuted = extendAndPermute(img);
 
-        final boolean optimizedIteration = img.equalIterationOrder(Views.iterable(permuted));
+        final int width = (int)permuted.dimension(0);
+        final int height = (int)permuted.dimension(1);
 
-        // get the resulting calibration
+        final ImagePlus r = new ImagePlus();
+        final ImageStack is = new ImageStack(width, height);
+        final IntervalIterator ii = createIntervalIterator(permuted);
+
+        long[] min = new long[ii.numDimensions()];
+        long[] max = new long[ii.numDimensions()];
+
+        max[0] = permuted.max(0);
+        max[1] = permuted.max(1);
+
+        //TODO: This can be parallelized
+        final T inType = img.firstElement();
+
+        while (ii.hasNext()) {
+            ii.fwd();
+
+            for (int d = 2; d < ii.numDimensions(); d++) {
+                min[d] = ii.getIntPosition(d);
+                max[d] = min[d];
+            }
+
+            final Cursor<T> cursor = Views.iterable(Views.interval(permuted, new FinalInterval(min, max))).cursor();
+            final ImageProcessor ip = processorFactory.createProcessor(width, height, inType);
+
+            final FloatType outProxy = new FloatType();
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    converter.convert(cursor.next(), outProxy);
+                    ip.setf(x, y, outProxy.get());
+                }
+            }
+
+            is.addSlice("", ip);
+        }
+
+        // set calibration
         final double[] newCalibration = getNewCalibration(img);
-
-        final long width = permuted.dimension(0);
-        final long height = permuted.dimension(1);
-        final ImageStack is = new ImageStack((int)permuted.dimension(0), (int)permuted.dimension(1));
-
-        if (optimizedIteration) {
-            final Cursor<? extends RealType<?>> cursor = img.cursor();
-            while (cursor.hasNext()) {
-                final ImageProcessor ip = createImageProcessor(img);
-                for (int y = 0; y < height; y++) {
-                    for (int x = 0; x < width; x++) {
-                        ip.setf(x, y, (cursor.next().getRealFloat() + offset) * scale);
-                    }
-                }
-
-                is.addSlice("", ip);
-            }
-        } else {
-            //Building the IJ ImagePlus
-            final long[] dims = new long[permuted.numDimensions()];
-            permuted.dimensions(dims);
-
-            dims[0] = 1;
-            dims[1] = 1;
-            final IntervalIterator ii = new IntervalIterator(dims);
-
-            long[] min = new long[ii.numDimensions()];
-            long[] max = new long[ii.numDimensions()];
-
-            max[0] = permuted.max(0);
-            max[1] = permuted.max(1);
-
-            while (ii.hasNext()) {
-                ii.fwd();
-
-                for (int d = 2; d < ii.numDimensions(); d++) {
-                    min[d] = ii.getIntPosition(d);
-                    max[d] = min[d];
-                }
-
-                final Cursor<? extends RealType<?>> cursor =
-                        Views.iterable(Views.interval(optimizedIteration ? img : permuted, new FinalInterval(min, max)))
-                                .cursor();
-
-                final ImageProcessor ip = createImageProcessor(new ImgView(permuted, null));
-
-                for (int y = 0; y < height; y++) {
-                    for (int x = 0; x < width; x++) {
-                        ip.setf(x, y, (cursor.next().getRealFloat() + offset) * scale);
-                    }
-                }
-
-                is.addSlice("", ip);
-            }
-        }
-
-        //calculates the missing arguments for the image stack constructor
-        int channels = 1;
-        int slices = 1;
-        int frames = 1;
-
-        switch (permuted.numDimensions()) {
-            case 2:
-                break;
-            case 3:
-                slices = (int)permuted.dimension(2);
-                break;
-            case 4:
-                slices = (int)permuted.dimension(2);
-                frames = (int)permuted.dimension(3);
-                break;
-            case 5:
-                channels = (int)permuted.dimension(2);
-                slices = (int)permuted.dimension(3);
-                frames = (int)permuted.dimension(4);
-                break;
-            default:
-                break;
-        }
-
-        //        set spatial calibration
         Calibration cal = new Calibration();
         cal.pixelWidth = newCalibration[0];
         cal.pixelHeight = newCalibration[1];
         cal.pixelDepth = newCalibration[3];
         r.setCalibration(cal);
 
-        r.setStack(is, channels, slices, frames);
+        r.setStack(is, (int)permuted.dimension(2), (int)permuted.dimension(3), (int)permuted.dimension(4));
         r.setTitle(img.getName());
 
         return r;
+    }
+
+    /**
+     * @param permuted
+     * @return
+     */
+    private static IntervalIterator createIntervalIterator(final RandomAccessibleInterval<?> permuted) {
+        final long[] dims = new long[permuted.numDimensions()];
+        permuted.dimensions(dims);
+
+        dims[0] = 1;
+        dims[1] = 1;
+
+        final IntervalIterator ii = new IntervalIterator(dims);
+        return ii;
     }
 
     /**
@@ -318,43 +282,6 @@ public final class ImgToIJ implements UnaryOutputOperation<ImgPlus<? extends Rea
         }
 
         return DimSwapper.swap(extended, getInferredMapping(img));
-    }
-
-    private static ImageProcessor createImageProcessor(final Img<? extends RealType<?>> op) {
-        if ((op.dimension(0) > Integer.MAX_VALUE) || (op.dimension(1) > Integer.MAX_VALUE)) {
-            throw new RuntimeException("Dimension exceeds ImageJ capabilities");
-        }
-
-        if ((op.firstElement() instanceof BitType)) {
-            return new BinaryProcessor(new ByteProcessor((int)op.dimension(0), (int)op.dimension(1)));
-        }
-        if ((op.firstElement() instanceof ByteType) || (op.firstElement() instanceof UnsignedByteType)) {
-            return new ByteProcessor((int)op.dimension(0), (int)op.dimension(1));
-        }
-        if ((op.firstElement() instanceof ShortType) || (op.firstElement() instanceof UnsignedShortType)) {
-            return new ShortProcessor((int)op.dimension(0), (int)op.dimension(1));
-        }
-        if (op.firstElement() instanceof FloatType) {
-            return new FloatProcessor((int)op.dimension(0), (int)op.dimension(1));
-        }
-
-        throw new UntransformableIJTypeException(op.firstElement());
-    }
-
-    @Override
-    public UnaryOutputOperation<ImgPlus<? extends RealType<?>>, ImagePlus> copy() {
-        return new ImgToIJ();
-    }
-
-    @Override
-    public UnaryObjectFactory<ImgPlus<? extends RealType<?>>, ImagePlus> bufferFactory() {
-        return new UnaryObjectFactory<ImgPlus<? extends RealType<?>>, ImagePlus>() {
-
-            @Override
-            public ImagePlus instantiate(final ImgPlus<? extends RealType<?>> a) {
-                return new ImagePlus();
-            }
-        };
     }
 
 }
