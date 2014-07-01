@@ -40,6 +40,7 @@ import org.scijava.plugin.Plugin;
                 + " see sezpoz.java.net => Notes => Eclipse-specific notes or inspect the MyFragmentDemoPlugin.", headless = true, type = Command.class)
 public class MyFragmentDemoPlugin<T extends RealType<T>> implements Command {
 
+        @SuppressWarnings("unused")
         @Parameter(type = ItemIO.OUTPUT)
         private String output;
 

@@ -60,7 +60,6 @@ import net.imglib2.type.numeric.integer.ByteType;
 import net.imglib2.type.numeric.integer.ShortType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
-import net.imglib2.type.numeric.real.FloatType;
 
 /**
  * @author Christian Dietz
@@ -68,7 +67,8 @@ import net.imglib2.type.numeric.real.FloatType;
 public class DefaultProcessorFactory implements ImageProcessorFactory {
 
     @Override
-    public final <T extends Type<T>> ImageProcessor createProcessor(final int width, final int height, final T type) {
+    public final <T extends Type<T>> ImageProcessor createProcessor(final int width, final int height, final T type)
+            throws UntransformableIJTypeException {
 
         if ((width > Integer.MAX_VALUE) || (height > Integer.MAX_VALUE)) {
             throw new RuntimeException("Dimension exceeds ImageJ capabilities");
@@ -83,11 +83,8 @@ public class DefaultProcessorFactory implements ImageProcessorFactory {
         if ((type instanceof ShortType) || (type instanceof UnsignedShortType)) {
             return new ShortProcessor(width, height);
         }
-        if (type instanceof FloatType) {
-            return new FloatProcessor(width, height);
-        }
 
-        throw new UntransformableIJTypeException(type);
+        return new FloatProcessor(width, height);
+
     }
-
 }

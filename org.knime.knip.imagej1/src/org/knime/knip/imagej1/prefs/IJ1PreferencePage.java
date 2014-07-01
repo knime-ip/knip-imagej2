@@ -65,6 +65,9 @@ import org.knime.knip.imagej2.core.KNIMEIMAGEJPlugin;
  */
 public class IJ1PreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
+    /**
+     * Default Constructor
+     */
     public IJ1PreferencePage() {
         setPreferenceStore(KNIMEIMAGEJPlugin.getDefault().getPreferenceStore());
         setDescription("ImageJ1 preferences");

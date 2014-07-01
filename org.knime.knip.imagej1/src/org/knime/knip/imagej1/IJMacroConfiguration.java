@@ -159,7 +159,7 @@ public abstract class IJMacroConfiguration extends SerializableConfiguration<Str
                 validate();
             } catch (InvalidSettingsException e) {
             }
-            m_jtaCodeView.setText(String.format(codeTemplate(), m_cachedSettings));
+            m_jtaCodeView.setText(String.format(codeTemplate(), (Object[])m_cachedSettings));
         }
     }
 
@@ -215,7 +215,7 @@ public abstract class IJMacroConfiguration extends SerializableConfiguration<Str
         if (m_jcbUseCode.isSelected()) {
             code = m_jtaCodeView.getText();
         } else {
-            code = String.format(codeTemplate(), m_cachedSettings);
+            code = String.format(codeTemplate(), (Object[])m_cachedSettings);
         }
         return new MacroSetting(code, m_cachedSettings, m_jcbUseCode.isSelected(), configrationClass());
     }

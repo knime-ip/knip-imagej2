@@ -61,9 +61,11 @@ public class MyPlugin<T extends RealType<T>> implements Command {
         @Parameter(description = "Demonstrates preview functionality by " + "displaying the given message in the ImageJ status bar.")
         private String message = "Type a status message here.";
 
+        @SuppressWarnings("unused")
         @Parameter(type = ItemIO.OUTPUT)
         private String output;
 
+        @SuppressWarnings("unchecked")
         @Override
         public void run() {
                 final StringBuilder sb = new StringBuilder();
@@ -113,7 +115,7 @@ public class MyPlugin<T extends RealType<T>> implements Command {
                 output = sb.toString();
 
                 // invert the image
-                ImgPlus<T> imgPlus = (ImgPlus<T>) dataset.getImgPlus();
+                final ImgPlus<T> imgPlus = (ImgPlus<T>) dataset.getImgPlus();
 
                 new UnaryOperationAssignment<T, T>(new RealInvert<T, T>(imgPlus.firstElement().getMinValue(), imgPlus.firstElement().getMaxValue()))
                                 .compute(imgPlus, imgPlus);

@@ -83,205 +83,185 @@ import org.knime.knip.base.data.img.ImgPlusCellFactory;
 
 /**
  * Implements a <code>DataTable</code> that read image data from files.
- * 
+ *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
- * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael
- *         Zinsmaier</a>
+ * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
 public class IJReadFileImageTable implements DataTable {
 
-	private final NodeLogger LOGGER = NodeLogger
-			.getLogger(IJReadFileImageTable.class);
+    private final NodeLogger LOGGER = NodeLogger.getLogger(IJReadFileImageTable.class);
 
-	/*
-	 * Reference to the execution context to set the progress.
-	 */
-	private ExecutionContext m_exec;
+    /*
+     * Reference to the execution context to set the progress.
+     */
+    private ExecutionContext m_exec;
 
-	/*
-	 * List of the files to open (full path and file name)
-	 */
+    /*
+     * List of the files to open (full path and file name)
+     */
 
-	/** The row header prefix that is used if nothing else is specified. */
-	public static final String STANDARD_ROW_PREFIX = "SAMPLE_";
+    /** The row header prefix that is used if nothing else is specified. */
+    public static final String STANDARD_ROW_PREFIX = "SAMPLE_";
 
-	/** Suffix of image files. */
-	public static final String SUFFIX = ".tif";
+    /** Suffix of image files. */
+    public static final String SUFFIX = ".tif";
 
-	/*
-	 * Holds the file list.
-	 */
-	private String[] m_fileReferences;
+    /*
+     * Holds the file list.
+     */
+    private String[] m_fileReferences;
 
-	/*
-	 * The current position of the iterator in the file list.
-	 */
-	private int m_idx;
+    /*
+     * The current position of the iterator in the file list.
+     */
+    private int m_idx;
 
-	/*
-	 * Number of errors occured, while the opening images by means of the
-	 * iterator.
-	 */
-	private int m_numErrors;
+    /*
+     * Number of errors occured, while the opening images by means of the
+     * iterator.
+     */
+    private int m_numErrors;
 
-	private ImgPlusCellFactory m_imgCellFactory;
+    private ImgPlusCellFactory m_imgCellFactory;
 
-	/**
-	 * Creates an new and empty ImageTable and is useful to get the table
-	 * specification without actually knowing the content.
-	 * 
-	 * @param metaDataColumns
-	 *            the meta data keys
-	 * @param planeSelection
-	 * @param omexml
-	 * 
-	 */
-	public IJReadFileImageTable() {
-	}
+    /**
+     * Creates an new and empty ImageTable and is useful to get the table specification without actually knowing the
+     * content.
+     *
+     */
+    public IJReadFileImageTable() {
+    }
 
-	/**
-	 * Constructor for an ImageTable.
-	 * 
-	 * @param dTableSpec
-	 *            The DataTableSpec
-	 * @param exec
-	 * @param planeSelection
-	 * @param files
-	 *            The files to open
-	 */
-	public IJReadFileImageTable(final ExecutionContext exec,
-			final String[] filelist) {
+    /**
+     * Constructor for an ImageTable.
+     *
+     * @param exec
+     * @param filelist
+     */
+    public IJReadFileImageTable(final ExecutionContext exec, final String[] filelist) {
 
-		m_fileReferences = filelist;
-		m_exec = exec;
-		m_imgCellFactory = new ImgPlusCellFactory(exec);
+        m_fileReferences = filelist;
+        m_exec = exec;
+        m_imgCellFactory = new ImgPlusCellFactory(exec);
 
-	}
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public DataTableSpec getDataTableSpec() {
-		final int col = 0;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DataTableSpec getDataTableSpec() {
+        final int col = 0;
 
-		DataColumnSpecCreator creator;
-		final DataColumnSpec[] cspecs = new DataColumnSpec[1];
-		creator = new DataColumnSpecCreator("Image", ImgPlusCell.TYPE);
-		cspecs[col] = creator.createSpec();
+        DataColumnSpecCreator creator;
+        final DataColumnSpec[] cspecs = new DataColumnSpec[1];
+        creator = new DataColumnSpecCreator("Image", ImgPlusCell.TYPE);
+        cspecs[col] = creator.createSpec();
 
-		return new DataTableSpec(cspecs);
-	}
+        return new DataTableSpec(cspecs);
+    }
 
-	/**
-	 * 
-	 * @return true, if an error occurred while iterating through the filelist
-	 *         to open the images.
-	 */
-	public boolean hasAnErrorOccured() {
-		return m_numErrors > 0;
-	}
+    /**
+     *
+     * @return true, if an error occurred while iterating through the filelist to open the images.
+     */
+    public boolean hasAnErrorOccured() {
+        return m_numErrors > 0;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public RowIterator iterator() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RowIterator iterator() {
 
-		m_idx = 0;
-		m_numErrors = 0;
+        m_idx = 0;
+        m_numErrors = 0;
 
-		return new RowIterator() {
+        return new RowIterator() {
 
-			@Override
-			public boolean hasNext() {
-				return m_idx < m_fileReferences.length;
-			}
+            @Override
+            public boolean hasNext() {
+                return m_idx < m_fileReferences.length;
+            }
 
-			@SuppressWarnings("unchecked")
-			@Override
-			public DataRow next() {
-				String rowHeaderName = STANDARD_ROW_PREFIX;
-				final Vector<DataCell> row = new Vector<DataCell>();
+            @SuppressWarnings({"unchecked", "rawtypes", "null"})
+            @Override
+            public DataRow next() {
+                String rowHeaderName = STANDARD_ROW_PREFIX;
+                final Vector<DataCell> row = new Vector<DataCell>();
 
-				// create RowHeader
-				// rowHeaderName =
-				// new
-				// File(m_files[m_pos].getReference()).getName();
-				rowHeaderName = m_fileReferences[m_idx];
-				final DataCell[] result = new DataCell[1];
+                // create RowHeader
+                // rowHeaderName =
+                // new
+                // File(m_files[m_pos].getReference()).getName();
+                rowHeaderName = m_fileReferences[m_idx];
+                final DataCell[] result = new DataCell[1];
 
-				final ImagePlus ijImagePlus = new ImagePlus(
-						m_fileReferences[m_idx]);
+                final ImagePlus ijImagePlus = new ImagePlus(m_fileReferences[m_idx]);
 
-				// read image(s)
-				final int[] srcDims = ijImagePlus.getDimensions();
+                // read image(s)
+                final int[] srcDims = ijImagePlus.getDimensions();
 
-				final AxisType[] labels = new AxisType[srcDims.length];
-				labels[0] = Axes.get("X");
-				labels[1] = Axes.get("Y");
-				// if (labels.length > 1)
-				// labels[2] = Axes.CHANNEL;
-				// for (int i = 3; i < labels.length; i++) {
-				// labels[i] = Axes.UNKNOWN;
-				// }
+                final AxisType[] labels = new AxisType[srcDims.length];
+                labels[0] = Axes.get("X");
+                labels[1] = Axes.get("Y");
+                // if (labels.length > 1)
+                // labels[2] = Axes.CHANNEL;
+                // for (int i = 3; i < labels.length; i++) {
+                // labels[i] = Axes.UNKNOWN;
+                // }
 
-				Img<? extends RealType<?>> resImg = null;
+                Img<? extends RealType<?>> resImg = null;
 
-				final ImageProcessor ip = ijImagePlus.getProcessor();
-				if (ip == null) {
-					LOGGER.error("Can not open the file "
-							+ m_fileReferences[m_idx]);
-					m_numErrors++;
+                final ImageProcessor ip = ijImagePlus.getProcessor();
+                if (ip == null) {
+                    LOGGER.error("Can not open the file " + m_fileReferences[m_idx]);
+                    m_numErrors++;
 
-				} else {
-					final Object pixels = ip.getPixels();
-					if (ip instanceof ByteProcessor) {
-						resImg = new PlanarImgFactory().create(new int[] {
-								srcDims[0], srcDims[1] }, new ByteType());
-					} else if (ip instanceof ShortProcessor) {
-						resImg = new PlanarImgFactory().create(new int[] {
-								srcDims[0], srcDims[1] }, new ShortType());
+                } else {
+                    final Object pixels = ip.getPixels();
+                    if (ip instanceof ByteProcessor) {
+                        resImg = new PlanarImgFactory().create(new int[]{srcDims[0], srcDims[1]}, new ByteType());
+                    } else if (ip instanceof ShortProcessor) {
+                        resImg = new PlanarImgFactory().create(new int[]{srcDims[0], srcDims[1]}, new ShortType());
 
-					} else {
-						LOGGER.error("Can not open the file "
-								+ m_fileReferences[m_idx]);
-						m_numErrors++;
-					}
-					System.arraycopy(pixels, 0, ((PlanarImg) resImg)
-							.getPlane(0).getCurrentStorageArray(), 0, ip
-							.getPixelCount());
+                    } else {
+                        LOGGER.error("Can not open the file " + m_fileReferences[m_idx]);
+                        m_numErrors++;
+                    }
+                    System.arraycopy(pixels, 0, ((PlanarImg)resImg).getPlane(0).getCurrentStorageArray(), 0,
+                                     ip.getPixelCount());
 
-					try {
-						result[0] = m_imgCellFactory.createCell(new ImgPlus(
-								resImg, m_fileReferences[m_idx], labels));
-					} catch (final IOException e) {
-						LOGGER.error("Error creating ImgPlusCell.", e);
-						result[0] = DataType.getMissingCell();
-					}
+                    try {
+                        result[0] = m_imgCellFactory.createCell(new ImgPlus(resImg, m_fileReferences[m_idx], labels));
+                    } catch (final IOException e) {
+                        LOGGER.error("Error creating ImgPlusCell.", e);
+                        result[0] = DataType.getMissingCell();
+                    }
 
-				}
+                }
 
-				for (final DataCell cell : result) {
-					if (cell == null) {
-						row.add(DataType.getMissingCell());
-					} else {
+                for (final DataCell cell : result) {
+                    if (cell == null) {
+                        row.add(DataType.getMissingCell());
+                    } else {
 
-						row.add(cell);
-					}
-				}
+                        row.add(cell);
+                    }
+                }
 
-				DataCell[] rowvalues = new DataCell[row.size()];
-				rowvalues = row.toArray(rowvalues);
-				m_idx++;
-				m_exec.setProgress((double) m_idx / m_fileReferences.length);
+                DataCell[] rowvalues = new DataCell[row.size()];
+                rowvalues = row.toArray(rowvalues);
+                m_idx++;
+                m_exec.setProgress((double)m_idx / m_fileReferences.length);
 
-				return new DefaultRow(new RowKey(rowHeaderName), rowvalues);
+                return new DefaultRow(new RowKey(rowHeaderName), rowvalues);
 
-			}
+            }
 
-		};
+        };
 
-	}
+    }
 }

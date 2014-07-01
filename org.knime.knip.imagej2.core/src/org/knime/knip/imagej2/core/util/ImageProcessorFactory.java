@@ -13,6 +13,8 @@ public interface ImageProcessorFactory {
      * @param height
      * @param type
      * @return {@link ImageProcessor} given w, height and type
+     * @throws UntransformableIJTypeException
      */
-    <T extends Type<T>> ImageProcessor createProcessor(final int width, int height, final T type);
+    <T extends Type<T>> ImageProcessor createProcessor(final int width, int height, final T type)
+            throws UntransformableIJTypeException;
 }
