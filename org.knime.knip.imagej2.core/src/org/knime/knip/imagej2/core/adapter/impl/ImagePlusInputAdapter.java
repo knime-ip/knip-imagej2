@@ -50,7 +50,6 @@ package org.knime.knip.imagej2.core.adapter.impl;
 
 import ij.ImagePlus;
 import net.imglib2.meta.ImgPlus;
-import net.imglib2.ops.operation.Operations;
 
 import org.knime.core.data.DataValue;
 import org.knime.knip.base.data.img.ImgPlusValue;
@@ -93,7 +92,6 @@ public class ImagePlusInputAdapter implements IJStandardInputAdapter<ImagePlus> 
             @SuppressWarnings({"rawtypes", "unchecked"})
             @Override
             public void configureModuleItem(final Module module) {
-                final ImgToIJ convert = new ImgToIJ();
 
                 ImgPlus imgPlus;
                 if (item.getIOType() == ItemIO.BOTH) {
@@ -103,9 +101,7 @@ public class ImagePlusInputAdapter implements IJStandardInputAdapter<ImagePlus> 
                     imgPlus = ((ImgPlusValue)m_dataValue).getImgPlus();
                 }
 
-                final ImagePlus img = Operations.compute(convert, imgPlus);
-
-                module.setInput(item.getName(), img);
+                module.setInput(item.getName(), ImgToIJ.wrap(imgPlus));
             }
 
             @Override
@@ -120,5 +116,4 @@ public class ImagePlusInputAdapter implements IJStandardInputAdapter<ImagePlus> 
             }
         };
     }
-
 }
