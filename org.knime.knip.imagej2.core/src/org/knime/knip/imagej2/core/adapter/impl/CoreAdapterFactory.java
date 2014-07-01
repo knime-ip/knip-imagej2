@@ -113,7 +113,7 @@ public class CoreAdapterFactory implements IJAdapterFactory {
                 new StringOutputAdapter(), new PBooleanOutputAdapter(), new PByteOutputAdapter(),
                 new PCharacterOutputAdapter(), new PDoubleOutputAdapter(), new PFloatOutputAdapter(),
                 new PIntegerOutputAdapter(), new PLongOutputAdapter(), new PShortOutputAdapter(),
-                new ImgOutputAdapter(), new LabelingOutputAdapter()};
+                new ImgOutputAdapter(), new LabelingOutputAdapter(), new ImgPlusOutputAdapter()};
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -125,7 +125,8 @@ public class CoreAdapterFactory implements IJAdapterFactory {
                 new IntegerInputAdapter(), new LongInputAdapter(), new ShortInputAdapter(), new StringInputAdapter(),
                 new PBooleanInputAdapter(), new PByteInputAdapter(), new PCharacterInputAdapter(),
                 new PDoubleInputAdapter(), new PFloatInputAdapter(), new PIntegerInputAdapter(),
-                new PLongInputAdapter(), new PShortInputAdapter(), new ImgInputAdapter(), new LabelingInputAdapter()};
+                new PLongInputAdapter(), new PShortInputAdapter(), new ImgInputAdapter(), new LabelingInputAdapter(),
+                new ImgPlusInputAdapter()};
     }
 
     @SuppressWarnings("unchecked")

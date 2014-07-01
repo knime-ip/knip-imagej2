@@ -57,6 +57,7 @@ import net.imagej.Dataset;
 import net.imagej.display.ImageDisplay;
 import net.imglib2.img.Img;
 import net.imglib2.labeling.Labeling;
+import net.imglib2.meta.ImgPlus;
 
 import org.knime.core.data.DataValue;
 import org.knime.core.node.DynamicNodeFactory;
@@ -120,7 +121,7 @@ public class IJNodeFactory extends DynamicNodeFactory<AbstractIJNodeModel> {
         for (final ModuleItem<?> item : m_moduleInfo.outputs()) {
             if (item.getType().equals(Dataset.class) || item.getType().equals(ImageDisplay.class)
                     || item.getType().equals(ImagePlus.class) || item.getType().equals(Img.class)
-                    || item.getType().equals(Labeling.class)) {
+                    || item.getType().equals(ImgPlus.class) || item.getType().equals(Labeling.class)) {
                 imgOutput = true;
                 break;
             }
@@ -173,6 +174,7 @@ public class IJNodeFactory extends DynamicNodeFactory<AbstractIJNodeModel> {
      * - a menu category from the plugin menu path - a description of the plugin - a basic static port description
      *
      * {@inheritDoc}
+     *
      * @deprecated
      *
      */
