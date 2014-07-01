@@ -263,7 +263,7 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                 final Inset inset = new Inset(min);
 
                 for (final Interval interval : intervals) {
-                    RandomAccessibleInterval subsetview = SubsetOperations.subsetview(img, interval);
+                    RandomAccessibleInterval subsetview = SubsetOperations.subsetview(img.getImg(), interval);
                     ImgPlusMetadata meta =
                             MetadataUtil
                                     .copyAndCleanImgPlusMetadata(interval, img,
