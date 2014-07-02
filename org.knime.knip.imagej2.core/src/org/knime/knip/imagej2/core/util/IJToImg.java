@@ -52,10 +52,12 @@ import ij.ImagePlus;
 import ij.measure.Measurements;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
-import net.imglib2.RandomAccess;
+import net.imglib2.Cursor;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.iterator.IntervalIterator;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.ops.img.UnaryObjectFactory;
 import net.imglib2.ops.operation.UnaryOutputOperation;
 import net.imglib2.type.NativeType;
@@ -64,6 +66,7 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.Views;
 
 /**
  * This class provides functionality to create an {@link Img} from an {@link ImagePlus}
@@ -73,7 +76,8 @@ import net.imglib2.type.numeric.real.FloatType;
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  * @param <T>
  */
-public final class IJToImg<T extends RealType<T> & NativeType<T>> implements UnaryOutputOperation<ImagePlus, Img<T>> {
+public final class IJToImg<T extends RealType<T> & NativeType<T>> implements
+        UnaryOutputOperation<ImagePlus, ImgPlus<T>> {
 
     /**
      * Creates Bit-, UnsignedByte-, UnsignedShort- or FloatType depending on the ImagePlus bit depth.
@@ -123,7 +127,9 @@ public final class IJToImg<T extends RealType<T> & NativeType<T>> implements Una
     }
 
     @Override
-    public final Img<T> compute(final ImagePlus op, final Img<T> r) {
+    public final ImgPlus<T> compute(final ImagePlus op, final ImgPlus<T> r) {
+        final RandomAccessibleInterval<T> access = ImgToIJ.extendAndPermute(r);
+
         final ImageStatistics is = op.getStatistics(Measurements.MIN_MAX);
         final long[] dim = new long[r.numDimensions()];
         r.dimensions(dim);
@@ -133,41 +139,30 @@ public final class IJToImg<T extends RealType<T> & NativeType<T>> implements Una
         dim[0] = 1;
         dim[1] = 1;
         final IntervalIterator ii = new IntervalIterator(dim);
-        final RandomAccess<T> ra = r.randomAccess();
-        final double raMin = ra.get().getMinValue();
-        final double raMax = ra.get().getMaxValue();
+        final Cursor<T> cur = Views.iterable(access).cursor();
+        final double raMin = r.firstElement().getMinValue();
+        final double raMax = r.firstElement().getMaxValue();
         final double scale = (is.max - is.min) / (raMax - raMin);
         float v;
 
-        // TODO: IntervalIterator
         while (ii.hasNext()) {
             ii.fwd();
-            ra.setPosition(ii);
-            switch (dim.length) {
-                case 3:
-                    op.setPosition(ii.getIntPosition(2) + 1, 1, 1);
-                    break;
-                case 4:
-                    op.setPosition(ii.getIntPosition(2) + 1, ii.getIntPosition(3) + 1, 1);
-                    break;
-                case 5:
-                    op.setPosition(ii.getIntPosition(2) + 1, ii.getIntPosition(3) + 1, ii.getIntPosition(4) + 1);
-                    break;
-            }
+            op.setPosition(ii.getIntPosition(2) + 1, ii.getIntPosition(3) + 1, ii.getIntPosition(4) + 1);
+
             final ImageProcessor ip = op.getChannelProcessor();
+
             for (y = 0; y < height; y++) {
-                ra.setPosition(y, 1);
                 for (x = 0; x < width; x++) {
-                    ra.setPosition(x, 0);
+                    cur.fwd();
                     v = ip.getf(x, y);
                     if (m_scale) {
-                        ra.get().setReal(((v - is.min) / scale) + raMin);
+                        cur.get().setReal(((v - is.min) / scale) + raMin);
                     } else if (v < raMin) {
-                        ra.get().setReal(raMin);
+                        cur.get().setReal(raMin);
                     } else if (v > raMax) {
-                        ra.get().setReal(raMax);
+                        cur.get().setReal(raMax);
                     } else {
-                        ra.get().setReal(v);
+                        cur.get().setReal(v);
                     }
                 }
             }
@@ -176,19 +171,19 @@ public final class IJToImg<T extends RealType<T> & NativeType<T>> implements Una
     }
 
     @Override
-    public UnaryOutputOperation<ImagePlus, Img<T>> copy() {
+    public UnaryOutputOperation<ImagePlus, ImgPlus<T>> copy() {
         return new IJToImg<T>(m_type);
     }
 
     @Override
-    public UnaryObjectFactory<ImagePlus, Img<T>> bufferFactory() {
-        return new UnaryObjectFactory<ImagePlus, Img<T>>() {
+    public UnaryObjectFactory<ImagePlus, ImgPlus<T>> bufferFactory() {
+        return new UnaryObjectFactory<ImagePlus, ImgPlus<T>>() {
 
             @Override
-            public Img<T> instantiate(final ImagePlus op) {
+            public ImgPlus<T> instantiate(final ImagePlus op) {
                 int nDim = m_numDimensions;
                 if (m_numDimensions < 0) {
-                    nDim = op.getNDimensions();
+                    nDim = 5;
                 }
                 final long[] dim = new long[nDim];
                 int i;
@@ -200,7 +195,8 @@ public final class IJToImg<T extends RealType<T> & NativeType<T>> implements Una
                         throw new IllegalArgumentException("Too less dimensions");
                     }
                 }
-                return new ArrayImgFactory<T>().create(dim, m_type);
+                return new ImgPlus<T>(new ArrayImgFactory<T>().create(dim, m_type), op.getTitle(),
+                        ImgToIJ.DEFAULT_ORDER);
             }
         };
     }
