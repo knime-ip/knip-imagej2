@@ -64,7 +64,7 @@ import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.ImgPlusMetadata;
 import net.imglib2.meta.MetadataUtil;
 import net.imglib2.ops.operation.SubsetOperations;
-import net.imglib2.ops.operation.iterableinterval.unary.Inset;
+import net.imglib2.ops.operation.iterableinterval.unary.IterableIntervalCopy;
 import net.imglib2.type.numeric.RealType;
 
 import org.knime.core.data.DataCell;
@@ -248,10 +248,11 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
             protected ImgPlusCell compute(final ImgPlusValue cellValue) throws Exception {
 
                 final ImgPlus img = cellValue.getImgPlus();
-                ImgPlus res = null;
                 final Interval[] intervals = m_dimSelection.getIntervals(img, img);
-
                 final int[] m_selectedDims = m_dimSelection.getSelectedDimIndices(img);
+                final IterableIntervalCopy copyOp = new IterableIntervalCopy();
+
+                ImgPlus res = null;
 
                 if (m_selectedDims.length < 2) {
                     throw new KNIPException(
@@ -259,10 +260,9 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                                     + cellValue.getMetadata().getName() + ". MissingCell is created.");
                 }
 
-                final long[] min = new long[img.numDimensions()];
-                final Inset inset = new Inset(min);
-
+                long[] min = new long[img.numDimensions()];
                 for (final Interval interval : intervals) {
+                    interval.min(min);
                     RandomAccessibleInterval subsetview = SubsetOperations.subsetview(img.getImg(), interval);
                     ImgPlusMetadata meta =
                             MetadataUtil
@@ -282,7 +282,6 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                                 e);
                     }
 
-                    interval.min(min);
                     if (res == null && intervals.length > 1) {
                         final long[] dims = new long[img.numDimensions()];
                         img.dimensions(dims);
@@ -293,12 +292,14 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                                 new ImgPlus(img.factory().create(dims,
                                                                  m_macro.resImgPlus().firstElement().createVariable()),
                                         img);
+                        res.setSource(img.getSource());
                     }
 
                     if (intervals.length > 1) {
-                        inset.compute(m_macro.resImgPlus(), res);
+                        copyOp.compute(m_macro.resImgPlus(), SubsetOperations.subsetview(res, interval));
                     } else {
                         res = m_macro.resImgPlus();
+                        res.setSource(img.getSource());
                     }
 
                     // fill result table if available
@@ -398,7 +399,7 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                 addDialogComponent("Options", "Snippets", new DialogComponentSerializableConfiguration(
                         createMacroSelectionModel(), pool));
                 addDialogComponent("Options", "Dimension Selection", new DialogComponentDimSelection(
-                        createDimSelectionModel(), "", 2, 3));
+                        createDimSelectionModel(), "", 2, 5));
                 // hidden dialog component to be able to controll the imagej
                 // macro node by flow variables
                 addDialogComponent("Options", "Snippets", new DialogComponent(createFlowVariableControllableCode()) {
