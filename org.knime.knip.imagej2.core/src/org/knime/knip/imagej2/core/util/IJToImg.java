@@ -53,7 +53,7 @@ import ij.measure.Measurements;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import net.imglib2.Cursor;
-import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.IterableInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.iterator.IntervalIterator;
@@ -128,7 +128,13 @@ public final class IJToImg<T extends RealType<T> & NativeType<T>> implements
 
     @Override
     public final ImgPlus<T> compute(final ImagePlus op, final ImgPlus<T> r) {
-        final RandomAccessibleInterval<T> access = ImgToIJ.extendAndPermute(r);
+        final IterableInterval<T> permuted = Views.iterable(ImgToIJ.extendAndPermute(r));
+        final Cursor<T> cur;
+        if (permuted.iterationOrder().equals(r.iterationOrder())) {
+            cur = r.cursor();
+        } else {
+            cur = permuted.cursor();
+        }
 
         final ImageStatistics is = op.getStatistics(Measurements.MIN_MAX);
         final long[] dim = new long[r.numDimensions()];
@@ -139,7 +145,6 @@ public final class IJToImg<T extends RealType<T> & NativeType<T>> implements
         dim[0] = 1;
         dim[1] = 1;
         final IntervalIterator ii = new IntervalIterator(dim);
-        final Cursor<T> cur = Views.iterable(access).cursor();
         final double raMin = r.firstElement().getMinValue();
         final double raMax = r.firstElement().getMaxValue();
         final double scale = (is.max - is.min) / (raMax - raMin);
@@ -149,7 +154,7 @@ public final class IJToImg<T extends RealType<T> & NativeType<T>> implements
             ii.fwd();
             op.setPosition(ii.getIntPosition(2) + 1, ii.getIntPosition(3) + 1, ii.getIntPosition(4) + 1);
 
-            final ImageProcessor ip = op.getChannelProcessor();
+            final ImageProcessor ip = op.getProcessor();
 
             for (y = 0; y < height; y++) {
                 for (x = 0; x < width; x++) {
