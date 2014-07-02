@@ -117,7 +117,7 @@ public class IJMacro<T extends RealType<T>> {
                 final Img<? extends RealType<?>> cleanRes =
                         new ImgView(SubsetOperations.subsetview(res, res), img.factory());
 
-                if (cleanRes.numDimensions()==img.numDimensions()) {
+                if (cleanRes.numDimensions() == img.numDimensions()) {
                     // If the image was only
                     // modified and it holds meta
                     // data, drag them along
