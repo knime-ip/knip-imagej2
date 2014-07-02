@@ -53,9 +53,10 @@ import ij.WindowManager;
 import ij.macro.Interpreter;
 import ij.measure.ResultsTable;
 import net.imglib2.img.Img;
+import net.imglib2.img.ImgView;
 import net.imglib2.meta.ImgPlus;
-import net.imglib2.meta.ImgPlusMetadata;
 import net.imglib2.ops.operation.Operations;
+import net.imglib2.ops.operation.SubsetOperations;
 import net.imglib2.type.numeric.RealType;
 
 import org.knime.knip.imagej2.core.util.IJToImg;
@@ -108,22 +109,21 @@ public class IJMacro<T extends RealType<T>> {
 
             final ImagePlus resPlus = Interpreter.getLastBatchModeImage();
             if (resPlus != null) {
-                final Img<?> org = resPlus.getTitle().equalsIgnoreCase(img.getName()) ? img : null;
-
                 // If the image was only modified,
                 // truncate to the same
                 // dimensionality
-                final int ndim = org != null ? org.numDimensions() : -1;
-                final Img<? extends RealType<?>> res =
-                        Operations.compute(new IJToImg(IJToImg.createMatchingType(resPlus), false, ndim), resPlus);
+                Img res = Operations.compute(new IJToImg(IJToImg.createMatchingType(resPlus), false, 5), resPlus);
 
-                if ((org != null) && (org instanceof ImgPlusMetadata)) {
+                final Img<? extends RealType<?>> cleanRes =
+                        new ImgView(SubsetOperations.subsetview(res, res), img.factory());
+
+                if (cleanRes.numDimensions()==img.numDimensions()) {
                     // If the image was only
                     // modified and it holds meta
                     // data, drag them along
-                    m_resImg = new ImgPlus(res, (ImgPlusMetadata)org);
+                    m_resImg = new ImgPlus(cleanRes, img);
                 } else {
-                    m_resImg = new ImgPlus(res);
+                    m_resImg = new ImgPlus(cleanRes);
                 }
             }
 
