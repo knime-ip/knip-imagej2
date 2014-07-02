@@ -283,7 +283,7 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                     }
 
                     interval.min(min);
-                    if (res == null) {
+                    if (res == null && intervals.length > 1) {
                         final long[] dims = new long[img.numDimensions()];
                         img.dimensions(dims);
                         for (int i = 0; i < m_selectedDims.length; i++) {
@@ -295,7 +295,11 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                                         img);
                     }
 
-                    inset.compute(m_macro.resImgPlus(), res);
+                    if (intervals.length > 1) {
+                        inset.compute(m_macro.resImgPlus(), res);
+                    } else {
+                        res = m_macro.resImgPlus();
+                    }
 
                     // fill result table if available
                     if (m_macro.resTable() != null) {
