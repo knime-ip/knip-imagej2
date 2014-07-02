@@ -60,6 +60,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import net.imglib2.Cursor;
@@ -78,9 +79,6 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 
-import org.knime.core.node.KNIMEConstants;
-import org.knime.knip.base.KNIPConstants;
-import org.knime.knip.base.ThreadPoolExecutorService;
 import org.knime.knip.core.ops.metadata.DimSwapper;
 
 /**
@@ -166,9 +164,9 @@ public final class ImgToIJ {
 
         // parallelization
         final ImageProcessor[] slices = new ImageProcessor[numSlices];
-        final ExecutorService service =
-                new ThreadPoolExecutorService(
-                        KNIMEConstants.GLOBAL_THREAD_POOL.createSubPool(KNIPConstants.THREADS_PER_NODE));
+        final ExecutorService service = Executors.newSingleThreadExecutor();
+        //                new ThreadPoolExecutorService(
+        //                        KNIMEConstants.GLOBAL_THREAD_POOL.createSubPool(KNIPConstants.THREADS_PER_NODE));
 
         final ArrayList<Future<Void>> futures = new ArrayList<Future<Void>>();
         final T inType = img.firstElement();
@@ -186,11 +184,14 @@ public final class ImgToIJ {
 
             futures.add(service.submit(new Callable<Void>() {
 
+                final FinalInterval tmp = new FinalInterval(min, max);
+
                 @Override
                 public Void call() throws Exception {
 
                     final Cursor<T> cursor =
-                            Views.iterable(Views.interval(access, new FinalInterval(min, max))).cursor();
+                            Views.iterable(Views.interval(access, tmp))
+                                    .cursor();
 
                     final ImageProcessor ip = processorFactory.createProcessor(width, height, inType);
 
