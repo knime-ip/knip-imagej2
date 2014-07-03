@@ -63,6 +63,7 @@ import org.knime.knip.imagej2.core.adapter.IJOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.ModuleItemConfig;
 import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
 import org.knime.knip.imagej2.core.imagejdialog.SettingsModelImageJDlg;
+import org.scijava.module.MethodCallException;
 import org.scijava.module.Module;
 import org.scijava.module.ModuleInfo;
 import org.scijava.module.ModuleItem;
@@ -161,6 +162,12 @@ public class ValueToCellIJCellFactory extends AbstractIJCellFactory {
 
                 synchronized (lock) {
                     m_valueConfig.configureModuleItem(module);
+                    ModuleItem<?> item = m_valueConfig.getItem();
+                    try {
+                        item.callback(module);
+                    } catch (MethodCallException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
 
                 //remaining config only for row configs => column binding tab yes

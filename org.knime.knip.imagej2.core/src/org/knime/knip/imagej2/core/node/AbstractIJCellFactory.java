@@ -68,6 +68,7 @@ import org.knime.knip.imagej2.core.adapter.IJOutputAdapterInstance;
 import org.knime.knip.imagej2.core.adapter.ModuleItemConfig;
 import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
 import org.knime.knip.imagej2.core.adapter.ModuleItemRowConfig;
+import org.scijava.module.MethodCallException;
 import org.scijava.module.Module;
 import org.scijava.module.ModuleItem;
 import org.scijava.module.ModuleRunner;
@@ -130,6 +131,12 @@ public abstract class AbstractIJCellFactory implements CellFactory {
                     // resolve and configure the handled module parts
                     itemConfig.resolveHandledModuleItems(module, false);
                     itemConfig.configureModuleItem(module);
+                    ModuleItem<?> item = itemConfig.getItem();
+                    try {
+                        item.callback(module);
+                    } catch (MethodCallException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
@@ -176,6 +183,14 @@ public abstract class AbstractIJCellFactory implements CellFactory {
                     // resolve and configure the handled module parts
                     itemConfig.resolveHandledModuleItems(module, false);
                     itemConfig.configureModuleItem(module);
+
+                    ModuleItem<?> item = itemConfig.getItem();
+                    try {
+                        item.callback(module);
+                    } catch (MethodCallException e) {
+                        throw new RuntimeException(e);
+                    }
+
                 }
             }
         }
