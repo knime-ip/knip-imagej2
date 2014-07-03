@@ -137,8 +137,8 @@ public final class IJToImg<T extends RealType<T> & NativeType<T>> implements
         }
 
         final ImageStatistics is = op.getStatistics(Measurements.MIN_MAX);
-        final long[] dim = new long[r.numDimensions()];
-        r.dimensions(dim);
+        final long[] dim = new long[permuted.numDimensions()];
+        permuted.dimensions(dim);
         final long width = dim[0];
         final long height = dim[1];
         int x, y;
