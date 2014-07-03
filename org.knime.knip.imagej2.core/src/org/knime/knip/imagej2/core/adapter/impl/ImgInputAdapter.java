@@ -71,7 +71,6 @@ import org.scijava.module.ModuleItem;
 @SuppressWarnings("rawtypes")
 public class ImgInputAdapter implements IJStandardInputAdapter<Img> {
 
-
     @Override
     public Class<Img> getIJType() {
         return Img.class;
@@ -82,6 +81,11 @@ public class ImgInputAdapter implements IJStandardInputAdapter<Img> {
         return new ModuleItemDataValueConfig() {
 
             private DataValue m_dataValue = null;
+
+            @Override
+            public ModuleItem<?> getItem() {
+                return item;
+            }
 
             @Override
             public void resolveHandledModuleItems(final Module module, final boolean preTest) {

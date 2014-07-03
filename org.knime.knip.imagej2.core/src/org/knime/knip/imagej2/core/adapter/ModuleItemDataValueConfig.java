@@ -63,8 +63,7 @@ import org.knime.core.data.DataValue;
 public interface ModuleItemDataValueConfig extends ModuleItemConfig {
 
     /**
-     * @param dataValues
-     *          the datavalues to set
+     * @param dataValues the datavalues to set
      */
     public void setConfigurationData(DataValue[] dataValues);
 
@@ -73,4 +72,5 @@ public interface ModuleItemDataValueConfig extends ModuleItemConfig {
      *         as the required data values in {@link ModuleItemDataValueConfig#setConfigurationData(DataValue[])} .
      */
     public DataValueConfigGuiInfos[] getGuiMetaInfo();
+
 }

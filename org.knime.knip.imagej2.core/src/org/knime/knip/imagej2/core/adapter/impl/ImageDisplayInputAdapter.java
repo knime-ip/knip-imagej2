@@ -133,6 +133,11 @@ public class ImageDisplayInputAdapter implements IJStandardInputAdapter<ImageDis
                 return new DataValueConfigGuiInfos[]{new DataValueConfigGuiInfos(item.getLabel(), item.getName(),
                         ImgPlusValue.class)};
             }
+
+            @Override
+            public ModuleItem<?> getItem() {
+                return item;
+            }
         };
     }
 

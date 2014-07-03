@@ -80,4 +80,9 @@ public interface ModuleItemConfig {
      */
     public void resolveHandledModuleItems(Module module, boolean preTest);
 
+    /**
+     * @return the wrapped {@link ModuleItem}
+     */
+    public ModuleItem<?> getItem();
+
 }

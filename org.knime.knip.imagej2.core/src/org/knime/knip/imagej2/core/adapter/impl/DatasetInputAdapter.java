@@ -116,6 +116,11 @@ public class DatasetInputAdapter implements IJStandardInputAdapter<Dataset> {
                 return new DataValueConfigGuiInfos[]{new DataValueConfigGuiInfos(item.getLabel(), item.getName(),
                         ImgPlusValue.class)};
             }
+
+            @Override
+            public ModuleItem<?> getItem() {
+                return item;
+            }
         };
     }
 

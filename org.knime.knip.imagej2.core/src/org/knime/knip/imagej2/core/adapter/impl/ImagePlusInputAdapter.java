@@ -89,6 +89,11 @@ public class ImagePlusInputAdapter implements IJStandardInputAdapter<ImagePlus> 
                 }
             }
 
+            @Override
+            public ModuleItem<?> getItem() {
+                return item;
+            }
+
             @SuppressWarnings({"rawtypes", "unchecked"})
             @Override
             public void configureModuleItem(final Module module) {

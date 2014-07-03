@@ -81,6 +81,11 @@ public class LabelingInputAdapter implements IJStandardInputAdapter<Labeling> {
             private DataValue m_dataValue = null;
 
             @Override
+            public ModuleItem<?> getItem() {
+                return item;
+            }
+
+            @Override
             public void resolveHandledModuleItems(final Module module, final boolean preTest) {
                 if (preTest || (m_dataValue != null)) {
                     module.setResolved(item.getName(), true);
