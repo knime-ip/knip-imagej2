@@ -61,6 +61,7 @@ import org.knime.core.data.RowKey;
 import org.knime.core.data.container.CellFactory;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
+import org.knime.core.node.NodeLogger;
 import org.knime.knip.imagej2.core.IJGateway;
 import org.knime.knip.imagej2.core.adapter.DataValueConfigGuiInfos;
 import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
@@ -86,6 +87,8 @@ import org.scijava.module.process.ModulePreprocessor;
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
 public abstract class AbstractIJCellFactory implements CellFactory {
+
+    protected static final NodeLogger LOGGER = NodeLogger.getLogger(AbstractIJCellFactory.class);
 
     /** counts the number of errors that resulted in missing cell output. */
     private int m_missingCellCount;
@@ -153,10 +156,12 @@ public abstract class AbstractIJCellFactory implements CellFactory {
      * @param identifier2CellID maps unique parameter identifiers (see {@link DataValueConfigGuiInfos}) to cell ids
      * @param moduleItemConfigs contains the guiding configuration objects (only RowConfigs are processed in this
      *            method)
+     * @throws MethodCallException
      */
     protected void configureDataValueConfigItems(final DataRow row, final Module module,
                                                  final List<ModuleItemConfig> moduleItemConfigs,
-                                                 final Map<String, Integer> identifier2CellID) {
+                                                 final Map<String, Integer> identifier2CellID)
+            throws MethodCallException {
         if (row != null) {
             for (final ModuleItemConfig itemConfig : moduleItemConfigs) {
                 if (itemConfig instanceof ModuleItemDataValueConfig) {
@@ -185,12 +190,7 @@ public abstract class AbstractIJCellFactory implements CellFactory {
                     itemConfig.configureModuleItem(module);
 
                     ModuleItem<?> item = itemConfig.getItem();
-                    try {
-                        item.callback(module);
-                    } catch (MethodCallException e) {
-                        throw new RuntimeException(e);
-                    }
-
+                    item.callback(module);
                 }
             }
         }

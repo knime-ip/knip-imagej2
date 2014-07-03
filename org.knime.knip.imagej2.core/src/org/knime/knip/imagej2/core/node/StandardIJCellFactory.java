@@ -64,6 +64,7 @@ import org.knime.knip.imagej2.core.adapter.ModuleItemConfig;
 import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
 import org.knime.knip.imagej2.core.adapter.ModuleItemRowConfig;
 import org.knime.knip.imagej2.core.imagejdialog.SettingsModelImageJDlg;
+import org.scijava.module.MethodCallException;
 import org.scijava.module.Module;
 import org.scijava.module.ModuleInfo;
 import org.scijava.module.ModuleItem;
@@ -125,7 +126,13 @@ public class StandardIJCellFactory extends AbstractIJCellFactory {
         final Module module = AbstractIJNodeModel.createDialogConfiguredModule(m_moduleInfo, m_dialogModuleSettings);
 
         configureRowConfigItems(row, module, m_moduleItemConfigs);
-        configureDataValueConfigItems(row, module, m_moduleItemConfigs, m_identifier2CellID);
+        try {
+            configureDataValueConfigItems(row, module, m_moduleItemConfigs, m_identifier2CellID);
+        } catch (MethodCallException e) {
+            LOGGER.warn("Error while executing row: " + row.getKey().getString()
+                        + "! Following problem occured: " + e.getCause().getCause().getMessage());
+            return null;
+        }
 
         //execute the configured plugin
         final List<DataCell> resCells = executeRowModule(module);

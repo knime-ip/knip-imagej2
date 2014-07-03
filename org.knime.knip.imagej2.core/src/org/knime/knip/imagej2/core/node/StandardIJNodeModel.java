@@ -52,8 +52,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.knime.core.data.DataCell;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
 import org.knime.core.data.RowIterator;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.container.ColumnRearranger;
@@ -183,8 +185,17 @@ public class StandardIJNodeModel extends AbstractIJNodeModel {
         if (inData.length == 0) {
             final BufferedDataContainer con = exec.createDataContainer(new DataTableSpec(cellFac.getColumnSpecs()));
 
-            final RowKey key = new RowKey("R1");
-            con.addRowToTable(new DefaultRow(key, cellFac.getCells(null)));
+            final RowKey key = new RowKey("Row1");
+            DataCell[] cells = cellFac.getCells(null);
+
+            if (cells == null) {
+                cells = new DataCell[cellFac.getColumnSpecs().length];
+                for (int i = 0; i < cells.length; i++) {
+                    cells[i] = DataType.getMissingCell();
+                }
+            }
+
+            con.addRowToTable(new DefaultRow(key, cells));
 
             cellFac.setProgress(1, 1, key, exec);
 

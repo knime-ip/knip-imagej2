@@ -166,7 +166,9 @@ public class ValueToCellIJCellFactory extends AbstractIJCellFactory {
                     try {
                         item.callback(module);
                     } catch (MethodCallException e) {
-                        throw new RuntimeException(e);
+                        LOGGER.warn("Error while executing row: " + row.getKey().getString()
+                                + "! Following problem occured: " + e.getCause().getCause().getMessage());
+                        return null;
                     }
                 }
 

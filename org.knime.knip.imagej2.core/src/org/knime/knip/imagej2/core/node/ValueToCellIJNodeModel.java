@@ -52,9 +52,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
 import org.knime.core.data.DataValue;
 import org.knime.core.data.RowIterator;
 import org.knime.core.data.container.CellFactory;
@@ -192,7 +194,17 @@ public class ValueToCellIJNodeModel extends AbstractIJNodeModel {
 
             while (it.hasNext()) {
                 row = it.next();
-                con.addRowToTable(new DefaultRow(row.getKey(), cellFac.getCells(row)));
+
+                DataCell[] cells = cellFac.getCells(row);
+
+                if (cells == null) {
+                    cells = new DataCell[cellFac.getColumnSpecs().length];
+                    for (int k = 0; k < cells.length; k++) {
+                        cells[k] = DataType.getMissingCell();
+                    }
+                }
+
+                con.addRowToTable(new DefaultRow(row.getKey(), cells));
                 exec.checkCanceled();
                 cellFac.setProgress(i, rowCount, row.getKey(), exec);
                 i++;
@@ -241,7 +253,7 @@ public class ValueToCellIJNodeModel extends AbstractIJNodeModel {
 
         if (selectedColIndices.length == 0) {
             throw new InvalidSettingsException("No columns of the required type "
-                    + m_valueConfig.getGuiMetaInfo()[0].inValue.getSimpleName() + " coud be found.");
+                    + m_valueConfig.getGuiMetaInfo()[0].inValue.getSimpleName() + " could be found.");
         }
 
         final CellFactory cellFac =
