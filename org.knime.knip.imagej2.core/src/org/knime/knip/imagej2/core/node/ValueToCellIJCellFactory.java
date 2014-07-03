@@ -150,35 +150,46 @@ public class ValueToCellIJCellFactory extends AbstractIJCellFactory {
     @Override
     public DataCell[] getCells(final DataRow row) {
         final List<DataCell> resCells = new ArrayList<DataCell>();
-        for (int i = 0; i < m_selectedColIndices.length; i++) {
-            if (row.getCell(m_selectedColIndices[i]).isMissing()) {
-                resCells.add(DataType.getMissingCell());
-            } else {
-                final Module module =
-                        AbstractIJNodeModel.createDialogConfiguredModule(m_moduleInfo, m_dialogModuleSettings);
-                //data value config
-                m_valueConfig.setConfigurationData(new DataValue[]{row.getCell(m_selectedColIndices[i])});
-                m_valueConfig.resolveHandledModuleItems(module, false);
+        try {
+            for (int i = 0; i < m_selectedColIndices.length; i++) {
+                if (row.getCell(m_selectedColIndices[i]).isMissing()) {
+                    resCells.add(DataType.getMissingCell());
+                } else {
+                    final Module module =
+                            AbstractIJNodeModel.createDialogConfiguredModule(m_moduleInfo, m_dialogModuleSettings);
+                    //data value config
+                    m_valueConfig.setConfigurationData(new DataValue[]{row.getCell(m_selectedColIndices[i])});
+                    m_valueConfig.resolveHandledModuleItems(module, false);
 
-                synchronized (lock) {
-                    m_valueConfig.configureModuleItem(module);
-                    ModuleItem<?> item = m_valueConfig.getItem();
-                    try {
+                    synchronized (lock) {
+                        m_valueConfig.configureModuleItem(module);
+                        ModuleItem<?> item = m_valueConfig.getItem();
                         item.callback(module);
-                    } catch (MethodCallException e) {
-                        LOGGER.warn("Error while executing row: " + row.getKey().getString()
-                                + "! Following problem occured: " + e.getCause().getCause().getMessage());
-                        return null;
                     }
+
+                    //remaining config only for row configs => column binding tab yes
+                    //valueConfig no
+                    configureRowConfigItems(row, module, m_moduleItemConfigs);
+
+                    //execute - and add one data cell per iteration
+                    DataCell dataCell = executeRowModule(module).get(0);
+                    resCells.add(dataCell);
                 }
-
-                //remaining config only for row configs => column binding tab yes
-                //valueConfig no
-                configureRowConfigItems(row, module, m_moduleItemConfigs);
-
-                //execute - and add one data cell per iteration
-                resCells.add(executeRowModule(module).get(0));
             }
+
+        } catch (MethodCallException e) {
+            fireWarning(row.getKey().getString(), e.getCause().getCause().getMessage());
+
+        } catch (Exception e) {
+            fireWarning(row.getKey().getString(), e.getMessage());
+        }
+
+        if (resCells.size() != m_selectedColIndices.length) {
+            DataCell[] cells = new DataCell[m_selectedColIndices.length];
+            for (int i = 0; i < cells.length; i++) {
+                cells[i] = DataType.getMissingCell();
+            }
+            return cells;
         }
 
         return resCells.toArray(new DataCell[resCells.size()]);

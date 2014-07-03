@@ -52,11 +52,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataType;
 import org.knime.core.data.DataValue;
 import org.knime.core.data.RowIterator;
 import org.knime.core.data.container.CellFactory;
@@ -194,17 +192,7 @@ public class ValueToCellIJNodeModel extends AbstractIJNodeModel {
 
             while (it.hasNext()) {
                 row = it.next();
-
-                DataCell[] cells = cellFac.getCells(row);
-
-                if (cells == null) {
-                    cells = new DataCell[cellFac.getColumnSpecs().length];
-                    for (int k = 0; k < cells.length; k++) {
-                        cells[k] = DataType.getMissingCell();
-                    }
-                }
-
-                con.addRowToTable(new DefaultRow(row.getKey(), cells));
+                con.addRowToTable(new DefaultRow(row.getKey(), cellFac.getCells(row)));
                 exec.checkCanceled();
                 cellFac.setProgress(i, rowCount, row.getKey(), exec);
                 i++;

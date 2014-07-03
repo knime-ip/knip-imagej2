@@ -126,16 +126,27 @@ public class StandardIJCellFactory extends AbstractIJCellFactory {
         final Module module = AbstractIJNodeModel.createDialogConfiguredModule(m_moduleInfo, m_dialogModuleSettings);
 
         configureRowConfigItems(row, module, m_moduleItemConfigs);
+        List<DataCell> resCells = null;
         try {
             configureDataValueConfigItems(row, module, m_moduleItemConfigs, m_identifier2CellID);
+
+            //execute the configured plugin
+            resCells = executeRowModule(module);
+
         } catch (MethodCallException e) {
-            LOGGER.warn("Error while executing row: " + row.getKey().getString()
-                        + "! Following problem occured: " + e.getCause().getCause().getMessage());
-            return null;
+            fireWarning(row.getKey().getString(), e.getCause().getCause().getMessage());
+        } catch (Exception e) {
+            fireWarning(row.getKey().getString(), e.getMessage());
         }
 
-        //execute the configured plugin
-        final List<DataCell> resCells = executeRowModule(module);
+        if (resCells == null) {
+            DataCell[] cells = new DataCell[module.getOutputs().size()];
+            for (int i = 0; i < cells.length; i++) {
+                cells[i] = DataType.getMissingCell();
+            }
+            return cells;
+        }
+
         return resCells.toArray(new DataCell[resCells.size()]);
     }
 

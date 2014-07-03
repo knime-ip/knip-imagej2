@@ -88,7 +88,7 @@ import org.scijava.module.process.ModulePreprocessor;
  */
 public abstract class AbstractIJCellFactory implements CellFactory {
 
-    protected static final NodeLogger LOGGER = NodeLogger.getLogger(AbstractIJCellFactory.class);
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(AbstractIJCellFactory.class);
 
     /** counts the number of errors that resulted in missing cell output. */
     private int m_missingCellCount;
@@ -201,8 +201,9 @@ public abstract class AbstractIJCellFactory implements CellFactory {
      *
      * @param rowModule a fully configured module ready for execution
      * @return list of DataCells that contains the module results
+     * @throws Exception
      */
-    protected List<DataCell> executeRowModule(final Module rowModule) {
+    protected List<DataCell> executeRowModule(final Module rowModule) throws Exception {
         @SuppressWarnings("rawtypes")
         final Map<Class<?>, IJOutputAdapterInstance> adapterMap = new HashMap<Class<?>, IJOutputAdapterInstance>();
 
@@ -253,6 +254,10 @@ public abstract class AbstractIJCellFactory implements CellFactory {
     @Override
     public void setProgress(final int curRowNr, final int rowCount, final RowKey lastKey, final ExecutionMonitor exec) {
         exec.setProgress((double)curRowNr / rowCount);
+    }
+
+    protected void fireWarning(final String rowKey, final String cause) {
+        LOGGER.warn("Error while executing row: " + rowKey + "! Cause: " + cause);
     }
 
 }
