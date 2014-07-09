@@ -59,7 +59,7 @@ import net.imglib2.type.numeric.integer.ShortType;
 import net.imglib2.type.numeric.real.FloatType;
 
 /**
- * @author Christian Dietz
+ * @author Christian Dietz, University of Konstanz
  */
 class DefaultImgToIJ1Converter<T extends RealType<T>> implements Converter<T, FloatType> {
 
