@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-Name: KNIME ImageJ Core Plugin
 Bundle-SymbolicName: org.knime.knip.imagej2.core;singleton:=true
 Bundle-ManifestVersion: 2
-Bundle-Version: 0.9.0.qualifier
+Bundle-Version: 0.9.1.qualifier
 Eclipse-BuddyPolicy: registered
 Eclipse-RegisterBuddy: org.knime.knip.scijava
 Bundle-Vendor: University of Konstanz
@@ -10,8 +10,8 @@ Require-Bundle: org.knime.workbench.repository;bundle-version="[2.10.0,3.0.0)",
  org.apache.log4j;bundle-version="1.2.15",
  org.eclipse.core.runtime,
  org.eclipse.ui,
- org.knime.knip.base;bundle-version="[1.2.0,1.3.0)",
- org.knime.knip.core;bundle-version="[1.2.0,1.3.0)",
+ org.knime.knip.base;bundle-version="[1.3.0,1.4.0)",
+ org.knime.knip.core;bundle-version="[1.3.0,1.4.0)",
  org.knime.base;bundle-version="[2.10.0,3.0.0)",
  org.knime.knip.scijava;bundle-version="2.24.0",
  org.knime.knip.scifio;bundle-version="0.15.4"

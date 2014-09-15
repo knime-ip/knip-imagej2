@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: KnimeOnlyAdapters
 Bundle-SymbolicName: org.knime.knip.imagej2.knimeonlyadapters;singleton:=true
-Bundle-Version: 0.9.0.qualifier
-Fragment-Host: org.knime.knip.imagej2.core;bundle-version="0.9.0"
+Bundle-Version: 0.9.1.qualifier
+Fragment-Host: org.knime.knip.imagej2.core;bundle-version="0.9.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .
 Bundle-Vendor: University of Konstanz / KNIME
