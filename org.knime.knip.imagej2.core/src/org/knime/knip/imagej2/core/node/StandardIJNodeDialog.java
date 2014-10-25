@@ -116,14 +116,15 @@ public class StandardIJNodeDialog extends AbstractIJNodeDialog {
                 }
             }
         }
+
+        addDialogComponent(new DialogComponentBoolean(StandardIJNodeModel.createAppendColumnsModel(), "Append columns?"));
+
         if (additionalInputDCGs.size() > 0) {
             useOptionTab = true;
             createNewGroup("KNIME Settings");
             for (final DialogComponentGroup dcg : additionalInputDCGs) {
                 addComponents(dcg);
             }
-            addDialogComponent(new DialogComponentBoolean(StandardIJNodeModel.createAppendColumnsModel(),
-                    "Append columns?"));
             closeCurrentGroup();
         }
 
