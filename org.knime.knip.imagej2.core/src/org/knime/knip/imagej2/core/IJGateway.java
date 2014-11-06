@@ -54,6 +54,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.imagej.DatasetService;
 import net.imagej.app.ImageJApp;
 import net.imagej.autoscale.AutoscaleService;
 import net.imagej.operator.CalculatorService;
@@ -118,7 +119,7 @@ public final class IJGateway {
     @SuppressWarnings("unchecked")
     private static final Class<? extends Service>[] SUPPORTED_SERVICES = new Class[]{UIService.class,
             MenuService.class, ToolService.class, EventService.class, ObjectService.class, CalculatorService.class,
-            AutoscaleService.class, ThresholdService.class, OptionsService.class};
+            AutoscaleService.class, ThresholdService.class, OptionsService.class, DatasetService.class};
 
     // MEMBERS
 
