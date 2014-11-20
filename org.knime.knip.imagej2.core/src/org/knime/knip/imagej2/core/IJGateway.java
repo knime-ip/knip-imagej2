@@ -178,7 +178,10 @@ public final class IJGateway {
         //get version info
         final AppService appService = m_imageJContext.getService(AppService.class);
         App app = appService.getApp(ImageJApp.NAME);
-        m_imagejVersion = app.getVersion();
+
+        // TODO: FIXME if needed. This workaround fixes a bug on the mac where the version can't be resolved.
+        // TODO: maybe in the new ImageJ2 Integration this is not required anymore
+        //        m_imagejVersion = app.getVersion();
 
         // get list of modules, and filter them to those acceptable to
         // KNIME/KNIP
