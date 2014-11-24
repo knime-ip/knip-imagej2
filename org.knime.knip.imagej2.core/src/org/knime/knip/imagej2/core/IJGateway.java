@@ -55,7 +55,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.imagej.DatasetService;
-import net.imagej.app.ImageJApp;
 import net.imagej.autoscale.AutoscaleService;
 import net.imagej.operator.CalculatorService;
 import net.imagej.threshold.ThresholdService;
@@ -66,8 +65,6 @@ import org.knime.core.node.NodeLogger;
 import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
-import org.scijava.app.App;
-import org.scijava.app.AppService;
 import org.scijava.command.CommandInfo;
 import org.scijava.command.DynamicCommand;
 import org.scijava.log.LogService;
@@ -174,14 +171,6 @@ public final class IJGateway {
         // create ImageJ context with all available services
         m_imageJContext =
                 new Context(new PluginIndex(new DefaultPluginFinder(new ContextFinder(getClass().getClassLoader()))));
-
-        //get version info
-        final AppService appService = m_imageJContext.getService(AppService.class);
-        App app = appService.getApp(ImageJApp.NAME);
-
-        // TODO: FIXME if needed. This workaround fixes a bug on the mac where the version can't be resolved.
-        // TODO: maybe in the new ImageJ2 Integration this is not required anymore
-        //        m_imagejVersion = app.getVersion();
 
         // get list of modules, and filter them to those acceptable to
         // KNIME/KNIP
