@@ -62,6 +62,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+import net.imagej.ImgPlus;
+import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
+import net.imagej.axis.DefaultTypedAxis;
 import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
 import net.imglib2.IterableRealInterval;
@@ -69,10 +73,6 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.converter.Converter;
 import net.imglib2.img.Img;
 import net.imglib2.iterator.IntervalIterator;
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
-import net.imglib2.meta.DefaultTypedAxis;
-import net.imglib2.meta.ImgPlus;
 import net.imglib2.ops.operation.UnaryOperation;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -148,7 +148,7 @@ public final class ImgToIJ {
         final ImageStack is = new ImageStack(width, height);
 
         final RandomAccessibleInterval<T> access =
-                img.equalIterationOrder((IterableRealInterval<?>)permuted) ? img : permuted;
+                img.iterationOrder().equals(((IterableRealInterval<?>)permuted).iterationOrder()) ? img : permuted;
 
         final IntervalIterator ii = createIntervalIterator(access);
 

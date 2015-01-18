@@ -3,33 +3,11 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="lib/base64-2.3.8.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/bcmail-jdk14-138.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk14-138.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-lang3-3.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/gentyref-1.1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij-1.49b.jar" sourcepath="C:/Users/Christian Dietz/.m2/repository/net/imagej/ij/1.49b/ij-1.49b-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ij1-patcher-0.9.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/imagej-common-0.7.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/imagej-ops-0.4.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/imagej-plugins-commands-0.2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/imagej-plugins-tools-0.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/imagej-plugins-uploader-ssh-0.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/imagej-plugins-uploader-webdav-0.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/imagej-ui-awt-0.1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/imagej-ui-swing-0.4.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/imagej-updater-0.3.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/itext-2.1.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jama-1.0.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/javassist-3.16.1-GA.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jcommon-1.0.17.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jdatepicker-1.3.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jfreechart-1.0.14.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jhotdraw-7.6.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jsch-0.1.49.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/markdownj-0.3.0-1.0.2b4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/minimaven-2.1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/object-inspector-0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/rsyntaxtextarea-2.0.4.1.jar"/>
+	<classpathentry kind="src" path=".apt_generated">
+		<attributes>
+			<attribute name="optional" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="plugins/Tubeness2Fragment.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -57,7 +57,7 @@ import net.imagej.Dataset;
 import net.imagej.display.ImageDisplay;
 import net.imglib2.img.Img;
 import net.imglib2.labeling.Labeling;
-import net.imglib2.meta.ImgPlus;
+import net.imagej.ImgPlus;
 
 import org.knime.core.data.DataValue;
 import org.knime.core.node.DynamicNodeFactory;

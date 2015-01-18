@@ -57,14 +57,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import net.imagej.ImgPlus;
+import net.imagej.ImgPlusMetadata;
 import net.imglib2.Interval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.ImgView;
-import net.imglib2.meta.ImgPlus;
-import net.imglib2.meta.ImgPlusMetadata;
-import net.imglib2.meta.MetadataUtil;
 import net.imglib2.ops.operation.SubsetOperations;
 import net.imglib2.ops.operation.iterableinterval.unary.IterableIntervalCopy;
+import net.imglib2.ops.util.MetadataUtil;
 import net.imglib2.type.numeric.RealType;
 
 import org.knime.core.data.DataCell;

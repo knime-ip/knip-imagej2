@@ -1,7 +1,7 @@
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.meta.ImgPlus;
+import net.imagej.ImgPlus;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 
@@ -33,6 +33,8 @@ public class MySimpleThreshold<T extends RealType<T>> implements Command {
 
                 // cursor over input image
                 final Cursor<T> inCursor = input.localizingCursor();
+                
+                System.out.println("HELLO");
 
                 // iterate over pixels of in input image
                 while (inCursor.hasNext()) {

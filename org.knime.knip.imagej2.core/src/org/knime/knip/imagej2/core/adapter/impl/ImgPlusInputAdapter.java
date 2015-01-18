@@ -49,7 +49,7 @@
 package org.knime.knip.imagej2.core.adapter.impl;
 
 import net.imglib2.img.Img;
-import net.imglib2.meta.ImgPlus;
+import net.imagej.ImgPlus;
 
 import org.knime.core.data.DataValue;
 import org.knime.knip.base.data.img.ImgPlusValue;

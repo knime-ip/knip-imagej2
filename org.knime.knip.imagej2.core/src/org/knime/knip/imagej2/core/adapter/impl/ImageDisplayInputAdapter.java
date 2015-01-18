@@ -54,7 +54,7 @@ import net.imagej.display.DatasetView;
 import net.imagej.display.DefaultDatasetView;
 import net.imagej.display.DefaultImageDisplay;
 import net.imagej.display.ImageDisplay;
-import net.imglib2.meta.ImgPlus;
+import net.imagej.ImgPlus;
 
 import org.knime.core.data.DataValue;
 import org.knime.knip.base.data.img.ImgPlusValue;

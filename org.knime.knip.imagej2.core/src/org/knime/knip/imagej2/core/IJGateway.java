@@ -49,7 +49,11 @@
 package org.knime.knip.imagej2.core;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +64,9 @@ import net.imagej.operator.CalculatorService;
 import net.imagej.threshold.ThresholdService;
 
 import org.bushe.swing.event.EventService;
-import org.eclipse.core.runtime.internal.adaptor.ContextFinder;
+import org.eclipse.osgi.internal.baseadaptor.DefaultClassLoader;
+import org.eclipse.osgi.internal.loader.BundleLoader;
+import org.eclipse.osgi.service.resolver.BundleSpecification;
 import org.knime.core.node.NodeLogger;
 import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
 import org.scijava.Context;
@@ -170,7 +176,8 @@ public final class IJGateway {
 
         // create ImageJ context with all available services
         m_imageJContext =
-                new Context(new PluginIndex(new DefaultPluginFinder(new ContextFinder(getClass().getClassLoader()))));
+                new Context(new PluginIndex(new DefaultPluginFinder(new ResourceAwareClassLoader(
+                        (DefaultClassLoader)getClass().getClassLoader()))));
 
         // get list of modules, and filter them to those acceptable to
         // KNIME/KNIP
@@ -399,5 +406,35 @@ public final class IJGateway {
         }
 
         return m_moduleService;
+    }
+
+    class ResourceAwareClassLoader extends ClassLoader {
+
+        final ArrayList<URL> urls = new ArrayList<URL>();
+
+        public ResourceAwareClassLoader(final DefaultClassLoader contextClassLoader) {
+            super(contextClassLoader);
+
+            for (BundleSpecification bundle : ((BundleLoader)contextClassLoader.getDelegate()).getBundle()
+                    .getBundleDescription().getRequiredBundles()) {
+
+                URL resource =
+                        org.eclipse.core.runtime.Platform.getBundle(bundle.getName())
+                                .getResource("META-INF/json/org.scijava.plugin.Plugin");
+
+                if (resource != null) {
+                    urls.add(resource);
+                }
+            }
+        }
+
+        @Override
+        public Enumeration<URL> getResources(final String name) throws IOException {
+            if (!name.startsWith("META-INF/json")) {
+                return Collections.emptyEnumeration();
+            }
+            urls.addAll(Collections.list(super.getResources(name)));
+            return Collections.enumeration(urls);
+        }
     }
 }

@@ -52,8 +52,8 @@ import ij.ImagePlus;
 
 import java.io.IOException;
 
+import net.imagej.ImgPlus;
 import net.imglib2.img.Img;
-import net.imglib2.meta.ImgPlus;
 import net.imglib2.ops.operation.Operations;
 
 import org.knime.core.data.DataCell;

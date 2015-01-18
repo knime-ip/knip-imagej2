@@ -54,35 +54,31 @@ import org.knime.knip.io.node.dialog.DialogComponentMultiFileChooser;
 import org.knime.knip.io.nodes.imgreader.ImgReaderNodeDialog;
 
 /**
- * Dialog for the ImageReader to select the files and choose some additional
- * options.
+ * Dialog for the ImageReader to select the files and choose some additional options.
  *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
- * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael
- *         Zinsmaier</a>
+ * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
 public class IJImageReaderNodeDialog extends DefaultNodeSettingsPane {
 
-	// private DialogComponentStringListSelection m_metadatakeys;
+    // private DialogComponentStringListSelection m_metadatakeys;
 
-	private final DialogComponentMultiFileChooser m_filechooser;
+    private final DialogComponentMultiFileChooser m_filechooser;
 
-	// private DialogComponentProcessExecution m_analyse;
+    // private DialogComponentProcessExecution m_analyse;
 
-	IJImageReaderNodeDialog() {
+    IJImageReaderNodeDialog() {
 
-		super();
+        super();
 
-		this.createNewGroup("File chooser");
-		m_filechooser = new DialogComponentMultiFileChooser(
-				new SettingsModelStringArray(
-						IJImageReaderNodeModel.CFG_FILE_LIST, new String[] {}),
-				ImgReaderNodeDialog.FILEFILTER,
-				IJImageReaderNodeModel.CFG_DIR_HISTORY);
-		addDialogComponent(m_filechooser);
-		this.closeCurrentGroup();
+        this.createNewGroup("File chooser");
+        m_filechooser =
+                new DialogComponentMultiFileChooser(new SettingsModelStringArray(IJImageReaderNodeModel.CFG_FILE_LIST,
+                        new String[]{}), ImgReaderNodeDialog.FILEFILTER, IJImageReaderNodeModel.CFG_DIR_HISTORY);
+        addDialogComponent(m_filechooser);
+        this.closeCurrentGroup();
 
-	}
+    }
 
 }

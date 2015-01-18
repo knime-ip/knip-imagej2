@@ -54,7 +54,7 @@ import ij.macro.Interpreter;
 import ij.measure.ResultsTable;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
-import net.imglib2.meta.ImgPlus;
+import net.imagej.ImgPlus;
 import net.imglib2.ops.operation.Operations;
 import net.imglib2.ops.operation.SubsetOperations;
 import net.imglib2.type.numeric.RealType;
