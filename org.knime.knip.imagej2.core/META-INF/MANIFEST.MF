@@ -37,4 +37,13 @@ Bundle-ClassPath: ij2-core.jar,
  plugins/Tubeness2Fragment.jar
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.knime.knip.imagej2.core.KNIMEIMAGEJPlugin
+Export-Package: org.knime.knip.imagej2.core,
+ org.knime.knip.imagej2.core.adapter,
+ org.knime.knip.imagej2.core.adapter.impl,
+ org.knime.knip.imagej2.core.adapter.impl.basicinput,
+ org.knime.knip.imagej2.core.adapter.impl.basicoutput,
+ org.knime.knip.imagej2.core.imagejdialog,
+ org.knime.knip.imagej2.core.node,
+ org.knime.knip.imagej2.core.preferences,
+ org.knime.knip.imagej2.core.util
 
