@@ -69,6 +69,7 @@ import org.eclipse.osgi.internal.loader.BundleLoader;
 import org.eclipse.osgi.service.resolver.BundleSpecification;
 import org.knime.core.node.NodeLogger;
 import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
+import org.osgi.framework.Bundle;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.command.CommandInfo;
@@ -415,14 +416,19 @@ public final class IJGateway {
         public ResourceAwareClassLoader(final DefaultClassLoader contextClassLoader) {
             super(contextClassLoader);
 
-            for (BundleSpecification bundle : ((BundleLoader)contextClassLoader.getDelegate()).getBundle()
+            for (BundleSpecification bundleSpec : ((BundleLoader)contextClassLoader.getDelegate()).getBundle()
                     .getBundleDescription().getRequiredBundles()) {
 
-                URL resource =
-                        org.eclipse.core.runtime.Platform.getBundle(bundle.getName())
-                                .getResource("META-INF/json/org.scijava.plugin.Plugin");
+                final Bundle bundle = org.eclipse.core.runtime.Platform.getBundle(bundleSpec.getName());
+                final URL resource = bundle.getResource("META-INF/json/org.scijava.plugin.Plugin");
 
-                if (resource != null) {
+                if (resource == null) {
+                    continue;
+                }
+
+                // we want to avoid transitive resolving of dependencies
+                final String host = resource.getHost();
+                if (bundle.getBundleId() == Long.valueOf(host.substring(0, host.indexOf(".")))) {
                     urls.add(resource);
                 }
             }
