@@ -287,6 +287,7 @@ public final class IJGateway {
 
                     } catch (Throwable t) {
                         //we have to catch throwable to detect errors caused by missing class definitions
+                        LOGGER.debug(t);
                         LOGGER.error("error during ImageJ plugin discovery " + t.getMessage());
                     }
                 }
