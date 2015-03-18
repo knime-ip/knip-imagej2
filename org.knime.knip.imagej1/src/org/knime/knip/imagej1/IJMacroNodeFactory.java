@@ -66,6 +66,7 @@ import net.imglib2.ops.operation.SubsetOperations;
 import net.imglib2.ops.operation.iterableinterval.unary.IterableIntervalCopy;
 import net.imglib2.ops.util.MetadataUtil;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.view.Views;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -296,7 +297,7 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                     }
 
                     if (intervals.length > 1) {
-                        copyOp.compute(m_macro.resImgPlus(), SubsetOperations.subsetview(res, interval));
+                        copyOp.compute(m_macro.resImgPlus(), Views.iterable(SubsetOperations.subsetview(res, interval)));
                     } else {
                         res = m_macro.resImgPlus();
                         res.setSource(img.getSource());
