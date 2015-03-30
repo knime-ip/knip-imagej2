@@ -79,7 +79,7 @@ public class CalculateHistogramIJMacro extends IJMacroConfiguration {
 	@Override
 	protected String codeTemplate() {
 		return  "minVal=%s\n" +
-                "maxVal=%s\n"
+                "maxVal=%s\n" +
                 "binCount=%s\n" +
                 "getHistogram(values, counts, valCount, minVal,maxVal); \n" +
                 "for (row=0; row<256; row++) { \n" +
