@@ -81,9 +81,9 @@ public class CalculateHistogramIJMacro extends IJMacroConfiguration {
 		return  "minVal=%s\n" +
                 "maxVal=%s\n" +
                 "binCount=%s\n" +
-                "getHistogram(values, counts, valCount, minVal,maxVal); \n" +
-                "for (row=0; row<256; row++) { \n" +
-                "       setResult(\"Radius\", row, row*(maxVal-minVal)/binCount+minVal); \n" +
+                "getHistogram(values, counts, binCount, minVal,maxVal); \n" +
+                "for (row=0; row<binCount; row++) { \n" +
+                "       setResult(\"Intensity\", row, row*(maxVal-minVal)/binCount+minVal); \n" +
                 "       setResult(\"Count\", row, counts[row]); \n" +
                 " } \n" +
                 " updateResults(); ";
