@@ -48,10 +48,15 @@
  */
 package org.knime.knip.imagej2.core.adapter.impl;
 
-import net.imglib2.labeling.Labeling;
+import net.imglib2.Cursor;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.roi.labeling.ImgLabeling;
+import net.imglib2.roi.labeling.LabelingType;
+import net.imglib2.view.Views;
 
 import org.knime.core.data.DataValue;
 import org.knime.knip.base.data.labeling.LabelingValue;
+import org.knime.knip.core.KNIPGateway;
 import org.knime.knip.imagej2.core.adapter.DataValueConfigGuiInfos;
 import org.knime.knip.imagej2.core.adapter.IJInputAdapter;
 import org.knime.knip.imagej2.core.adapter.IJStandardInputAdapter;
@@ -61,22 +66,22 @@ import org.scijava.module.Module;
 import org.scijava.module.ModuleItem;
 
 /**
- * {@link IJInputAdapter} for {@link Labeling}
+ * {@link IJInputAdapter} for {@link ImgLabeling}
  *
  * @author <a href="mailto:dietzc85@googlemail.com">Christian Dietz</a>
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
 @SuppressWarnings({"rawtypes"})
-public class LabelingInputAdapter implements IJStandardInputAdapter<Labeling> {
+public class LabelingInputAdapter implements IJStandardInputAdapter<ImgLabeling> {
 
     @Override
-    public Class<Labeling> getIJType() {
-        return Labeling.class;
+    public Class<ImgLabeling> getIJType() {
+        return ImgLabeling.class;
     }
 
     @Override
-    public ModuleItemDataValueConfig createModuleItemConfig(final ModuleItem<Labeling> item) {
+    public ModuleItemDataValueConfig createModuleItemConfig(final ModuleItem<ImgLabeling> item) {
         return new ModuleItemDataValueConfig() {
             private DataValue m_dataValue = null;
 
@@ -94,13 +99,29 @@ public class LabelingInputAdapter implements IJStandardInputAdapter<Labeling> {
 
             @Override
             public void configureModuleItem(final Module module) {
-                Labeling lab = ((LabelingValue)m_dataValue).getLabeling();
+                RandomAccessibleInterval<LabelingType<Object>> lab = ((LabelingValue)m_dataValue).getLabeling();
                 if (item.getIOType() == ItemIO.BOTH) {
                     // make copy if item is in and output
-                    lab = lab.copy();
+                    lab = copy(lab);
                 }
 
                 module.setInput(item.getName(), lab);
+            }
+
+            private <L> RandomAccessibleInterval<LabelingType<L>>
+                    copy(final RandomAccessibleInterval<LabelingType<L>> lab) {
+
+                RandomAccessibleInterval<LabelingType<L>> res =
+                        (RandomAccessibleInterval<LabelingType<L>>)KNIPGateway.ops().createImgLabeling(lab);
+
+                Cursor<LabelingType<L>> c1 = Views.iterable(lab).cursor();
+                Cursor<LabelingType<L>> c2 = Views.iterable(res).cursor();
+
+                while (c1.hasNext()) {
+                    c2.next().addAll(c1.next());
+                }
+
+                return res;
             }
 
             @Override

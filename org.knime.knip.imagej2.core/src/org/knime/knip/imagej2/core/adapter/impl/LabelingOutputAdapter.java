@@ -51,6 +51,7 @@ package org.knime.knip.imagej2.core.adapter.impl;
 import java.io.IOException;
 
 import net.imglib2.labeling.Labeling;
+import net.imglib2.roi.labeling.ImgLabeling;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataType;
@@ -72,11 +73,11 @@ import org.knime.knip.imagej2.core.adapter.IJOutputAdapterInstance;
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class LabelingOutputAdapter implements IJOutputAdapter<Labeling> {
+public class LabelingOutputAdapter implements IJOutputAdapter<ImgLabeling> {
 
     @Override
-    public Class<Labeling> getIJType() {
-        return Labeling.class;
+    public Class<ImgLabeling> getIJType() {
+        return ImgLabeling.class;
     }
 
     @Override
@@ -95,14 +96,14 @@ public class LabelingOutputAdapter implements IJOutputAdapter<Labeling> {
     }
 
     @Override
-    public IJOutputAdapterInstance<Labeling> createAdapterInstance(final ExecutionContext exec) {
+    public IJOutputAdapterInstance<ImgLabeling> createAdapterInstance(final ExecutionContext exec) {
 
         final LabelingCellFactory factory = new LabelingCellFactory(exec);
 
-        return new IJOutputAdapterInstance<Labeling>() {
+        return new IJOutputAdapterInstance<ImgLabeling>() {
 
             @Override
-            public DataCell[] getDataCells(final Labeling ijObject) {
+            public DataCell[] getDataCells(final ImgLabeling ijObject) {
                 LabelingCell output = null;
                 try {
                     output =

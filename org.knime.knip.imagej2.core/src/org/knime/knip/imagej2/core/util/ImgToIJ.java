@@ -80,7 +80,7 @@ import net.imglib2.view.Views;
 
 import org.knime.core.node.KNIMEConstants;
 import org.knime.knip.base.KNIPConstants;
-import org.knime.knip.base.ThreadPoolExecutorService;
+import org.knime.knip.core.ThreadPoolExecutorService;
 import org.knime.knip.core.ops.metadata.DimSwapper;
 
 /**
