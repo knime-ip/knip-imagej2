@@ -111,8 +111,7 @@ public class LabelingInputAdapter implements IJStandardInputAdapter<ImgLabeling>
             private <L> RandomAccessibleInterval<LabelingType<L>>
                     copy(final RandomAccessibleInterval<LabelingType<L>> lab) {
 
-                RandomAccessibleInterval<LabelingType<L>> res =
-                        (RandomAccessibleInterval<LabelingType<L>>)KNIPGateway.ops().createImgLabeling(lab);
+                RandomAccessibleInterval<LabelingType<L>> res = KNIPGateway.ops().create().imgLabeling(lab);
 
                 Cursor<LabelingType<L>> c1 = Views.iterable(lab).cursor();
                 Cursor<LabelingType<L>> c2 = Views.iterable(res).cursor();
