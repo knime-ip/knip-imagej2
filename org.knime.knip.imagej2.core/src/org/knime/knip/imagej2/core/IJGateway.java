@@ -49,27 +49,15 @@
 package org.knime.knip.imagej2.core;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.imagej.DatasetService;
-import net.imagej.autoscale.AutoscaleService;
-import net.imagej.operator.CalculatorService;
-import net.imagej.threshold.ThresholdService;
-
 import org.bushe.swing.event.EventService;
-import org.eclipse.osgi.internal.baseadaptor.DefaultClassLoader;
-import org.eclipse.osgi.internal.loader.BundleLoader;
-import org.eclipse.osgi.service.resolver.BundleSpecification;
 import org.knime.core.node.NodeLogger;
 import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
-import org.osgi.framework.Bundle;
+import org.knime.knip.scijava.core.ResourceAwareClassLoader;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.command.CommandInfo;
@@ -90,6 +78,11 @@ import org.scijava.tool.ToolService;
 import org.scijava.ui.UIService;
 import org.scijava.util.ClassUtils;
 import org.scijava.util.ColorRGB;
+
+import net.imagej.DatasetService;
+import net.imagej.autoscale.AutoscaleService;
+import net.imagej.operator.CalculatorService;
+import net.imagej.threshold.ThresholdService;
 
 /**
  * provides access to the ImageJ context and loads supported ImageJ Plugins. The class implements the singleton pattern
@@ -112,18 +105,18 @@ public final class IJGateway {
      * all types that can be supported as input type for an ImageJ plugin as a
      * {@link org.knime.knip.imagej2.core.imagejdialog panel} derived from the ImageJ dialog.
      */
-    public static final Class<?>[] SUPPORTED_IJ_DIALOG_TYPES = {Number.class, byte.class, double.class, float.class,
-            int.class, long.class, short.class, String.class, Character.class, char.class, Boolean.class,
-            boolean.class, File.class, ColorRGB.class};
+    public static final Class<?>[] SUPPORTED_IJ_DIALOG_TYPES =
+            {Number.class, byte.class, double.class, float.class, int.class, long.class, short.class, String.class,
+                    Character.class, char.class, Boolean.class, boolean.class, File.class, ColorRGB.class};
 
     /**
      * all services that are supported out of the box by the IJ Adapters. Mainly services that are actually not
      * supported but will do no harm like the MenuService
      */
     @SuppressWarnings("unchecked")
-    private static final Class<? extends Service>[] SUPPORTED_SERVICES = new Class[]{UIService.class,
-            MenuService.class, ToolService.class, EventService.class, ObjectService.class, CalculatorService.class,
-            AutoscaleService.class, ThresholdService.class, OptionsService.class, DatasetService.class};
+    private static final Class<? extends Service>[] SUPPORTED_SERVICES = new Class[]{UIService.class, MenuService.class,
+            ToolService.class, EventService.class, ObjectService.class, CalculatorService.class, AutoscaleService.class,
+            ThresholdService.class, OptionsService.class, DatasetService.class};
 
     // MEMBERS
 
@@ -176,9 +169,8 @@ public final class IJGateway {
         }
 
         // create ImageJ context with all available services
-        m_imageJContext =
-                new Context(new PluginIndex(new DefaultPluginFinder(new ResourceAwareClassLoader(
-                        (DefaultClassLoader)getClass().getClassLoader()))));
+        m_imageJContext = new Context(new PluginIndex(
+                new DefaultPluginFinder(new ResourceAwareClassLoader(getClass().getClassLoader(), getClass()))));
 
         // get list of modules, and filter them to those acceptable to
         // KNIME/KNIP
@@ -408,54 +400,5 @@ public final class IJGateway {
         }
 
         return m_moduleService;
-    }
-
-    class ResourceAwareClassLoader extends ClassLoader {
-
-        final ArrayList<URL> urls = new ArrayList<URL>();
-
-        public ResourceAwareClassLoader(
-                final DefaultClassLoader contextClassLoader) {
-            super(contextClassLoader);
-
-            for (BundleSpecification bundleSpec : ((BundleLoader) contextClassLoader
-                    .getDelegate()).getBundle().getBundleDescription()
-                    .getRequiredBundles()) {
-
-                final Bundle bundle = org.eclipse.core.runtime.Platform
-                        .getBundle(bundleSpec.getName());
-                Enumeration<URL> resources;
-                try {
-                    resources = bundle
-                            .getResources("META-INF/json/org.scijava.plugin.Plugin");
-                } catch (IOException e) {
-                    continue;
-                }
-
-                if (resources == null) {
-                    continue;
-                }
-
-                while (resources.hasMoreElements()) {
-                    final URL resource = resources.nextElement();
-                    // we want to avoid transitive resolving of dependencies
-                    final String host = resource.getHost();
-                    if (bundle.getBundleId() == Long.valueOf(host.substring(0,
-                            host.indexOf(".")))) {
-                        urls.add(resource);
-                    }
-                }
-            }
-        }
-
-        @Override
-        public Enumeration<URL> getResources(final String name)
-                throws IOException {
-            if (!name.startsWith("META-INF/json")) {
-                return Collections.emptyEnumeration();
-            }
-            urls.addAll(Collections.list(super.getResources(name)));
-            return Collections.enumeration(urls);
-        }
     }
 }

@@ -48,13 +48,7 @@
  */
 package org.knime.knip.imagej2.core.adapter.impl;
 
-import ij.ImagePlus;
-
 import java.io.IOException;
-
-import net.imagej.ImgPlus;
-import net.imglib2.img.Img;
-import net.imglib2.ops.operation.Operations;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataType;
@@ -66,6 +60,11 @@ import org.knime.knip.base.data.img.ImgPlusValue;
 import org.knime.knip.imagej2.core.adapter.IJOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.IJOutputAdapterInstance;
 import org.knime.knip.imagej2.core.util.IJToImg;
+
+import ij.ImagePlus;
+import net.imagej.ImgPlus;
+import net.imglib2.img.Img;
+import net.imglib2.ops.operation.Operations;
 
 /**
  * {@link IJOutputAdapter} for {@link ImagePlus}
@@ -109,7 +108,7 @@ public class ImagePlusOutputAdapter implements IJOutputAdapter<ImagePlus> {
             public DataCell[] getDataCells(final ImagePlus ijObject) {
 
                 final IJToImg convert = new IJToImg(IJToImg.createMatchingType(ijObject));
-                final Img image = Operations.compute(convert, ijObject);
+                final Img image = (Img)Operations.compute(convert, ijObject);
 
                 ImgPlusCell output = null;
                 try {
