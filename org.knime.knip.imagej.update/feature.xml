@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.knime.knip.imagej.update"
-      label="KNIP Update Site"
-      version="0.9.1.qualifier">
+      label="KNIME Image Processing - ImageJ2 Update-Site"
+      version="0.10.0.qualifier">
 
    <includes
          id="org.knime.knip.imagej.feature"
