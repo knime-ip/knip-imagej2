@@ -81,8 +81,6 @@ import org.scijava.util.ColorRGB;
 
 import net.imagej.DatasetService;
 import net.imagej.autoscale.AutoscaleService;
-import net.imagej.operator.CalculatorService;
-import net.imagej.threshold.ThresholdService;
 
 /**
  * provides access to the ImageJ context and loads supported ImageJ Plugins. The class implements the singleton pattern
@@ -114,9 +112,9 @@ public final class IJGateway {
      * supported but will do no harm like the MenuService
      */
     @SuppressWarnings("unchecked")
-    private static final Class<? extends Service>[] SUPPORTED_SERVICES = new Class[]{UIService.class, MenuService.class,
-            ToolService.class, EventService.class, ObjectService.class, CalculatorService.class, AutoscaleService.class,
-            ThresholdService.class, OptionsService.class, DatasetService.class};
+    private static final Class<? extends Service>[] SUPPORTED_SERVICES =
+            new Class[]{UIService.class, MenuService.class, ToolService.class, EventService.class, ObjectService.class,
+                    AutoscaleService.class, OptionsService.class, DatasetService.class};
 
     // MEMBERS
 
