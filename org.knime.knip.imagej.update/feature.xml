@@ -30,6 +30,13 @@
          unpack="false"/>
 
    <plugin
+         id="imagej-deprecated"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="imagej-ui-awt"
          download-size="0"
          install-size="0"
@@ -63,6 +70,14 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
+   <plugin
+         id="jython-shaded"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 
    <plugin
          id="imglib2-ij"
