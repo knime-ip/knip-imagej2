@@ -102,6 +102,7 @@ public abstract class AbstractModuleItemColumnConfig implements ModuleItemRowCon
         if (m_currentDataRow != null) {
             configureModuleItem(module, m_currentDataRow);
         }
+        m_currentDataRow = null;
     }
 
     /**

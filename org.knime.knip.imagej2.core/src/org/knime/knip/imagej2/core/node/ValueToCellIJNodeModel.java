@@ -177,9 +177,8 @@ public class ValueToCellIJNodeModel extends AbstractIJNodeModel {
         BufferedDataTable[] res;
         final BufferedDataTable inTable = inData[0];
         final int[] selectedColIndices = getSelectedColumnIndices(inTable.getDataTableSpec());
-        final ValueToCellIJCellFactory cellFac =
-                new ValueToCellIJCellFactory(m_moduleInfo, m_imageJDlGSettingsModel, m_moduleItemConfigs,
-                        m_valueConfig, selectedColIndices, createSpecNames(inTable.getSpec()), exec);
+        final ValueToCellIJCellFactory cellFac = new ValueToCellIJCellFactory(m_moduleInfo, m_imageJDlGSettingsModel,
+                m_moduleItemConfigs, m_valueConfig, selectedColIndices, createSpecNames(inTable.getSpec()), exec);
 
         exec.setProgress("Processing ...");
         if (m_colCreationMode.getStringValue().equals(COL_CREATION_MODES[0])) {
@@ -244,9 +243,8 @@ public class ValueToCellIJNodeModel extends AbstractIJNodeModel {
                     + m_valueConfig.getGuiMetaInfo()[0].inValue.getSimpleName() + " could be found.");
         }
 
-        final CellFactory cellFac =
-                new ValueToCellIJCellFactory(m_moduleInfo, m_imageJDlGSettingsModel, m_moduleItemConfigs,
-                        m_valueConfig, selectedColIndices, createSpecNames(inSpec), null);
+        final CellFactory cellFac = new ValueToCellIJCellFactory(m_moduleInfo, m_imageJDlGSettingsModel,
+                m_moduleItemConfigs, m_valueConfig, selectedColIndices, createSpecNames(inSpec), null);
 
         if (m_colCreationMode.getStringValue().equals(COL_CREATION_MODES[0])) {
             return new DataTableSpec[]{new DataTableSpec(cellFac.getColumnSpecs())};

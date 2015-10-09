@@ -48,9 +48,6 @@
  */
 package org.knime.knip.imagej2.core.adapter.impl;
 
-import net.imglib2.img.Img;
-import net.imagej.ImgPlus;
-
 import org.knime.core.data.DataValue;
 import org.knime.knip.base.data.img.ImgPlusValue;
 import org.knime.knip.imagej2.core.adapter.DataValueConfigGuiInfos;
@@ -60,6 +57,9 @@ import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
 import org.scijava.ItemIO;
 import org.scijava.module.Module;
 import org.scijava.module.ModuleItem;
+
+import net.imagej.ImgPlus;
+import net.imglib2.img.Img;
 
 /**
  * {@link IJInputAdapter} for {@link Img}
@@ -100,6 +100,7 @@ public class ImgPlusInputAdapter implements IJStandardInputAdapter<ImgPlus> {
                 }
 
                 module.setInput(item.getName(), imgPlus);
+                m_dataValue = null;
             }
 
             @Override
@@ -109,8 +110,8 @@ public class ImgPlusInputAdapter implements IJStandardInputAdapter<ImgPlus> {
 
             @Override
             public DataValueConfigGuiInfos[] getGuiMetaInfo() {
-                return new DataValueConfigGuiInfos[]{new DataValueConfigGuiInfos(item.getLabel(), item.getName(),
-                        ImgPlusValue.class)};
+                return new DataValueConfigGuiInfos[]{
+                        new DataValueConfigGuiInfos(item.getLabel(), item.getName(), ImgPlusValue.class)};
             }
 
             @Override

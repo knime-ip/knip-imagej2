@@ -48,10 +48,6 @@
  */
 package org.knime.knip.imagej2.core.adapter.impl;
 
-import net.imagej.Dataset;
-import net.imagej.DefaultDataset;
-import net.imagej.ImgPlus;
-
 import org.knime.core.data.DataValue;
 import org.knime.knip.base.data.img.ImgPlusValue;
 import org.knime.knip.imagej2.core.IJGateway;
@@ -61,6 +57,10 @@ import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
 import org.scijava.ItemIO;
 import org.scijava.module.Module;
 import org.scijava.module.ModuleItem;
+
+import net.imagej.Dataset;
+import net.imagej.DefaultDataset;
+import net.imagej.ImgPlus;
 
 /**
  * TODO Auto-generated
