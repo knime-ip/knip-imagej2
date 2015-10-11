@@ -57,27 +57,6 @@
          version="0.0.0"
          unpack="false"/>
 
-   <plugin
-         id="scripting-java"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="scripting-jython"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="jython-shaded"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
 
    <plugin
          id="imglib2-ij"
