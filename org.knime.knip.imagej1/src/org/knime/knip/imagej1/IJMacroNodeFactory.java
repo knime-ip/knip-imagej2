@@ -48,25 +48,12 @@
  */
 package org.knime.knip.imagej1;
 
-import ij.measure.ResultsTable;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-
-import net.imagej.ImgPlus;
-import net.imagej.ImgPlusMetadata;
-import net.imglib2.Interval;
-import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.img.ImgView;
-import net.imglib2.ops.operation.SubsetOperations;
-import net.imglib2.ops.operation.iterableinterval.unary.IterableIntervalCopy;
-import net.imglib2.ops.util.MetadataUtil;
-import net.imglib2.type.numeric.RealType;
-import net.imglib2.view.Views;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -120,6 +107,18 @@ import org.knime.knip.imagej1.macro.WatershedIJMacro;
 import org.knime.knip.imagej1.prefs.IJ1Preferences;
 import org.knime.knip.imagej2.core.util.UntransformableIJTypeException;
 import org.knime.node2012.KnimeNodeDocument.KnimeNode;
+
+import ij.measure.ResultsTable;
+import net.imagej.ImgPlus;
+import net.imagej.ImgPlusMetadata;
+import net.imglib2.Interval;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.img.ImgView;
+import net.imglib2.ops.operation.SubsetOperations;
+import net.imglib2.ops.operation.iterableinterval.unary.IterableIntervalCopy;
+import net.imglib2.ops.util.MetadataUtil;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.view.Views;
 
 /**
  * {@link NodeFactory} to run {@link IJMacro}s
@@ -297,7 +296,7 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                     }
 
                     if (intervals.length > 1) {
-                        copyOp.compute(m_macro.resImgPlus(), Views.iterable(SubsetOperations.subsetview(res, interval)));
+                        copyOp.compute(m_macro.resImgPlus(), Views.iterable((RandomAccessibleInterval<T>)SubsetOperations.subsetview(res, interval)));
                     } else {
                         res = m_macro.resImgPlus();
                         res.setSource(img.getSource());

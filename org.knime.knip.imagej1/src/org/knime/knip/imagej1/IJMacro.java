@@ -48,19 +48,19 @@
  */
 package org.knime.knip.imagej1;
 
+import org.knime.knip.imagej2.core.util.IJToImg;
+import org.knime.knip.imagej2.core.util.ImgToIJ;
+
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.macro.Interpreter;
 import ij.measure.ResultsTable;
+import net.imagej.ImgPlus;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
-import net.imagej.ImgPlus;
 import net.imglib2.ops.operation.Operations;
 import net.imglib2.ops.operation.SubsetOperations;
 import net.imglib2.type.numeric.RealType;
-
-import org.knime.knip.imagej2.core.util.IJToImg;
-import org.knime.knip.imagej2.core.util.ImgToIJ;
 
 /**
  *
@@ -112,7 +112,7 @@ public class IJMacro<T extends RealType<T>> {
                 // If the image was only modified,
                 // truncate to the same
                 // dimensionality
-                Img res = Operations.compute(new IJToImg(IJToImg.createMatchingType(resPlus), false, 5), resPlus);
+                Img res = (Img)Operations.compute(new IJToImg(IJToImg.createMatchingType(resPlus), false, 5), resPlus);
 
                 final Img<? extends RealType<?>> cleanRes =
                         new ImgView(SubsetOperations.subsetview(res, res), img.factory());
