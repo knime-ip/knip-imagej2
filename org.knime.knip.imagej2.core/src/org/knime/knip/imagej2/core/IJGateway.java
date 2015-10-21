@@ -81,6 +81,7 @@ import org.scijava.util.ColorRGB;
 
 import net.imagej.DatasetService;
 import net.imagej.autoscale.AutoscaleService;
+import net.imagej.units.UnitService;
 
 /**
  * provides access to the ImageJ context and loads supported ImageJ Plugins. The class implements the singleton pattern
@@ -92,7 +93,6 @@ import net.imagej.autoscale.AutoscaleService;
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael Zinsmaier</a>
  */
-@SuppressWarnings("restriction")
 public final class IJGateway {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(IJGateway.class);
@@ -113,7 +113,7 @@ public final class IJGateway {
      */
     @SuppressWarnings("unchecked")
     private static final Class<? extends Service>[] SUPPORTED_SERVICES =
-            new Class[]{UIService.class, MenuService.class, ToolService.class, EventService.class, ObjectService.class,
+            new Class[]{UnitService.class, UIService.class, MenuService.class, ToolService.class, EventService.class, ObjectService.class,
                     AutoscaleService.class, OptionsService.class, DatasetService.class};
 
     // MEMBERS
