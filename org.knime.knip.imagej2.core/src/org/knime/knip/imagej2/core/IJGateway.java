@@ -57,7 +57,7 @@ import java.util.Map;
 import org.bushe.swing.event.EventService;
 import org.knime.core.node.NodeLogger;
 import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
-import org.knime.knip.scijava.core.ResourceAwareClassLoader;
+import org.knime.scijava.core.ResourceAwareClassLoader;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.command.CommandInfo;
