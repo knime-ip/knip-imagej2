@@ -4,7 +4,7 @@ Bundle-SymbolicName: org.knime.knip.imagej2.core;singleton:=true
 Bundle-ManifestVersion: 2
 Bundle-Version: 0.10.1.qualifier
 Eclipse-BuddyPolicy: registered
-Eclipse-RegisterBuddy: org.knime.knip.scijava
+Eclipse-RegisterBuddy: org.knime.scijava.core
 Bundle-Vendor: University of Konstanz
 Require-Bundle: org.knime.workbench.repository;bundle-version="[3.0.0,4.0.0)",
  org.apache.log4j;bundle-version="1.2.15",
