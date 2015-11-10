@@ -8,6 +8,5 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="plugins/Tubeness2Fragment.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

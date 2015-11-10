@@ -35,8 +35,7 @@ Require-Bundle: org.knime.workbench.repository;bundle-version="[3.0.0,4.0.0)",
  scripting-javascript;bundle-version="0.4.1",
  org.knime.scijava.core;bundle-version="0.2.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: ij2-core.jar,
- plugins/Tubeness2Fragment.jar
+Bundle-ClassPath: ij2-core.jar
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.knime.knip.imagej2.core.KNIMEIMAGEJPlugin
 Export-Package: org.knime.knip.imagej2.core,
