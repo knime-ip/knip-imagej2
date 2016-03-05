@@ -131,8 +131,8 @@ import net.imglib2.view.Views;
  *
  */
 @SuppressWarnings("rawtypes")
-public class IJMacroNodeFactory<T extends RealType<T>> extends
-        GenericValueToCellNodeFactory<ImgPlusValue, ValueToCellNodeModel<ImgPlusValue, ImgPlusCell>> {
+public class IJMacroNodeFactory<T extends RealType<T>>
+        extends GenericValueToCellNodeFactory<ImgPlusValue, ValueToCellNodeModel<ImgPlusValue, ImgPlusCell>> {
 
     private static SettingsModelSerializableObjects<SerializableSetting<String>> createMacroSelectionModel() {
         return new SettingsModelSerializableObjects<SerializableSetting<String>>("kernels", new ImageJ1ObjectExt0());
@@ -247,7 +247,8 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
             @Override
             protected ImgPlusCell compute(final ImgPlusValue cellValue) throws Exception {
 
-                final ImgPlus img = cellValue.getImgPlus();
+                final ImgPlus img = cellValue.getZeroMinImgPlus();
+
                 final Interval[] intervals = m_dimSelection.getIntervals(img, img);
                 final int[] m_selectedDims = m_dimSelection.getSelectedDimIndices(img);
                 final IterableIntervalCopy copyOp = new IterableIntervalCopy();
@@ -263,11 +264,11 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                 long[] min = new long[img.numDimensions()];
                 for (final Interval interval : intervals) {
                     interval.min(min);
+
                     RandomAccessibleInterval subsetview = SubsetOperations.subsetview(img.getImg(), interval);
-                    ImgPlusMetadata meta =
-                            MetadataUtil
-                                    .copyAndCleanImgPlusMetadata(interval, img,
-                                                                 new DefaultImgMetadata(subsetview.numDimensions()));
+                    ImgPlusMetadata meta = MetadataUtil
+                            .copyAndCleanImgPlusMetadata(interval, img,
+                                                         new DefaultImgMetadata(subsetview.numDimensions()));
 
                     try {
                         ImgPlus<T> imgPlus = new ImgPlus<T>(new ImgView<T>(subsetview, img.factory()), meta);
@@ -288,15 +289,14 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                         for (int i = 0; i < m_selectedDims.length; i++) {
                             dims[m_selectedDims[i]] = m_macro.resImgPlus().dimension(i);
                         }
-                        res =
-                                new ImgPlus(img.factory().create(dims,
-                                                                 m_macro.resImgPlus().firstElement().createVariable()),
-                                        img);
+                        res = new ImgPlus(
+                                img.factory().create(dims, m_macro.resImgPlus().firstElement().createVariable()), img);
                         res.setSource(img.getSource());
                     }
 
                     if (intervals.length > 1) {
-                        copyOp.compute(m_macro.resImgPlus(), Views.iterable((RandomAccessibleInterval<T>)SubsetOperations.subsetview(res, interval)));
+                        copyOp.compute(m_macro.resImgPlus(), Views
+                                .iterable((RandomAccessibleInterval<T>)SubsetOperations.subsetview(res, interval)));
                     } else {
                         res = m_macro.resImgPlus();
                         res.setSource(img.getSource());
@@ -316,9 +316,8 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                             final int numCols = m_resTableContainer.getTableSpec().getNumColumns();
                             final int[] colIndices = new int[numCols];
                             for (int i = 0; i < colIndices.length; i++) {
-                                colIndices[i] =
-                                        m_macro.resTable().getColumnIndex(m_resTableContainer.getTableSpec()
-                                                                                  .getColumnSpec(i).getName());
+                                colIndices[i] = m_macro.resTable()
+                                        .getColumnIndex(m_resTableContainer.getTableSpec().getColumnSpec(i).getName());
                             }
                             for (int r = 0; r < m_macro.resTable().getCounter(); r++) {
                                 final DataCell[] cells;
@@ -396,10 +395,10 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                 pool.put("ROF Denoise", ROFDenoiseIJMacro.class);
                 pool.put("Despeckle", DespeckleIJMacro.class);
 
-                addDialogComponent("Options", "Snippets", new DialogComponentSerializableConfiguration(
-                        createMacroSelectionModel(), pool));
-                addDialogComponent("Options", "Dimension Selection", new DialogComponentDimSelection(
-                        createDimSelectionModel(), "", 2, 5));
+                addDialogComponent("Options", "Snippets",
+                                   new DialogComponentSerializableConfiguration(createMacroSelectionModel(), pool));
+                addDialogComponent("Options", "Dimension Selection",
+                                   new DialogComponentDimSelection(createDimSelectionModel(), "", 2, 5));
                 // hidden dialog component to be able to controll the imagej
                 // macro node by flow variables
                 addDialogComponent("Options", "Snippets", new DialogComponent(createFlowVariableControllableCode()) {
