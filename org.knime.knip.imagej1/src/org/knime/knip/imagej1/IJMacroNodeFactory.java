@@ -91,6 +91,7 @@ import org.knime.knip.base.node.nodesettings.SettingsModelSerializableObjects;
 import org.knime.knip.base.nodes.io.kernel.DialogComponentSerializableConfiguration;
 import org.knime.knip.base.nodes.io.kernel.SerializableSetting;
 import org.knime.knip.core.data.img.DefaultImgMetadata;
+import org.knime.knip.core.util.CellUtil;
 import org.knime.knip.imagej1.macro.AnalyzeParticlesIJMacro;
 import org.knime.knip.imagej1.macro.CLAHEIJMacro;
 import org.knime.knip.imagej1.macro.DespeckleIJMacro;
@@ -247,7 +248,7 @@ public class IJMacroNodeFactory<T extends RealType<T>>
             @Override
             protected ImgPlusCell compute(final ImgPlusValue cellValue) throws Exception {
 
-                final ImgPlus img = cellValue.getZeroMinImgPlus();
+                final ImgPlus img = CellUtil.getZeroMinImgPlus(cellValue.getImgPlus());
 
                 final Interval[] intervals = m_dimSelection.getIntervals(img, img);
                 final int[] m_selectedDims = m_dimSelection.getSelectedDimIndices(img);
@@ -271,7 +272,7 @@ public class IJMacroNodeFactory<T extends RealType<T>>
                                                          new DefaultImgMetadata(subsetview.numDimensions()));
 
                     try {
-                        ImgPlus<T> imgPlus = new ImgPlus<T>(new ImgView<T>(subsetview, img.factory()), meta);
+                        ImgPlus<T> imgPlus = new ImgPlus<T>(ImgView.wrap(subsetview, img.factory()), meta);
                         m_macro.run(imgPlus);
                     } catch (UntransformableIJTypeException e) {
                         throw new KNIPRuntimeException(e.getMessage(), e);
@@ -371,6 +372,7 @@ public class IJMacroNodeFactory<T extends RealType<T>>
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("deprecation")
     @Override
     protected ValueToCellNodeDialog<ImgPlusValue> createNodeDialog() {
         return new ValueToCellNodeDialog<ImgPlusValue>() {
