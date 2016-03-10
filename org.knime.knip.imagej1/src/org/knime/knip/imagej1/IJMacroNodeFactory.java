@@ -91,7 +91,7 @@ import org.knime.knip.base.node.nodesettings.SettingsModelSerializableObjects;
 import org.knime.knip.base.nodes.io.kernel.DialogComponentSerializableConfiguration;
 import org.knime.knip.base.nodes.io.kernel.SerializableSetting;
 import org.knime.knip.core.data.img.DefaultImgMetadata;
-import org.knime.knip.core.util.CellUtil;
+import org.knime.knip.core.util.MinimaUtils;
 import org.knime.knip.imagej1.macro.AnalyzeParticlesIJMacro;
 import org.knime.knip.imagej1.macro.CLAHEIJMacro;
 import org.knime.knip.imagej1.macro.DespeckleIJMacro;
@@ -248,7 +248,7 @@ public class IJMacroNodeFactory<T extends RealType<T>>
             @Override
             protected ImgPlusCell compute(final ImgPlusValue cellValue) throws Exception {
 
-                final ImgPlus img = CellUtil.getZeroMinImgPlus(cellValue.getImgPlus());
+                final ImgPlus img = MinimaUtils.getZeroMinImgPlus(cellValue.getImgPlus());
 
                 final Interval[] intervals = m_dimSelection.getIntervals(img, img);
                 final int[] m_selectedDims = m_dimSelection.getSelectedDimIndices(img);
