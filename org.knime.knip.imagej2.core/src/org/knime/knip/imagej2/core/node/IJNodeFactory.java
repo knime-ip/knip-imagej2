@@ -48,16 +48,8 @@
  */
 package org.knime.knip.imagej2.core.node;
 
-import ij.ImagePlus;
-
 import java.net.URL;
 import java.util.Iterator;
-
-import net.imagej.Dataset;
-import net.imagej.display.ImageDisplay;
-import net.imglib2.img.Img;
-import net.imglib2.labeling.Labeling;
-import net.imagej.ImgPlus;
 
 import org.knime.core.data.DataValue;
 import org.knime.core.node.DynamicNodeFactory;
@@ -67,6 +59,7 @@ import org.knime.core.node.NodeView;
 import org.knime.core.node.config.ConfigRO;
 import org.knime.core.node.config.ConfigWO;
 import org.knime.knip.base.nodes.view.TableCellViewNodeView;
+import org.knime.knip.cellviewer.CellNodeView;
 import org.knime.knip.imagej2.core.IJGateway;
 import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
 import org.knime.knip.imagej2.core.adapter.IJInputAdapter;
@@ -83,6 +76,13 @@ import org.knime.node2012.TabDocument.Tab;
 import org.scijava.module.ModuleInfo;
 import org.scijava.module.ModuleItem;
 import org.scijava.service.Service;
+
+import ij.ImagePlus;
+import net.imagej.Dataset;
+import net.imagej.ImgPlus;
+import net.imagej.display.ImageDisplay;
+import net.imglib2.img.Img;
+import net.imglib2.labeling.Labeling;
 
 /**
  * Node factory for ImageJ2 plugins. Contains internal settings that associate an instance of IJNodeFactory with a
@@ -143,7 +143,7 @@ public class IJNodeFactory extends DynamicNodeFactory<AbstractIJNodeModel> {
     @Override
     public NodeView<AbstractIJNodeModel> createNodeView(final int viewIndex, final AbstractIJNodeModel nodeModel) {
         if (getNrNodeViews() == 1) {
-            return new TableCellViewNodeView<AbstractIJNodeModel>(nodeModel);
+            return new CellNodeView<AbstractIJNodeModel>(nodeModel);
         }
         return null;
     }
