@@ -164,18 +164,56 @@ public class HarvesterModuleWrapper implements Module {
         // not supported in harvester mode
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public boolean isResolved(final String name) {
+    public boolean isInputResolved(final String name) {
         if (m_notHarvested.contains(name)) {
             return true;
         } else {
-            return m_module.isResolved(name);
+            return m_module.isInputResolved(name);
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void setResolved(final String name, final boolean resolved) {
-        // not supported in harvester mode
+    public boolean isOutputResolved(final String name) {
+        return m_module.isOutputResolved(name);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void resolveInput(final String name) {
+       m_module.resolveInput(name);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void resolveOutput(final String name) {
+        m_module.resolveOutput(name);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void unresolveInput(final String name) {
+        m_module.unresolveInput(name);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void unresolveOutput(final String name) {
+        m_module.unresolveOutput(name);
     }
 
 }
