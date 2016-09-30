@@ -85,6 +85,7 @@ import org.knime.knip.base.exceptions.KNIPRuntimeException;
 import org.knime.knip.base.node.GenericValueToCellNodeFactory;
 import org.knime.knip.base.node.ValueToCellNodeDialog;
 import org.knime.knip.base.node.ValueToCellNodeModel;
+import org.knime.knip.base.node.dialog.Descriptions;
 import org.knime.knip.base.node.dialog.DialogComponentDimSelection;
 import org.knime.knip.base.node.nodesettings.SettingsModelDimSelection;
 import org.knime.knip.base.node.nodesettings.SettingsModelSerializableObjects;
@@ -439,7 +440,7 @@ public class IJMacroNodeFactory<T extends RealType<T>>
      */
     @Override
     protected void addNodeDescriptionContent(final KnimeNode node) {
-        DialogComponentDimSelection.createNodeDescription(node.getFullDescription().getTabList().get(0).addNewOption());
+        Descriptions.createNodeDescriptionDimSelection(node.getFullDescription().getTabList().get(0).addNewOption());
     }
 
 }
