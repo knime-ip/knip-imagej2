@@ -2,7 +2,7 @@
 <feature
       id="org.knime.knip.imagej.update"
       label="KNIME Image Processing - ImageJ2 Update-Site"
-      version="0.11.1.qualifier">
+      version="0.11.2.qualifier">
 
    <includes
          id="org.knime.knip.imagej.feature"
