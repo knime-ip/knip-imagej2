@@ -9,4 +9,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/mpicbg-20111128.jar,
  lib/imglib.jar
-Require-Bundle: org.knime.knip.io;bundle-version="[1.5.0,1.6.0)"
+Require-Bundle: org.knime.knip.io;bundle-version="[1.5.2,1.6.0)"
