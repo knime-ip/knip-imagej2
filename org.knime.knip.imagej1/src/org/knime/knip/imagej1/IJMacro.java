@@ -51,10 +51,12 @@ package org.knime.knip.imagej1;
 import org.knime.knip.imagej2.core.util.IJToImg;
 import org.knime.knip.imagej2.core.util.ImgToIJ;
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.macro.Interpreter;
 import ij.measure.ResultsTable;
+import ij.text.TextPanel;
 import net.imagej.ImgPlus;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
@@ -93,8 +95,12 @@ public class IJMacro<T extends RealType<T>> {
     public final void run(final ImgPlus<T> img) {
 
         m_resTable = ResultsTable.getResultsTable();
+
+        // We fake a text panel as some result tables require one..
+
         // TODO Run different ImageJ instances?
         synchronized (m_resTable) {
+            IJ.setTextPanel(new TextPanel("Dummy"));
             final Interpreter inter = new Interpreter();
             // Prepare images
             final ImagePlus plus = ImgToIJ.wrap(img);
@@ -127,7 +133,7 @@ public class IJMacro<T extends RealType<T>> {
                 }
             }
 
-            // m_resTable = parseResultTable(rt);
+             m_resTable = ResultsTable.getResultsTable();
             // Clean up
             while (WindowManager.getImageCount() > 0) {
                 final ImagePlus current = WindowManager.getCurrentImage();
