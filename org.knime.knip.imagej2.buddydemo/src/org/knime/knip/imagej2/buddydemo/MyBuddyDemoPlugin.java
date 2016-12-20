@@ -18,17 +18,34 @@ import org.scijava.plugin.Plugin;
  * and "help" imagej.core with class loading.
  */
 
-@Plugin(menu = {@Menu(label = "DeveloperPlugins"), @Menu(label = "MyBuddyDemoPlugin")}, description = "One way to add new ImageJ plugins to KNIME is to wrap them with eclipse plugins that register themselves as buddies of"
-                + " org.knime.knip.imagej.core . The automatic plugin retriev mechanism will discover the plugins, parse the annotations and add them as"
-                + " KNIME nodes. However the java compiler settings of the fragment project have to be adjusted to meet the requirements of the sezpoz"
-                + " library. For more details see sezpoz.java.net => Notes => Eclipse-specific notes or inspect the MyBuddyDemoPlugin." + "", headless = true, type = Command.class)
+@Plugin(menu = {@Menu(label = "DeveloperPlugins"),
+                @Menu(label = "MyBuddyDemoPlugin")}, description = "One way to add new ImageJ plugins to KNIME is to wrap them with eclipse plugins that register themselves as buddies of"
+                                + " org.knime.knip.imagej.core . The automatic plugin retriev mechanism will discover the plugins, parse the annotations and add them as"
+                                + " KNIME nodes. However the java compiler settings of the fragment project have to be adjusted to meet the requirements of the sezpoz"
+                                + " library. For more details see sezpoz.java.net => Notes => Eclipse-specific notes or inspect the MyBuddyDemoPlugin."
+                                + "", headless = true, type = Command.class)
 public class MyBuddyDemoPlugin<T extends RealType<T>> implements Command {
+
+        @Parameter
+        private float[] testFloat;
+
+        @Parameter
+        private double[] testDouble;
+
+        @Parameter(type = ItemIO.OUTPUT)
+        private float[] floatOut;
+
+        @Parameter(type = ItemIO.OUTPUT)
+        private double[] doubleOut;
 
         @Parameter(type = ItemIO.OUTPUT)
         private String output;
 
         @Override
         public void run() {
+                floatOut = testFloat;
+                doubleOut = testDouble;
+
                 output = "plugins can be defined in registerd buddies of imagej.core";
         }
 

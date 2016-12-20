@@ -48,9 +48,6 @@
  */
 package org.knime.knip.imagej2.core.adapter.impl;
 
-import net.imagej.display.ImageDisplayService;
-import net.imagej.display.OverlayService;
-
 import org.knime.knip.imagej2.core.adapter.IJAdapterFactory;
 import org.knime.knip.imagej2.core.adapter.IJInputAdapter;
 import org.knime.knip.imagej2.core.adapter.IJOutputAdapter;
@@ -58,7 +55,9 @@ import org.knime.knip.imagej2.core.adapter.IJServiceAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicinput.BooleanInputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicinput.ByteInputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicinput.CharacterInputAdapter;
+import org.knime.knip.imagej2.core.adapter.impl.basicinput.DoubleArrayInputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicinput.DoubleInputAdapter;
+import org.knime.knip.imagej2.core.adapter.impl.basicinput.FloatArrayInputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicinput.FloatInputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicinput.IntegerInputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicinput.LongInputAdapter;
@@ -75,7 +74,9 @@ import org.knime.knip.imagej2.core.adapter.impl.basicinput.StringInputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.BooleanOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.ByteOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.CharacterOutputAdapter;
+import org.knime.knip.imagej2.core.adapter.impl.basicoutput.DoubleArrayOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.DoubleOutputAdapter;
+import org.knime.knip.imagej2.core.adapter.impl.basicoutput.FloatArrayOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.FloatOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.IntegerOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.LongOutputAdapter;
@@ -90,6 +91,9 @@ import org.knime.knip.imagej2.core.adapter.impl.basicoutput.PShortOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.ShortOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.StringOutputAdapter;
 import org.scijava.service.Service;
+
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayService;
 
 /**
  * uses the adapter extension point to add all input, output and service adapters that are supported by the core
@@ -113,7 +117,8 @@ public class CoreAdapterFactory implements IJAdapterFactory {
                 new StringOutputAdapter(), new PBooleanOutputAdapter(), new PByteOutputAdapter(),
                 new PCharacterOutputAdapter(), new PDoubleOutputAdapter(), new PFloatOutputAdapter(),
                 new PIntegerOutputAdapter(), new PLongOutputAdapter(), new PShortOutputAdapter(),
-                new ImgOutputAdapter(), new LabelingOutputAdapter(), new ImgPlusOutputAdapter()};
+                new ImgOutputAdapter(), new LabelingOutputAdapter(), new ImgPlusOutputAdapter(),
+                new FloatArrayOutputAdapter(), new DoubleArrayOutputAdapter()};
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -126,7 +131,7 @@ public class CoreAdapterFactory implements IJAdapterFactory {
                 new PBooleanInputAdapter(), new PByteInputAdapter(), new PCharacterInputAdapter(),
                 new PDoubleInputAdapter(), new PFloatInputAdapter(), new PIntegerInputAdapter(),
                 new PLongInputAdapter(), new PShortInputAdapter(), new ImgInputAdapter(), new LabelingInputAdapter(),
-                new ImgPlusInputAdapter()};
+                new ImgPlusInputAdapter(), new FloatArrayInputAdapter(), new DoubleArrayInputAdapter()};
     }
 
     @SuppressWarnings("unchecked")
