@@ -72,12 +72,14 @@ import org.knime.knip.imagej2.core.adapter.impl.basicinput.PShortInputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicinput.ShortInputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicinput.StringInputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.BooleanOutputAdapter;
+import org.knime.knip.imagej2.core.adapter.impl.basicoutput.ByteArrayOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.ByteOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.CharacterOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.DoubleArrayOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.DoubleOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.FloatArrayOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.FloatOutputAdapter;
+import org.knime.knip.imagej2.core.adapter.impl.basicoutput.IntegerArrayOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.IntegerOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.LongOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.PBooleanOutputAdapter;
@@ -88,6 +90,7 @@ import org.knime.knip.imagej2.core.adapter.impl.basicoutput.PFloatOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.PIntegerOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.PLongOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.PShortOutputAdapter;
+import org.knime.knip.imagej2.core.adapter.impl.basicoutput.ShortArrayOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.ShortOutputAdapter;
 import org.knime.knip.imagej2.core.adapter.impl.basicoutput.StringOutputAdapter;
 import org.scijava.service.Service;
@@ -118,7 +121,8 @@ public class CoreAdapterFactory implements IJAdapterFactory {
                 new PCharacterOutputAdapter(), new PDoubleOutputAdapter(), new PFloatOutputAdapter(),
                 new PIntegerOutputAdapter(), new PLongOutputAdapter(), new PShortOutputAdapter(),
                 new ImgOutputAdapter(), new LabelingOutputAdapter(), new ImgPlusOutputAdapter(),
-                new FloatArrayOutputAdapter(), new DoubleArrayOutputAdapter()};
+                new FloatArrayOutputAdapter(), new DoubleArrayOutputAdapter(), new ShortArrayOutputAdapter(),
+                new IntegerArrayOutputAdapter(), new ByteArrayOutputAdapter()};
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
