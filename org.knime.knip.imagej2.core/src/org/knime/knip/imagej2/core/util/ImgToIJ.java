@@ -230,6 +230,7 @@ public final class ImgToIJ {
         cal.pixelWidth = newCalibration[0];
         cal.pixelHeight = newCalibration[1];
         cal.pixelDepth = newCalibration[3];
+        cal.frameInterval = newCalibration[4];
         r.setCalibration(cal);
 
         r.setStack(is, (int)permuted.dimension(2), (int)permuted.dimension(3), (int)permuted.dimension(4));
