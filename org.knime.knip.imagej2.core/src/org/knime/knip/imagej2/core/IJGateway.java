@@ -81,6 +81,7 @@ import org.scijava.util.ColorRGB;
 
 import net.imagej.DatasetService;
 import net.imagej.autoscale.AutoscaleService;
+import net.imagej.operator.CalculatorService;
 import net.imagej.units.UnitService;
 
 /**
@@ -113,8 +114,8 @@ public final class IJGateway {
      */
     @SuppressWarnings("unchecked")
     private static final Class<? extends Service>[] SUPPORTED_SERVICES =
-            new Class[]{UnitService.class, UIService.class, MenuService.class, ToolService.class, EventService.class, ObjectService.class,
-                    AutoscaleService.class, OptionsService.class, DatasetService.class};
+            new Class[]{UnitService.class, UIService.class, MenuService.class, ToolService.class, EventService.class,
+                    ObjectService.class, AutoscaleService.class, OptionsService.class, DatasetService.class, CalculatorService.class};
 
     // MEMBERS
 
