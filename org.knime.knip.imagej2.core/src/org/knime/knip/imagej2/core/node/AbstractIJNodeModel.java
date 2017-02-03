@@ -77,6 +77,7 @@ import org.knime.knip.imagej2.core.adapter.PersistentModuleItemConfig;
 import org.knime.knip.imagej2.core.adapter.impl.basicinput.AbstractModuleItemBasicInputConfig;
 import org.knime.knip.imagej2.core.imagejdialog.DialogComponentImageJDlg;
 import org.knime.knip.imagej2.core.imagejdialog.SettingsModelImageJDlg;
+import org.scijava.Context;
 import org.scijava.module.Module;
 import org.scijava.module.ModuleException;
 import org.scijava.module.ModuleInfo;
@@ -294,7 +295,8 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
      */
     private void resolveToDefault(final Module module, final DataTableSpec inSpec) {
         for (final ModuleItem<?> item : m_moduleInfo.inputs()) {
-            if (!((Service.class).isAssignableFrom(item.getType()))) {
+            if (!((Service.class).isAssignableFrom(item.getType()))
+                    && !((Context.class).isAssignableFrom(item.getType()))) {
                 //not a service
                 if (module.getInput(item.getName()) != null) {
                     //set default value
@@ -362,10 +364,11 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
     protected void testModule(final Module module) throws InvalidSettingsException {
         for (final ModuleItem<?> item : m_moduleInfo.inputs()) {
             if (item.isRequired() && !module.isResolved(item.getName())) {
-                if (!((Service.class).isAssignableFrom(item.getType()))) {
+                if (!((Service.class).isAssignableFrom(item.getType()))
+                        && !(Context.class.isAssignableFrom(item.getType()))) {
                     // services are not resolved
-                    throw new InvalidSettingsException("Configuration required: at least one required input ("
-                            + item.getName() + ") is not set.");
+                    throw new InvalidSettingsException(
+                            "Configuration required: at least one required input (" + item.getName() + ") is not set.");
                 }
             }
         }
