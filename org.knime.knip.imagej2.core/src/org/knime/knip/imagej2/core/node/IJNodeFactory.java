@@ -73,6 +73,7 @@ import org.knime.node2012.OptionDocument.Option;
 import org.knime.node2012.OutPortDocument.OutPort;
 import org.knime.node2012.PortsDocument.Ports;
 import org.knime.node2012.TabDocument.Tab;
+import org.scijava.Context;
 import org.scijava.module.ModuleInfo;
 import org.scijava.module.ModuleItem;
 import org.scijava.service.Service;
@@ -380,7 +381,8 @@ public class IJNodeFactory extends DynamicNodeFactory<AbstractIJNodeModel> {
         while (iter.hasNext()) {
             final ModuleItem<?> tmpItem = iter.next();
             if (!IJGateway.isIJDialogInputType(tmpItem.getType())
-                    && !(Service.class.isAssignableFrom(tmpItem.getType()))) {
+                    && !(Service.class.isAssignableFrom(tmpItem.getType()))
+                    && !(Context.class.isAssignableFrom(tmpItem.getType()))) {
                 nrInputs++;
                 item = tmpItem;
             }
