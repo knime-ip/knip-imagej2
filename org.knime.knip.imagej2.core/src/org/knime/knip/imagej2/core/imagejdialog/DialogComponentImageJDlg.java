@@ -91,7 +91,8 @@ public class DialogComponentImageJDlg extends DialogComponent {
 
         m_inputPanel = new ExtendedInputPanel();
         final SwingInputHarvester harvester = new SwingInputHarvester();
-        harvester.setContext(IJGateway.getImageJContext());
+
+        IJGateway.getImageJContext().inject(harvester);
 
         try {
             harvester.buildPanel(m_inputPanel, harvesterModule);
