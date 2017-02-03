@@ -70,8 +70,10 @@ import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
 import org.knime.knip.imagej2.core.imagejdialog.DialogComponentImageJDlg;
 import org.knime.knip.imagej2.core.imagejdialog.HarvesterModuleWrapper;
 import org.knime.knip.imagej2.core.imagejdialog.SettingsModelImageJDlg;
+import org.scijava.module.Module;
 import org.scijava.module.ModuleInfo;
 import org.scijava.module.ModuleItem;
+import org.scijava.module.process.ServicePreprocessor;
 
 /**
  * Provides a basic set of methods that are common to all IJNodeDialogs: Handling of the ImageJ dialog for basic
@@ -107,9 +109,12 @@ public abstract class AbstractIJNodeDialog extends DefaultNodeSettingsPane {
     protected AbstractIJNodeDialog(final ModuleInfo info) {
         m_dummyModel = AbstractIJNodeModel.createImageJDlgModel();
         m_dummyModel.setEnabled(false);
+        final Module module = IJGateway.getInstance().getModuleService().createModule(info);
+        final ServicePreprocessor servicePreproc = new ServicePreprocessor();
+        IJGateway.getImageJContext().inject(servicePreproc);
+        servicePreproc.process(module);
 
-        HarvesterModuleWrapper harvesterModule =
-                new HarvesterModuleWrapper(IJGateway.getInstance().getModuleService().createModule(info));
+        HarvesterModuleWrapper harvesterModule = new HarvesterModuleWrapper(module);
 
         m_imageJDialog = new DialogComponentImageJDlg(AbstractIJNodeModel.createImageJDlgModel(), harvesterModule);
         m_useDialog = false;
