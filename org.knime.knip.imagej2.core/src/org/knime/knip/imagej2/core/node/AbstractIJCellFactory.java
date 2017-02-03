@@ -215,7 +215,6 @@ public abstract class AbstractIJCellFactory implements CellFactory {
         }
 
         // execute the module
-        IJGateway.getImageJContext().inject(rowModule);
         final List<ModulePreprocessor> pre = new ArrayList<ModulePreprocessor>();
         final InitPreprocessor ip = new InitPreprocessor();
         // TODO        final ValidityPreprocessor

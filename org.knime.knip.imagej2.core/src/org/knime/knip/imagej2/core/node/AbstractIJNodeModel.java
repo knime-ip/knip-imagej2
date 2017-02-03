@@ -69,6 +69,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.knip.base.node.NodeUtils;
+import org.knime.knip.imagej2.core.IJGateway;
 import org.knime.knip.imagej2.core.adapter.DataValueConfigGuiInfos;
 import org.knime.knip.imagej2.core.adapter.ModuleItemConfig;
 import org.knime.knip.imagej2.core.adapter.ModuleItemDataValueConfig;
@@ -345,6 +346,9 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
         Module module = null;
         try {
             module = moduleInfo.createModule();
+            // inject context
+            IJGateway.getImageJContext().inject(module);
+
             // load the dialog matched settings with the dialog settings
             dialogModuleSettings.configureModule(module);
         } catch (final ModuleException e) {
