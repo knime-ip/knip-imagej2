@@ -92,7 +92,7 @@ public class ImageDisplayInputAdapter implements IJStandardInputAdapter<ImageDis
             @Override
             public void resolveHandledModuleItems(final Module module, final boolean preTest) {
                 if (preTest || (m_dataValue != null)) {
-                    module.setResolved(item.getName(), true);
+                    module.resolveInput(item.getName());
                 }
             }
 
