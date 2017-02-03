@@ -324,6 +324,10 @@ public final class IJGateway {
      */
     private boolean isSupportedInputType(final ModuleInfo info, final Class<?> type) {
 
+        if (Context.class.isAssignableFrom(type)) {
+            return true;
+        }
+
         // test for classes that can be mapped to the image j generated dialog
         for (final Class<?> candidate : SUPPORTED_IJ_DIALOG_TYPES) {
             if (candidate.isAssignableFrom(type)) {
