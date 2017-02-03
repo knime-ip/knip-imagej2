@@ -337,7 +337,7 @@ public final class IJGateway {
             }
         }
 
-        // test for addapter supported services
+        // test for adapter supported services
         if (IJAdapterProvider.getKnownServiceTypes().contains(type)) {
             return true;
         }
