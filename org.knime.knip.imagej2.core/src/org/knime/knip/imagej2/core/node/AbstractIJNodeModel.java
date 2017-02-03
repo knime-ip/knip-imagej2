@@ -367,7 +367,7 @@ public abstract class AbstractIJNodeModel extends NodeModel implements BufferedD
      */
     protected void testModule(final Module module) throws InvalidSettingsException {
         for (final ModuleItem<?> item : m_moduleInfo.inputs()) {
-            if (item.isRequired() && !module.isResolved(item.getName())) {
+            if (item.isRequired() && !module.isInputResolved(item.getName())) {
                 if (!((Service.class).isAssignableFrom(item.getType()))
                         && !(Context.class.isAssignableFrom(item.getType()))) {
                     // services are not resolved
