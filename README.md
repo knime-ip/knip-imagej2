@@ -100,7 +100,7 @@ Development
    - Add your dependencies:
        A large quantity of libraries from the Scijava, Imglib and ImageJ2
        communities are already available as eclipse plugins. You can add them
-       via the _Dependencies_ tab.
+       in the _Required Bundles_ section of the _Dependencies_ tab.
    - External dependencies:
       Dependencies not available via the previously described method can be
       added manually as `jar` files. Create a new folder in your project
@@ -122,5 +122,14 @@ Development
    setup you can find your commands as nodes in KNIME in the node explorer in
    the folder `Community/Image Processing/ImageJ2/YourMenuPath`
 
+#### Common Pitfalls
+
+- Using _Import Package_ in _plugin.xml_ when you are trying to use classes from
+  not declared dependencies. Eclipse may prompt you to _Add com.example.xxx to
+  imported packages_ when you are importing classes from other projects.
+  This can lead to problems, as you will not specify where this package will
+  come from and can result in your plugins no longer appearing in KNIME.
+  Instead, always declare the dependencies as _Required bundles_ or as imported
+  jars within the `plugin.xml`.
 
 
