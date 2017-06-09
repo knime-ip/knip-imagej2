@@ -116,8 +116,9 @@ public final class IJGateway {
      */
     @SuppressWarnings("unchecked")
     private static final Class<? extends Service>[] SUPPORTED_SERVICES =
-            new Class[]{OpService.class, LogService.class, UnitService.class, UIService.class, MenuService.class, ToolService.class, EventService.class,
-                    ObjectService.class, AutoscaleService.class, OptionsService.class, DatasetService.class, CalculatorService.class, TextService.class};
+            new Class[]{OpService.class, LogService.class, UnitService.class, UIService.class, MenuService.class,
+                    ToolService.class, EventService.class, ObjectService.class, AutoscaleService.class,
+                    OptionsService.class, DatasetService.class, CalculatorService.class, TextService.class};
 
     // MEMBERS
 
