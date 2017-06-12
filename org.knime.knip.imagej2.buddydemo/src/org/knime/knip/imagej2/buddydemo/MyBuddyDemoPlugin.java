@@ -30,9 +30,6 @@ public class MyBuddyDemoPlugin<T extends RealType<T>> implements Command {
 
         @Override
         public void run() {
-                floatOut = testFloat;
-                doubleOut = testDouble;
-
                 output = "plugins can be defined in registerd buddies of imagej.core";
         }
 
