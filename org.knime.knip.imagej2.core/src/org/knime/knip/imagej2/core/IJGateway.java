@@ -74,6 +74,7 @@ import org.scijava.options.OptionsService;
 import org.scijava.plugin.DefaultPluginFinder;
 import org.scijava.plugin.PluginIndex;
 import org.scijava.service.Service;
+import org.scijava.text.TextService;
 import org.scijava.tool.ToolService;
 import org.scijava.ui.UIService;
 import org.scijava.util.ClassUtils;
@@ -115,8 +116,9 @@ public final class IJGateway {
      */
     @SuppressWarnings("unchecked")
     private static final Class<? extends Service>[] SUPPORTED_SERVICES =
-            new Class[]{OpService.class, LogService.class, UnitService.class, UIService.class, MenuService.class, ToolService.class, EventService.class,
-                    ObjectService.class, AutoscaleService.class, OptionsService.class, DatasetService.class, CalculatorService.class};
+            new Class[]{OpService.class, LogService.class, UnitService.class, UIService.class, MenuService.class,
+                    ToolService.class, EventService.class, ObjectService.class, AutoscaleService.class,
+                    OptionsService.class, DatasetService.class, CalculatorService.class, TextService.class};
 
     // MEMBERS
 
