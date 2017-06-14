@@ -25,6 +25,9 @@ import org.scijava.plugin.Plugin;
                                 + " library. For more details see sezpoz.java.net => Notes => Eclipse-specific notes or inspect the MyBuddyDemoPlugin."
                                 + "", headless = true, type = Command.class)
 public class MyBuddyDemoPlugin<T extends RealType<T>> implements Command {
+        @Parameter(label = "Float input")
+        private float testFloat;
+
         @Parameter(type = ItemIO.OUTPUT)
         private String output;
 
