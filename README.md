@@ -38,7 +38,7 @@ parameters can also be bound to table columns. Thus advanced workflows with
 different prametrizations for each image become available for high-throughput or
 batch processing.
 
-We currently support a basic set of input and output parameters that can be
+We currently support a basic set of input and output parameters (for images:`Img` and `ImgPlus`) that can be
 extended by core or third party developers as needed. These parameters get
 converted with adapters that translate the table centric data model of KNIME to
 ImageJ2 and vice versa. However, not all plugins can be executed with KNIME,
