@@ -44,7 +44,14 @@ converted with adapters that translate the table centric data model of KNIME to
 ImageJ2 and vice versa. However, not all plugins can be executed with KNIME,
 apart from suitable parameter annotations and adapters it is very important,
 that a plugin supports headless execution such that it fits the "configure once
-execute often" paradigm of KNIME.
+execute often" paradigm of KNIME:
+
+```java
+@Parameter(type = Command.class, headless = true)
+public class ExampleCommand implements Command {
+   ...
+}
+```
 
 The ImageJ2 plugin comes with some pre installed example plugins , like edge
 detection or the ImageJ2 shadow plugins, that demonstrate the neat integration
