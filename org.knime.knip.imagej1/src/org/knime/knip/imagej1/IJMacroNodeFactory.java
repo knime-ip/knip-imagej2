@@ -106,6 +106,8 @@ import org.knime.knip.imagej1.macro.SharpenIJMacro;
 import org.knime.knip.imagej1.macro.SkeletonizeIJMacro;
 import org.knime.knip.imagej1.macro.SubstractBackgroundIJMacro;
 import org.knime.knip.imagej1.macro.WatershedIJMacro;
+import org.knime.knip.imagej1.macro.CalculateHistogramIJMacro;
+
 import org.knime.knip.imagej1.prefs.IJ1Preferences;
 import org.knime.knip.imagej2.core.util.UntransformableIJTypeException;
 import org.knime.node2012.KnimeNodeDocument.KnimeNode;
@@ -391,6 +393,7 @@ public class IJMacroNodeFactory<T extends RealType<T>>
                 pool.put("Analyze Particles", AnalyzeParticlesIJMacro.class);
                 pool.put("Sharpen", SharpenIJMacro.class);
                 pool.put("Watersched", WatershedIJMacro.class);
+                pool.put("Histogram", CalculateHistogramIJMacro.class);
                 pool.put("Substract Background", SubstractBackgroundIJMacro.class);
                 pool.put("Enhance Local Constract (CLAHE)", CLAHEIJMacro.class);
                 pool.put("Exact Euclidean Distance Transform (3D)", EDT3DIJMacro.class);
