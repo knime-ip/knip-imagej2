@@ -89,7 +89,7 @@ public final class IJToImg<T extends RealType<T> & NativeType<T>> implements
         switch (op.getBitDepth()) {
             case 8:
                 final ImageStatistics is = op.getStatistics(Measurements.AREA);
-                if ((is.histogram[0] + is.histogram[is.histogram.length - 1]) == is.area) {
+                if ((is.histogram[0] + is.histogram[is.histogram.length - 1]) == is.pixelCount) {
                     return new BitType();
                 }
                 return new UnsignedByteType();
