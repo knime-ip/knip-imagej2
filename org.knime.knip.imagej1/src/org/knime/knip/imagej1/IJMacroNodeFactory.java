@@ -390,8 +390,8 @@ public class IJMacroNodeFactory<T extends RealType<T>>
                 pool.put("Find Maxima", FindMaximaIJMacro.class);
                 pool.put("Analyze Particles", AnalyzeParticlesIJMacro.class);
                 pool.put("Sharpen", SharpenIJMacro.class);
-                pool.put("Watersched", WatershedIJMacro.class);
-                pool.put("Substract Background", SubstractBackgroundIJMacro.class);
+                pool.put("Watershed", WatershedIJMacro.class);
+                pool.put("Subtract Background", SubstractBackgroundIJMacro.class);
                 pool.put("Enhance Local Constract (CLAHE)", CLAHEIJMacro.class);
                 pool.put("Exact Euclidean Distance Transform (3D)", EDT3DIJMacro.class);
                 pool.put("Skeletonize", SkeletonizeIJMacro.class);
