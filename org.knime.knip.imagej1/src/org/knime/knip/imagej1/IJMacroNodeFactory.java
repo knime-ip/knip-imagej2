@@ -68,6 +68,7 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DialogComponent;
 import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
@@ -110,6 +111,7 @@ import org.knime.knip.imagej1.prefs.IJ1Preferences;
 import org.knime.knip.imagej2.core.util.UntransformableIJTypeException;
 import org.knime.node2012.KnimeNodeDocument.KnimeNode;
 
+import ij.IJ;
 import ij.measure.ResultsTable;
 import net.imagej.ImgPlus;
 import net.imagej.ImgPlusMetadata;
@@ -178,6 +180,8 @@ public class IJMacroNodeFactory<T extends RealType<T>>
             private String m_currentRowKey;
 
             private ExecutionContext m_exec;
+
+            private NodeLogger log = NodeLogger.getLogger(IJMacroNodeFactory.class);
 
             /**
              * {@inheritDoc}
@@ -280,6 +284,7 @@ public class IJMacroNodeFactory<T extends RealType<T>>
                     } catch (KNIPRuntimeException e) {
                         throw e;
                     } catch (Exception e) {
+                        log.warn("ImageJ Macro Error: " + IJ.getErrorMessage());
                         throw new KNIPRuntimeException(
                                 "The specified macro has thrown an error while execution. Make sure that the used plugins are available in the selected IJ1 plugin folder! See KNIME Log for details!",
                                 e);
