@@ -80,7 +80,7 @@ Development
    the [knip-sdk-setup](https://github.com/knime-ip/knip-sdk-setup) repository.
    The ``knip-sdk-nightly-full`` contains everything you'll need to start developing right away.
 
-2. Clone this repository and import the ``org.knime.knip.imagaj2.buddydemo`` project it into your workspace.
+2. Clone this repository and import the ``org.knime.knip.imagej2.buddydemo`` project it into your workspace.
 
 3. From within eclipse, copy the ``org.knime.knip.imagej2.buddydemo`` project
    and rename it so that it is applicable to you, e.g: ``com.example.knime.imagej2plugins``. 
