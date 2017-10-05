@@ -50,6 +50,7 @@ package org.knime.knip.imagej2.core.imagejdialog;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -219,6 +220,8 @@ public class SettingsModelImageJDlg extends SettingsModel {
                 item = settings.getString(keys[i]);
             } else if (types[i].equals(Boolean.class.getSimpleName())) {
                 item = settings.getBoolean(keys[i]);
+            } else if (types[i].equals(File.class.getSimpleName())) {
+                item = new File(settings.getString(keys[i]));
             } else {
                 final String itemString = settings.getString(keys[i]);
                 item = stringToObject(itemString);
@@ -275,6 +278,9 @@ public class SettingsModelImageJDlg extends SettingsModel {
             } else if (item instanceof Boolean) {
                 settings.addBoolean(keys[i], (Boolean)item);
                 types[i] = Boolean.class.getSimpleName();
+            } else if (item instanceof File) {
+                settings.addString(keys[i], ((File)item).getAbsolutePath());
+                types[i] = File.class.getSimpleName();
             } else {
                 final String itemString = objectToString(item);
                 types[i] = "OTHER";
