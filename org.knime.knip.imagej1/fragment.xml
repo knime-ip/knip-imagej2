@@ -4,7 +4,6 @@
    <extension
          point="org.knime.workbench.repository.nodesets">
       <nodeset
-            expert-flag="false"
             factory-class="org.knime.knip.imagej1.ImageJ1NodeSetFactory"
             id="org.knime.knip.imagej1.ImageJ1NodeSetFactory">
       </nodeset>
