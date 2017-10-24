@@ -7,7 +7,6 @@
   
      <nodeset
               default-category-icon="icon.png"
-              expert-flag="false"
               factory-class="org.knime.knip.imagej2.core.node.IJNodeSetFactory"
               id="org.knime.knip.imagej.core.node.IJNodeSetFactory">
         </nodeset>   
