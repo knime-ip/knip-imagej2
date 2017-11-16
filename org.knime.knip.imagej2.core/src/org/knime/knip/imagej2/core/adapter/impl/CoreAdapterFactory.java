@@ -135,7 +135,7 @@ public class CoreAdapterFactory implements IJAdapterFactory {
                 new PBooleanInputAdapter(), new PByteInputAdapter(), new PCharacterInputAdapter(),
                 new PDoubleInputAdapter(), new PFloatInputAdapter(), new PIntegerInputAdapter(),
                 new PLongInputAdapter(), new PShortInputAdapter(), new ImgInputAdapter(), new LabelingInputAdapter(),
-                new ImgPlusInputAdapter(), new FloatArrayInputAdapter(), new DoubleArrayInputAdapter()};
+                new ImgPlusInputAdapter(), new FloatArrayInputAdapter(), new DoubleArrayInputAdapter(), new FileAdapter()};
     }
 
     @SuppressWarnings("unchecked")
@@ -143,19 +143,9 @@ public class CoreAdapterFactory implements IJAdapterFactory {
     public IJServiceAdapter<? extends Service>[] getServiceAdapters() {
 
         // construct simple service class adapters
-        final IJServiceAdapter<OverlayService> overlayServiceAdapter = new IJServiceAdapter<OverlayService>() {
-            @Override
-            public Class<OverlayService> getIJType() {
-                return OverlayService.class;
-            }
-        };
+        final IJServiceAdapter<OverlayService> overlayServiceAdapter = () -> OverlayService.class;
 
-        final IJServiceAdapter<ImageDisplayService> imageServiceAdapter = new IJServiceAdapter<ImageDisplayService>() {
-            @Override
-            public Class<ImageDisplayService> getIJType() {
-                return ImageDisplayService.class;
-            }
-        };
+        final IJServiceAdapter<ImageDisplayService> imageServiceAdapter = () -> ImageDisplayService.class;
 
         // return them
         return new IJServiceAdapter[]{overlayServiceAdapter, imageServiceAdapter};

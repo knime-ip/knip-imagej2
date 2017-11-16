@@ -89,13 +89,13 @@ public final class IJAdapterProvider {
     /**
      * all adapter factories that have been registered at the construction time via the extension point.
      */
-    private final List<IJAdapterFactory> m_factories = new ArrayList<IJAdapterFactory>();
+    private final List<IJAdapterFactory> m_factories = new ArrayList<>();
 
-    private final Map<Class<?>, IJOutputAdapter<?>> m_outputAdapters = new HashMap<Class<?>, IJOutputAdapter<?>>();
+    private final Map<Class<?>, IJOutputAdapter<?>> m_outputAdapters = new HashMap<>();
 
-    private final Map<Class<?>, IJInputAdapter<?>> m_inputAdapters = new HashMap<Class<?>, IJInputAdapter<?>>();
+    private final Map<Class<?>, IJInputAdapter<?>> m_inputAdapters = new HashMap<>();
 
-    private final Set<Class<? extends Service>> m_serviceAdapters = new HashSet<Class<? extends Service>>();
+    private final Set<Class<? extends Service>> m_serviceAdapters = new HashSet<>();
 
     /** the single instance of this class. */
     private static IJAdapterProvider m_instance;
@@ -247,7 +247,8 @@ public final class IJAdapterProvider {
                             (IJAdapterFactory)elem.createExecutableExtension(EXT_POINT_ATTR_DF);
                     m_factories.add(factory);
                 } catch (final Throwable t) {
-                    LOGGER.error("Problems during initialization of " + "Table Cell View (with id '" + operator + "'.)");
+                    LOGGER.error("Problems during initialization of " + "Table Cell View (with id '" + operator
+                            + "'.)");
                     if (decl != null) {
                         LOGGER.error("Extension " + decl + " ignored.", t);
                     }

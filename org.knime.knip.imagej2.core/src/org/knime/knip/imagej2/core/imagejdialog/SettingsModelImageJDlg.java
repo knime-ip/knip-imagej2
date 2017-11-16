@@ -50,11 +50,13 @@ package org.knime.knip.imagej2.core.imagejdialog;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -67,6 +69,7 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.config.Config;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.util.pathresolve.ResolverUtil;
 import org.scijava.module.Module;
 
 /**
@@ -101,7 +104,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
      */
     public SettingsModelImageJDlg(final String configName) {
         m_configName = configName;
-        m_itemName2Value = new HashMap<String, Object>(10);
+        m_itemName2Value = new HashMap<>(10);
     }
 
     /**
@@ -113,7 +116,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
 
         for (final String name : m_itemName2Value.keySet()) {
             module.setInput(name, m_itemName2Value.get(name));
-            module.setResolved(name, true);
+            module.resolveInput(name);
         }
 
     }
@@ -123,7 +126,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
      * @return the values of all items that are part of the model and specified in the provided item set
      */
     public Map<String, Object> getItemValues(final Set<String> itemNames) {
-        final Map<String, Object> ret = new HashMap<String, Object>();
+        final Map<String, Object> ret = new HashMap<>();
         for (final String itemName : itemNames) {
             if (m_itemName2Value.containsKey(itemName)) {
                 ret.put(itemName, m_itemName2Value.get(itemName));
@@ -186,6 +189,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
      */
     @Override
     protected void validateSettingsForModel(final NodeSettingsRO settings) throws InvalidSettingsException {
+        // nothing to do here
     }
 
     /**
@@ -199,7 +203,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
 
         for (int i = 0; i < keys.length; i++) {
             final Object item;
-            if (types.equals("null")) {
+            if (types[i].equals("null")) {
                 item = null;
             } else if (types[i].equals(Byte.class.getSimpleName())) {
                 item = settings.getByte(keys[i]);
@@ -219,18 +223,39 @@ public class SettingsModelImageJDlg extends SettingsModel {
                 item = settings.getString(keys[i]);
             } else if (types[i].equals(Boolean.class.getSimpleName())) {
                 item = settings.getBoolean(keys[i]);
+            } else if (types[i].equals(File.class.getSimpleName())) {
+                item = stringToFile(settings.getString(keys[i]));
             } else {
                 final String itemString = settings.getString(keys[i]);
                 item = stringToObject(itemString);
             }
-
             if (item != null) {
                 m_itemName2Value.put(keys[i], item);
             } else {
-                throw new InvalidSettingsException("The item with the identifier " + keys[i]
-                        + " could not be restored.");
+                throw new InvalidSettingsException(
+                        "The item with the identifier " + keys[i] + " could not be restored.");
             }
 
+        }
+    }
+
+    /**
+     * @return
+     * @throws InvalidSettingsException
+     */
+    private File stringToFile(final String path) throws InvalidSettingsException {
+        try {
+            // Workaround for semi-invalid uri
+            if (path.startsWith("knime:/")) {
+                if (path.charAt(7) != '/') {
+                    return ResolverUtil
+                            .resolveURItoLocalFile(URI.create("knime://" + path.substring(7, path.length())));
+                }
+                return ResolverUtil.resolveURItoLocalFile(URI.create(path));
+            }
+            return new File(path);
+        } catch (Exception exc) {
+            throw new InvalidSettingsException(exc);
         }
     }
 
@@ -275,6 +300,9 @@ public class SettingsModelImageJDlg extends SettingsModel {
             } else if (item instanceof Boolean) {
                 settings.addBoolean(keys[i], (Boolean)item);
                 types[i] = Boolean.class.getSimpleName();
+            } else if (item instanceof File) {
+                settings.addString(keys[i], ((File)item).getPath());
+                types[i] = File.class.getSimpleName();
             } else {
                 final String itemString = objectToString(item);
                 types[i] = "OTHER";
@@ -311,9 +339,9 @@ public class SettingsModelImageJDlg extends SettingsModel {
             }
 
             //if there is an empty default constructor, just write the class name and re-instantiate the object later
-            Constructor<?>[] constructors = object.getClass().getConstructors();
+            final Constructor<?>[] constructors = object.getClass().getConstructors();
             boolean hasPublicDefaultConstructor = false;
-            for (Constructor<?> constr : constructors) {
+            for (final Constructor<?> constr : constructors) {
                 if (constr.getParameterTypes().length == 0) {
                     hasPublicDefaultConstructor = true;
                     break;
@@ -326,8 +354,8 @@ public class SettingsModelImageJDlg extends SettingsModel {
         } catch (final IOException e) {
             e.printStackTrace();
         }
-        throw new RuntimeException("Object of class " + object.getClass().getCanonicalName()
-                + " can not be serialized.");
+        throw new RuntimeException(
+                "Object of class " + object.getClass().getCanonicalName() + " can not be serialized.");
 
     }
 
@@ -341,11 +369,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
             //if only the class name has been serialized re-instantiate from the class name
             try {
                 return Class.forName(stringRepresentation.substring(CLASS_PREFIX.length())).newInstance();
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
+            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         } else {
@@ -359,9 +383,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
                 ObjectInputStream ois;
                 ois = new ObjectInputStream(bis);
                 ret = ois.readObject();
-            } catch (final IOException e) {
-                e.printStackTrace();
-            } catch (final ClassNotFoundException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
             return ret;

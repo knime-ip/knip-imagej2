@@ -54,6 +54,7 @@ import java.util.Map;
 import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
 import org.knime.knip.imagej2.core.adapter.IJInputAdapter;
 import org.knime.knip.imagej2.core.adapter.IJStandardInputAdapter;
+import org.knime.knip.imagej2.core.adapter.impl.FileAdapter;
 import org.scijava.module.Module;
 import org.scijava.module.ModuleInfo;
 import org.scijava.module.ModuleItem;
@@ -81,7 +82,7 @@ public class HarvesterModuleWrapper implements Module {
      */
     public HarvesterModuleWrapper(final Module module) {
         m_module = module;
-        m_notHarvested = new HashSet<String>();
+        m_notHarvested = new HashSet<>();
 
         //ignore all items that cannot be part of the input panel
         for (final ModuleItem<?> item : m_module.getInfo().inputs()) {
@@ -89,6 +90,8 @@ public class HarvesterModuleWrapper implements Module {
             //do not allow those items, that are IJStandardInputAdapter (like image input etc.)
             //if there is NO input adapter, allow them and hope that imagej provides a dialog component (TODO: is this the right approach?? what if there is no input adapter AND imagej DOESN'T provide any widget)
             if (o != null && o instanceof IJStandardInputAdapter) {
+                m_notHarvested.add(item.getName());
+            } else if (o instanceof FileAdapter) {
                 m_notHarvested.add(item.getName());
             }
         }

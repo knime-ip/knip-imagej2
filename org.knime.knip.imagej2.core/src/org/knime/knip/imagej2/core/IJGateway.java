@@ -48,7 +48,6 @@
  */
 package org.knime.knip.imagej2.core;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -108,7 +107,7 @@ public final class IJGateway {
      */
     public static final Class<?>[] SUPPORTED_IJ_DIALOG_TYPES =
             {Number.class, byte.class, double.class, float.class, int.class, long.class, short.class, String.class,
-                    Character.class, char.class, Boolean.class, boolean.class, File.class, ColorRGB.class};
+                    Character.class, char.class, Boolean.class, boolean.class, ColorRGB.class};
 
     /**
      * all services that are supported out of the box by the IJ Adapters. Mainly services that are actually not
@@ -178,7 +177,7 @@ public final class IJGateway {
         // KNIME/KNIP
         final List<ModuleInfo> moduleInfos = getModuleService().getModules();
         m_supportedModulesInfos = findSupportedModules(moduleInfos);
-        m_delegateClassName2ModuleInfo = new HashMap<String, ModuleInfo>(m_supportedModulesInfos.size());
+        m_delegateClassName2ModuleInfo = new HashMap<>(m_supportedModulesInfos.size());
         for (final ModuleInfo info : m_supportedModulesInfos) {
             m_delegateClassName2ModuleInfo.put(info.getDelegateClassName(), info);
         }
