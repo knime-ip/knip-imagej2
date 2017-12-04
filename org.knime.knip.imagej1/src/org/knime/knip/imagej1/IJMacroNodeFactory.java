@@ -278,7 +278,7 @@ public class IJMacroNodeFactory<T extends RealType<T>> extends
                                                          new DefaultImgMetadata(subsetview.numDimensions()));
 
                     try {
-                        ImgPlus<T> imgPlus = new ImgPlus<>(ImgView.wrap(subsetview, img.factory()), meta);
+                        ImgPlus<T> imgPlus = new ImgPlus<T>(ImgView.wrap(subsetview, img.factory()), meta);
                         m_macro.run(imgPlus);
                     } catch (UntransformableIJTypeException e) {
                         throw new KNIPRuntimeException(e.getMessage(), e);
