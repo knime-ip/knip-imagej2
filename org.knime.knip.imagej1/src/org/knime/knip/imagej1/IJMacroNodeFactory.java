@@ -96,6 +96,7 @@ import org.knime.knip.core.data.img.DefaultImgMetadata;
 import org.knime.knip.core.util.MinimaUtils;
 import org.knime.knip.imagej1.macro.AnalyzeParticlesIJMacro;
 import org.knime.knip.imagej1.macro.CLAHEIJMacro;
+import org.knime.knip.imagej1.macro.CalculateHistogramIJMacro;
 import org.knime.knip.imagej1.macro.DespeckleIJMacro;
 import org.knime.knip.imagej1.macro.EDT3DIJMacro;
 import org.knime.knip.imagej1.macro.FindEdgesIJMacro;
@@ -135,11 +136,11 @@ import net.imglib2.view.Views;
  *
  */
 @SuppressWarnings("rawtypes")
-public class IJMacroNodeFactory<T extends RealType<T>>
-        extends GenericValueToCellNodeFactory<ImgPlusValue, ValueToCellNodeModel<ImgPlusValue, ImgPlusCell>> {
+public class IJMacroNodeFactory<T extends RealType<T>> extends
+        GenericValueToCellNodeFactory<ImgPlusValue, ValueToCellNodeModel<ImgPlusValue, ImgPlusCell>> {
 
     private static SettingsModelSerializableObjects<SerializableSetting<String>> createMacroSelectionModel() {
-        return new SettingsModelSerializableObjects<SerializableSetting<String>>("kernels", new ImageJ1ObjectExt0());
+        return new SettingsModelSerializableObjects<>("kernels", new ImageJ1ObjectExt0());
     }
 
     private static SettingsModelDimSelection createDimSelectionModel() {
@@ -222,7 +223,7 @@ public class IJMacroNodeFactory<T extends RealType<T>>
                     m_flowVarCode.setStringValue("");
                 }
 
-                m_macro = new IJMacro<T>(code);
+                m_macro = new IJMacro<>(code);
                 m_imgCellFactory = new ImgPlusCellFactory(exec);
 
                 m_exec = exec;
@@ -234,7 +235,7 @@ public class IJMacroNodeFactory<T extends RealType<T>>
             private DataTableSpec createResultTableSpec(final ResultsTable table) {
                 final String colHeadings = table.getColumnHeadings();
                 final StringTokenizer tk = new StringTokenizer(colHeadings, "\t");
-                final ArrayList<DataColumnSpec> colSpecs = new ArrayList<DataColumnSpec>(tk.countTokens());
+                final ArrayList<DataColumnSpec> colSpecs = new ArrayList<>(tk.countTokens());
                 while (tk.hasMoreTokens()) {
                     final String token = tk.nextToken().trim();
                     if (token.length() > 0) {
@@ -277,7 +278,7 @@ public class IJMacroNodeFactory<T extends RealType<T>>
                                                          new DefaultImgMetadata(subsetview.numDimensions()));
 
                     try {
-                        ImgPlus<T> imgPlus = new ImgPlus<T>(ImgView.wrap(subsetview, img.factory()), meta);
+                        ImgPlus<T> imgPlus = new ImgPlus<>(ImgView.wrap(subsetview, img.factory()), meta);
                         m_macro.run(imgPlus);
                     } catch (UntransformableIJTypeException e) {
                         throw new KNIPRuntimeException(e.getMessage(), e);
@@ -396,6 +397,7 @@ public class IJMacroNodeFactory<T extends RealType<T>>
                 pool.put("Analyze Particles", AnalyzeParticlesIJMacro.class);
                 pool.put("Sharpen", SharpenIJMacro.class);
                 pool.put("Watershed", WatershedIJMacro.class);
+                pool.put("Histogram", CalculateHistogramIJMacro.class);
                 pool.put("Subtract Background", SubstractBackgroundIJMacro.class);
                 pool.put("Enhance Local Constract (CLAHE)", CLAHEIJMacro.class);
                 pool.put("Exact Euclidean Distance Transform (3D)", EDT3DIJMacro.class);
