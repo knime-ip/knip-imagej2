@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ImageJ1
 Bundle-SymbolicName: org.knime.knip.imagej1;singleton:=true
-Bundle-Version: 0.11.4.qualifier
+Bundle-Version: 0.11.5.qualifier
 Bundle-Vendor: University of Konstanz
-Fragment-Host: org.knime.knip.imagej2.core;bundle-version="0.11.2"
+Fragment-Host: org.knime.knip.imagej2.core;bundle-version="0.11.5"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/imglib.jar,
