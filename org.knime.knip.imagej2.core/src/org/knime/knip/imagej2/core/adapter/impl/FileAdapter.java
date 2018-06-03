@@ -51,6 +51,8 @@ package org.knime.knip.imagej2.core.adapter.impl;
 
 import java.io.File;
 
+import javax.swing.JFileChooser;
+
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
@@ -134,7 +136,9 @@ public class FileAdapter implements IJAdvancedInputAdapter<File> {
     @Override
     public DialogComponentGroup createDialogComponents(final ModuleItem<File> item) {
         final DialogComponentLabel label = new DialogComponentLabel("\t" + item.getLabel() + ":   ");
-        final DialogComponent comp = new DialogComponentFileChooser(createModel(item.getName()), "ij2-plugins-history");
+        final boolean dironly = item.getWidgetStyle().equals("directory"); // NB same style value as in IJ
+        final DialogComponent comp = new DialogComponentFileChooser(createModel(item.getName()), "ij2-plugins-history",
+                JFileChooser.SAVE_DIALOG, dironly);
         return new DialogComponentGroup(new DialogComponent[]{label, comp}, PLACEMENT_HINT.HORIZONTAL);
     }
 
