@@ -10,10 +10,10 @@ Require-Bundle: org.knime.base,
  org.apache.log4j;bundle-version="1.2.15",
  org.eclipse.core.runtime,
  org.eclipse.ui,
- org.knime.knip.imagej2.core;bundle-version="0.1.0",
- org.knime.knip.core;bundle-version="1.4.0",
- imglib2;bundle-version="2.2.0",
- scijava-common;bundle-version="2.36.0"
+ org.knime.knip.imagej2.core;bundle-version="0.11.5",
+ org.knime.knip.core;bundle-version="1.7.0",
+ imglib2;bundle-version="5.3.0",
+ scijava-common;bundle-version="2.74.2"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: knipimagejbuddy.jar
 Bundle-ActivationPolicy: lazy
