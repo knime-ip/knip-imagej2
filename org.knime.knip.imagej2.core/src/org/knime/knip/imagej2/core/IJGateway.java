@@ -48,12 +48,12 @@
  */
 package org.knime.knip.imagej2.core;
 
+import java.security.Provider.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bushe.swing.event.EventService;
 import org.knime.core.node.NodeLogger;
 import org.knime.knip.imagej2.core.adapter.IJAdapterProvider;
 import org.knime.scijava.core.ResourceAwareClassLoader;
@@ -62,28 +62,16 @@ import org.scijava.InstantiableException;
 import org.scijava.command.CommandInfo;
 import org.scijava.command.DynamicCommand;
 import org.scijava.log.LogService;
-import org.scijava.menu.MenuService;
 import org.scijava.module.MethodCallException;
 import org.scijava.module.ModuleException;
 import org.scijava.module.ModuleInfo;
 import org.scijava.module.ModuleItem;
 import org.scijava.module.ModuleService;
 import org.scijava.object.ObjectService;
-import org.scijava.options.OptionsService;
 import org.scijava.plugin.DefaultPluginFinder;
 import org.scijava.plugin.PluginIndex;
-import org.scijava.service.Service;
-import org.scijava.text.TextService;
-import org.scijava.tool.ToolService;
-import org.scijava.ui.UIService;
 import org.scijava.util.ClassUtils;
 import org.scijava.util.ColorRGB;
-
-import net.imagej.DatasetService;
-import net.imagej.autoscale.AutoscaleService;
-import net.imagej.operator.CalculatorService;
-import net.imagej.ops.OpService;
-import net.imagej.units.UnitService;
 
 /**
  * provides access to the ImageJ context and loads supported ImageJ Plugins. The class implements the singleton pattern
@@ -108,16 +96,6 @@ public final class IJGateway {
     public static final Class<?>[] SUPPORTED_IJ_DIALOG_TYPES =
             {Number.class, byte.class, double.class, float.class, int.class, long.class, short.class, String.class,
                     Character.class, char.class, Boolean.class, boolean.class, ColorRGB.class};
-
-    /**
-     * all services that are supported out of the box by the IJ Adapters. Mainly services that are actually not
-     * supported but will do no harm like the MenuService
-     */
-    @SuppressWarnings("unchecked")
-    private static final Class<? extends Service>[] SUPPORTED_SERVICES =
-            new Class[]{OpService.class, LogService.class, UnitService.class, UIService.class, MenuService.class,
-                    ToolService.class, EventService.class, ObjectService.class, AutoscaleService.class,
-                    OptionsService.class, DatasetService.class, CalculatorService.class, TextService.class};
 
     // MEMBERS
 
@@ -338,15 +316,8 @@ public final class IJGateway {
         }
 
         //         test for supported services
-        for (final Class<?> candidate : SUPPORTED_SERVICES) {
-            if (candidate.isAssignableFrom(type)) {
-                return true;
-            }
-        }
-
-        // test for adapter supported services
-        if (IJAdapterProvider.getKnownServiceTypes().contains(type)) {
-            return true;
+        if(Service.class.isAssignableFrom(type)) {
+           return true;
         }
 
         // test for adaptable types
