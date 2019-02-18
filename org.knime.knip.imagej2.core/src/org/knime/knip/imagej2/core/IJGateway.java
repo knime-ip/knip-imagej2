@@ -48,7 +48,6 @@
  */
 package org.knime.knip.imagej2.core;
 
-import java.security.Provider.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,6 +69,7 @@ import org.scijava.module.ModuleService;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.DefaultPluginFinder;
 import org.scijava.plugin.PluginIndex;
+import org.scijava.service.Service;
 import org.scijava.util.ClassUtils;
 import org.scijava.util.ColorRGB;
 
@@ -315,7 +315,7 @@ public final class IJGateway {
             }
         }
 
-        //         test for supported services
+        // test for supported services
         if(Service.class.isAssignableFrom(type)) {
            return true;
         }
@@ -329,6 +329,7 @@ public final class IJGateway {
         if (isMultipleChoiceObject(type)) {
             return true;
         }
+
         return false;
     }
 
