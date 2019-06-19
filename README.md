@@ -99,6 +99,8 @@ Development
    To test If everything worked out, navigate to the project directory using
    your operating systems file browser, and check if the file
    ``bin/META-INF/json/plugins/json/org.scijava.plugin.Plugin`` was created.
+   If the file was not created this could be due to a failing builder because
+   of the system java version. See [Common Pitfalls](#common-pitfalls)
 
 5. Adjust the ``plugin.xml`` file:
    - Update the project metadata:
@@ -139,4 +141,9 @@ Development
   Instead, always declare the dependencies as _Required bundles_ or as imported
   jars within the `plugin.xml`.
 
-
+- Using _java 11_ for the _EclipseHelper_ builder. The _EclipseHelper_ builder is
+  only compatible with java 8. If another java version is the default jre of the
+  system this version is used and the builder fails silently.  
+  
+  To fix that, open the _EclipseHelper_ preferences as described in point 3 and edit
+  the location to point to your java 8 executable.
