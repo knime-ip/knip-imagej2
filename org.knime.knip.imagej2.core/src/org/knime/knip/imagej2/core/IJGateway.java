@@ -222,11 +222,11 @@ public final class IJGateway {
         for (final ModuleInfo info : modules) {
 
             if (!info.canRunHeadless()) {
-                LOGGER.debug("Skipping non-headless-compatible module: {}", info);
+                LOGGER.debug("Skipping non-headless-compatible module: " + info);
                 continue;
             }
             if (isDynamicPlugin(info)) {
-                LOGGER.debug("Skipping dynamic module: {}", info);
+                LOGGER.debug("Skipping dynamic module: " + info);
                 continue;
             }
 
@@ -241,7 +241,8 @@ public final class IJGateway {
                     final Class<?> type = item.getType();
                     hasInOrOutput = true;
                     if (!isSupportedInputType(info, type)) {
-                        LOGGER.debug("Unsupported input '{}' of type '{}' for module: {}", item.getName(), type.getName(), info);
+                        LOGGER.debug("Unsupported input '" + item.getName() + "' of type '" + type.getName()
+                                + "' for module: " + info);
                         inputsOK = false;
                     }
                 }
@@ -252,14 +253,17 @@ public final class IJGateway {
                     final Class<?> type = item.getType();
                     hasInOrOutput = true;
                     if (!isSupportedOutputType(type)) {
-                        LOGGER.debug("Unsupported output '{}' of type '{}' for module: {}", item.getName(), type.getName(), info);
+                        LOGGER.debug("Unsupported output '" + item.getName() + "' of type '" + type.getName()
+                                + "' for module: " + info);
                         outputsOK = false;
                     }
                 }
-                if (!inputsOK || !outputsOK) continue;
+                if (!inputsOK || !outputsOK) {
+                    continue;
+                }
 
                 if (!hasInOrOutput) {
-                    LOGGER.debug("No inputs or outputs for module: {}", info);
+                    LOGGER.debug("No inputs or outputs for module: " + info);
                     continue;
                 }
 
