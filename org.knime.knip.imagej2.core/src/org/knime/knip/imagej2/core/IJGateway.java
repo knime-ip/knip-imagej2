@@ -221,47 +221,54 @@ public final class IJGateway {
         final ArrayList<ModuleInfo> supportedModules = new ArrayList<ModuleInfo>();
         for (final ModuleInfo info : modules) {
 
-            if (info.canRunHeadless()) {
-                if (!isDynamicPlugin(info)) {
+            if (!info.canRunHeadless()) {
+                LOGGER.debug("Skipping non-headless-compatible module: {}", info);
+                continue;
+            }
+            if (isDynamicPlugin(info)) {
+                LOGGER.debug("Skipping dynamic module: {}", info);
+                continue;
+            }
 
-                    //test if at least one input or output exists
-                    boolean hasInOrOutput = false;
+            //test if at least one input or output exists
+            boolean hasInOrOutput = false;
 
-                    try {
+            try {
 
-                        // test inputs
-                        boolean inputsOK = true;
-                        for (final ModuleItem<?> item : info.inputs()) {
-                            final Class<?> type = item.getType();
-                            hasInOrOutput = true;
-                            if (!isSupportedInputType(info, type)) {
-                                inputsOK = false;
-                                break;
-                            }
-                        }
-
-                        if (inputsOK) { // test outputs
-                            boolean outputsOK = true;
-                            for (final ModuleItem<?> item : info.outputs()) {
-                                final Class<?> type = item.getType();
-                                hasInOrOutput = true;
-                                if (!isSupportedOutputType(type)) {
-                                    outputsOK = false;
-                                    break;
-                                }
-                            }
-
-                            if (outputsOK && hasInOrOutput) { // && inputsOK
-                                supportedModules.add(info);
-                            }
-                        }
-
-                    } catch (Throwable t) {
-                        //we have to catch throwable to detect errors caused by missing class definitions
-                        LOGGER.debug(t);
-                        LOGGER.error("error during ImageJ plugin discovery " + t.getMessage());
+                // test inputs
+                boolean inputsOK = true;
+                for (final ModuleItem<?> item : info.inputs()) {
+                    final Class<?> type = item.getType();
+                    hasInOrOutput = true;
+                    if (!isSupportedInputType(info, type)) {
+                        LOGGER.debug("Unsupported input '{}' of type '{}' for module: {}", item.getName(), type.getName(), info);
+                        inputsOK = false;
                     }
                 }
+
+                // test outputs
+                boolean outputsOK = true;
+                for (final ModuleItem<?> item : info.outputs()) {
+                    final Class<?> type = item.getType();
+                    hasInOrOutput = true;
+                    if (!isSupportedOutputType(type)) {
+                        LOGGER.debug("Unsupported output '{}' of type '{}' for module: {}", item.getName(), type.getName(), info);
+                        outputsOK = false;
+                    }
+                }
+                if (!inputsOK || !outputsOK) continue;
+
+                if (!hasInOrOutput) {
+                    LOGGER.debug("No inputs or outputs for module: {}", info);
+                    continue;
+                }
+
+                supportedModules.add(info);
+
+            } catch (Throwable t) {
+                //we have to catch throwable to detect errors caused by missing class definitions
+                LOGGER.debug(t);
+                LOGGER.error("error during ImageJ plugin discovery " + t.getMessage());
             }
         }
 
