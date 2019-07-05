@@ -38,11 +38,13 @@ parameters can also be bound to table columns. Thus advanced workflows with
 different prametrizations for each image become available for high-throughput or
 batch processing.
 
-We currently support a basic set of input and output parameters (for images:`Img` and `ImgPlus`) that can be
-extended by core or third party developers as needed. These parameters get
+We currently support a basic set of input and output parameters (for images: 
+[`Img`](https://javadoc.scijava.org/ImgLib2/net/imglib2/img/Img.html) and 
+[`ImgPlus`](https://javadoc.scijava.org/ImageJ/net/imagej/ImgPlus.html)) that can
+be extended by core or third party developers as needed. These parameters get
 converted with adapters that translate the table centric data model of KNIME to
 ImageJ2 and vice versa. However, not all plugins can be executed with KNIME,
-apart from suitable parameter annotations and adapters it is very important,
+apart from suitable parameter annotations and adapters it is very important 
 that a plugin supports headless execution such that it fits the "configure once
 execute often" paradigm of KNIME:
 
@@ -53,41 +55,40 @@ public class ExampleCommand implements Command {
 }
 ```
 
-The ImageJ2 plugin comes with some pre installed example plugins , like edge
-detection or the ImageJ2 shadow plugins, that demonstrate the neat integration
-of KNIME and ImageJ2. Additionally an ImageJ2 version of Tubeness 1.2
+The ImageJ2 plugin comes with some pre-installed examples, like edge detection
+or the ImageJ2 shadow plugins, that demonstrate the neat integration
+of KNIME and ImageJ2. Additionally, an ImageJ2 version of Tubeness 1.2
 (http://www.longair.net/edinburgh/imagej/tubeness/) has been included as a
 demonstration of a more advanced plugin (use grayscale images to test it). Most
 importantly, ImageJ2 plugins can easily be added to KNIME via KNIME update sites
 or with the local installations of the plugins (mainly intended for development
 purposes). To test the local installation mode go to the Image Processing
 Preference Page (File -> Preferences -> KNIME -> Image Processing Plugin) and
-select ImageJ2 Plugin Installation, then choose an ImageJ2 plugin jar-file (with
-sezpoz annotations), install it and restart KNIME. The plugins become available
-in the local node repository according to the menu annotations of the plugin.
+select ImageJ2 Plugin Installation, then choose an ImageJ2 plugin jar-file, install
+it and restart KNIME. The plugins become availablevin the local node repository
+according to the menu annotations of the plugin.
 
 The KNIME integration of ImageJ2 is currently a beta release but with the
 ongoing development of ImageJ2 we hope to improve the integration between both
 tools. However, the current version already allows to write algorithms, that run
-in KNIME and ImageJ2 at the same time, without requiring a deeper knowledge of
-the KNIME API.
+in KNIME as well as ImageJ2, without requiring a deeper knowledge of the KNIME API.
 
 Development
 -------------
 
 ### Add your own ImageJ2 plugins to KNIME
-1. Setup your eclipse for KNIP development as described in
+1. Set your Eclipse up for KNIP development as described in
    the [knip-sdk-setup](https://github.com/knime-ip/knip-sdk-setup) repository.
    The ``knip-sdk-nightly-full`` contains everything you'll need to start developing right away.
 
-2. Clone this repository and import the ``org.knime.knip.imagej2.buddydemo`` project it into your workspace.
+2. Clone this repository and import the ``org.knime.knip.imagej2.buddydemo`` project into your workspace.
 
-3. From within eclipse, copy the ``org.knime.knip.imagej2.buddydemo`` project
-   and rename it so that it is applicable to you, e.g: ``com.example.knime.imagej2plugins``. 
+3. From within Eclipse, copy the ``org.knime.knip.imagej2.buddydemo`` project
+   and rename it to your needs, e.g: ``com.example.knime.imagej2plugins``. 
 
 3. Adjust the builder settings:
-   - rightclick on the project and select _Properties_ -> _Builders_, then
-   doubleclick on __EclipseHelper__. In the menu that opens you need to adjust
+   - right click on the project and select _Properties_ -> _Builders_, then
+   double click on __EclipseHelper__. In the menu that opens you need to adjust
    the code in the _Arguments_ section. Change the line:
    ```
    -classpath "${project_classpath:org.knime.knip.imagej2.buddydemo}"
@@ -96,8 +97,8 @@ Development
    ```
    -classpath "${project_classpath:com.example.knime.imagej2plugins}"
    ```
-   To test If everything worked out, navigate to the project directory using
-   your operating systems file browser, and check if the file
+   To test if everything worked out, navigate to the project directory using
+   your operating system's file browser, and check if the file
    ``bin/META-INF/json/plugins/json/org.scijava.plugin.Plugin`` was created.
    If the file was not created this could be due to a failing builder because
    of the system java version. See [Common Pitfalls](#common-pitfalls)
