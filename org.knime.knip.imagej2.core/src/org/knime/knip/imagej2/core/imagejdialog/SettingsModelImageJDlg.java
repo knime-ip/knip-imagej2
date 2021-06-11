@@ -57,11 +57,11 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.net.URI;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.xmlbeans.impl.util.Base64;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -332,10 +332,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
                 baos.close();
 
                 final byte[] byteObject = baos.toByteArray();
-                new Base64();
-                final byte[] encodedObject = Base64.encode(byteObject);
-
-                return new String(encodedObject);
+                return Base64.getMimeEncoder().encodeToString(byteObject);
             }
 
             //if there is an empty default constructor, just write the class name and re-instantiate the object later
@@ -375,8 +372,7 @@ public class SettingsModelImageJDlg extends SettingsModel {
         } else {
             //restore object via java serialization
             Object ret = null;
-            new Base64();
-            final byte[] decodedObject = Base64.decode(stringRepresentation.getBytes());
+            final byte[] decodedObject = Base64.getMimeDecoder().decode(stringRepresentation);
 
             try {
                 final ByteArrayInputStream bis = new ByteArrayInputStream(decodedObject);
