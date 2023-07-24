@@ -1,2 +1,5 @@
 *.class
 */bin*
+org.knime.knip.imagej2.core/ij2-core.jar
+target/
+.polyglot.*
