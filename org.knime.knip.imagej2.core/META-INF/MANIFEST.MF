@@ -36,7 +36,7 @@ Require-Bundle: org.knime.workbench.repository;bundle-version="[3.0.0,6.0.0)",
  org.knime.knip.cellviewer;bundle-version="[1.7.0,2.0.0)",
  eventbus;bundle-version="1.4.0",
  scijava-search;bundle-version="0.4.1"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-ClassPath: ij2-core.jar
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.knime.knip.imagej2.core.KNIMEIMAGEJPlugin
